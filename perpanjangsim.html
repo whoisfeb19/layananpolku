@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Perpanjang Sim</title>
+    <style>
+        :root {
+            --primary-color: #1f2937;
+            --secondary-color: #3b82f6;
+            --danger-color: #dc2626;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --light-color: #f9fafb;
+            --dark-color: #111827;
+        }
+        
+        body {
+            background-image: url('home.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--dark-color);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2.2rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 3px;
+            background: var(--secondary-color);
+            border-radius: 3px;
+        }
+        .navbar-custom {
+            background: #111827;
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.16);
+            margin: 24px auto 0 auto;
+            max-width: 1300px;
+            padding: 0.45rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 10;
+        }
+        .navbar-custom .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .navbar-custom .brand img {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+        }
+        .navbar-custom .brand span {
+            color: #fff;
+            font-weight: bold;
+            font-size: 20px;
+            letter-spacing: 0.5px;
+        }
+        .navbar-custom .nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .navbar-custom .nav li {
+            position: relative;
+        }
+        .navbar-custom .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+            padding: 0.7rem 1.2rem;
+            border-radius: 0.6rem;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .nav-link:focus {
+            background: #1f2937;
+            color: #fff !important;
+            text-decoration: none;
+        }
+        .navbar-custom .nav-link:visited,
+        .navbar-custom .nav-link:active {
+            color: #fff !important;
+            text-decoration: none;
+        }
+        /* Dropdown menu: default hidden, only shown by JS .show class */
+        .dropdown-menu-custom {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            background: #fff;
+            min-width: 170px;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.13);
+            z-index: 99;
+        }
+        .dropdown-menu-custom a {
+            color: #222;
+            text-decoration: none;
+            display: block;
+            padding: 10px 18px;
+            border-radius: 0.5rem;
+            font-size: 15px;
+            transition: background 0.18s;
+        }
+        .dropdown-menu-custom a:hover {
+            background: #e5e7eb;
+            color: #1e40af;
+        }
+        /* Only show dropdown on .show class (handled by JS, not hover) */
+        .navbar-custom .nav li.show > .dropdown-menu-custom {
+            display: block;
+        }
+        @media (max-width: 900px) {
+            .navbar-custom {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1rem;
+            }
+            .navbar-custom .nav {
+                flex-direction: column;
+                gap: 0.7rem;
+                align-items: stretch;
+                margin-top: 0.6rem;
+            }
+            .navbar-custom .nav-link {
+                justify-content: flex-start;
+                width: 100%;
+            }
+            .dropdown-menu-custom {
+                position: static;
+                min-width: unset;
+                box-shadow: none;
+                border-radius: 0.5rem;
+            }
+        }
+        .hero-box {
+            background: rgba(255,255,255,0.92);
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+            max-width: 1000px;
+            margin: 48px auto 0 auto;
+            padding: 2rem 2.6rem 1.2rem 2.6rem;
+            text-align: center;
+        }
+        .hero-title {
+            font-size: 2.3rem;
+            color: #1f2937;
+            margin-bottom: 0.1rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+        .hero-title::after {
+            content: '';
+            display: block;
+            width: 120px;
+            height: 3.8px;
+            background: #3b82f6;
+            border-radius: 2px;
+            margin: 0.4rem auto 0 auto;
+        }
+        .main-bg-img {
+            display: block;
+            width: 100%;
+            max-width: 1140px;
+            margin: 32px auto 0 auto;
+            border-radius: 1.3rem;
+            box-shadow: 0 1.5px 12px rgba(0,0,0,0.14);
+            border: 3px solid #fff;
+        }
+        /* Modal Content Animation */
+        .animate-pop {
+            animation: pop 0.4s ease-out;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Profile Section */
+        .profile-section {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 3px solid #3085d6;
+        }
+
+        .social-links {
+            margin-top: 10px;
+        }
+
+        .social-icon {
+            font-size: 1.5rem;
+            margin: 0 8px;
+            color: #555;
+            transition: color 0.3s;
+        }
+
+        .social-icon:hover {
+            color: #3085d6;
+        }
+
+        /* Modal Basic Styling */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .summary-checkbox {
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .remove-btn {
+            padding: 0.2rem 0.4rem;
+            font-size: 0.75rem;
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+            transform: scale(1.05);
+        }
+
+        /* Upload Box custom & file list */
+        .upload-area {
+          border: 2px dashed #bdbdbd;
+          border-radius: 8px;
+          padding: 24px 18px;
+          text-align: center;
+          margin-bottom: 18px;
+          transition: border-color 0.2s, background 0.2s;
+          background: #fafbfc;
+          position: relative;
+        }
+        .upload-area.dragover {
+          border-color: #3b82f6;
+          background: #e6f0ff;
+        }
+        .upload-input {
+          opacity: 0;
+          width: 100%;
+          height: 70px;
+          position: absolute;
+          left: 0; top: 0;
+          cursor: pointer;
+        }
+        .upload-label {
+          display: block;
+          cursor: pointer;
+          color: #444;
+          font-size: 1em;
+          position: relative;
+          z-index: 2;
+        }
+        .upload-link {
+          color: #2563eb;
+          text-decoration: underline;
+          cursor: pointer;
+        }
+        .upload-format {
+          display: block;
+          margin-top: 6px;
+          color: #888;
+          font-size: 0.93em;
+        }
+        #fileList {
+          margin-top: 8px;
+          font-size: 0.96em;
+          color: #222;
+          word-break: break-all;
+        }
+        #fileList li {
+          margin-bottom: 3px;
+          list-style: disc inside;
+        }
+        /* Responsive: pastikan kotak upload tetap rapi di HP */
+        @media (max-width: 600px) {
+          .upload-area {
+            padding: 14px 4vw;
+            font-size: 0.98em;
+          }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar-custom">
+        <div class="brand">
+            <img src="logopolku.png" alt="Logo">
+            <span>Layanan Kepolisian Kotaku</span>
+        </div>
+        <ul class="nav">
+            <li>
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
+            </li>
+            <li class="dropdown-parent">
+                <a class="nav-link dropdown-toggle"><i class="fas fa-file-alt"></i> Layanan <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
+                <div class="dropdown-menu-custom">
+                    <a href="createsim.html">Pembuatan SIM</a>
+                    <a href="perpanjangsim.html">Perpanjang SIM</a>
+                    <a href="#">Pengambilan Impound</a>
+                    <a href="#">Pembuatan SKCK</a>
+                </div>
+            </li>
+            <li class="dropdown-parent">
+                <a class="nav-link dropdown-toggle"><i class="fas fa-sitemap"></i> Informasi<i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
+                <div class="dropdown-menu-custom">
+                    <a href="#">Pendaftaran</a>
+                    <a href="#">Coming Soon</a>
+                    <a href="#">Coming Soon</a>
+                </div>
+            </li>
+            <li>
+                <a href="#" class="nav-link"><i class="fas fa-dollar"></i> Regulasi</a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" id="contactBtn"><i class="fas fa-address-book"></i> Kontak</a>
+            </li>
+        </ul>
+    </nav>
+        <div class="container">
+<head>
+  <meta charset="UTF-8">
+  <title>Kepolisian Kotaku</title>
+  <style>
+    .navbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      margin: 0 auto;
+      width: 90%;
+      max-width: 1000px;
+    }
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropbtn {
+      background-color: #2980b9;
+      color: white;
+      padding: 10px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f6f6f6;
+      min-width: 180px;
+      border-radius: 6px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+      z-index: 1;
+      right: 0;
+      margin-top: 4px;
+    }
+    .dropdown-content a {
+      color: #333;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      border-bottom: 1px solid #e1e1e1;
+    }
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+    .dropdown-content a:hover { background-color: #e3eefd;}
+    .title-area {
+      text-align: center;
+      font-size: 2em;
+      font-weight: bold;
+      color: #222;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .title-area .underline {
+      width: 60px;
+      height: 3px;
+      background: #3498db;
+      margin-top: 6px;
+      border-radius: 2px;
+    }
+
+            /* Tambahan style untuk form perpanjang sim */
+        .form-container {
+            background: rgba(255,255,255,0.95);
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.13);
+        }
+        .form-container h2 {
+            margin-top: 0;
+        }
+        .form-container label {
+            font-weight: bold;
+            display: block;
+            margin-top: 14px;
+            margin-bottom: 4px;
+        }
+        .form-container input[type="text"], 
+        .form-container input[type="email"], 
+        .form-container input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin: 3px 0 10px 0;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+            font-size: 1em;
+        }
+        .form-container input[type="file"] {
+            margin-bottom: 10px;
+        }
+        .form-container .radio-group {
+            margin-bottom: 10px;
+        }
+        .form-container .submit-btn {
+            margin-top: 18px;
+            padding: 10px 28px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .form-container .submit-btn:hover {
+            background: #1e40af;
+        }
+
+        .upload-area {
+        border: 2px dashed #bdbdbd;
+        border-radius: 8px;
+        padding: 24px 18px;
+        text-align: center;
+        margin-bottom: 18px;
+        transition: border-color 0.2s, background 0.2s;
+        background: #fafbfc;
+        position: relative;
+        }
+        .upload-area.dragover {
+        border-color: #3b82f6;
+        background: #e6f0ff;
+        }
+        .upload-input {
+        opacity: 0;
+        width: 100%;
+        height: 70px;
+        position: absolute;
+        left: 0; top: 0;
+        cursor: pointer;
+        }
+        .upload-label {
+        display: block;
+        cursor: pointer;
+        color: #444;
+        font-size: 1em;
+        position: relative;
+        z-index: 2;
+        }
+        .upload-link {
+        color: #2563eb;
+        text-decoration: underline;
+        cursor: pointer;
+        }
+        .upload-format {
+        display: block;
+        margin-top: 6px;
+        color: #888;
+        font-size: 0.93em;
+        }
+        /* Responsive: pastikan kotak upload tetap rapi di HP */
+        @media (max-width: 600px) {
+        .upload-area {
+            padding: 14px 4vw;
+            font-size: 0.98em;
+        }
+        }
+  </style>
+</head>
+<body>
+    <!-- Tengah -->
+    <div class="title-area">
+        <a href="index.html" id="kepolisianTitle" style="color:inherit;text-decoration:none;cursor:pointer;">
+        <span><span style="font-size:1.2em;">&#128196;</span> Kepolisian Kotaku</span>
+        </a>
+    </div>
+  <script>
+    // Fungsi untuk membuka/menutup dropdown
+    function toggleDropdown(id) {
+      // Tutup semua dropdown lain
+      document.querySelectorAll('.dropdown-content').forEach(el => {
+        if (el.id !== id) el.style.display = 'none';
+      });
+      // Toggle dropdown yang diklik
+      var dropdown = document.getElementById(id);
+      if (dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+      } else {
+        dropdown.style.display = 'block';
+      }
+    }
+    // Tutup dropdown kalau klik di luar menu
+    document.addEventListener('click', function(event) {
+      if (!event.target.matches('.dropbtn')) {
+        document.querySelectorAll('.dropdown-content').forEach(el => {
+          el.style.display = 'none';
+        });
+      }
+    });
+
+     // === Penambahan: Multi-file array agar file tidak ter-reset saat tambah satu per satu ===
+    document.addEventListener('DOMContentLoaded', function () {
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadInput = document.getElementById('gambarInput');
+        const fileList = document.getElementById('fileList');
+        let selectedFiles = [];
+
+        // Drag & drop feedback
+        if(uploadArea && uploadInput) {
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                // Tambah file dari drop ke array
+                addFilesToList(e.dataTransfer.files);
+            });
+            uploadInput.addEventListener('change', function() {
+                uploadArea.classList.remove('dragover');
+                // Tambah file dari picker ke array
+                addFilesToList(uploadInput.files);
+                // Reset input supaya bisa pilih file sama lagi jika perlu
+                uploadInput.value = '';
+            });
+        }
+
+        function addFilesToList(fileListInput) {
+            for (let file of fileListInput) {
+                // Cegah duplikat berdasarkan nama dan ukuran (optional)
+                if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    selectedFiles.push(file);
+                }
+            }
+            showSelectedFiles();
+        }
+
+        function showSelectedFiles() {
+            fileList.innerHTML = '';
+            if (selectedFiles.length > 0) {
+                const ul = document.createElement('ul');
+                selectedFiles.forEach((file, idx) => {
+                    const li = document.createElement('li');
+                    li.textContent = file.name;
+                    // Tombol hapus
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.textContent = 'Hapus';
+                    removeBtn.style.marginLeft = "10px";
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = function() {
+                        selectedFiles.splice(idx, 1);
+                        showSelectedFiles();
+                    };
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+                });
+                fileList.appendChild(ul);
+            }
+        }
+
+        // Override submit untuk pakai selectedFiles
+        document.getElementById("staffForm").addEventListener("submit", async function(e){
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+            const statusDiv = document.getElementById("status");
+
+            // Ambil semua tipe SIM yang dipilih
+            const simCheckboxes = form.querySelectorAll('input[name="sim"]:checked');
+            const tipeSimArr = [];
+            let totalHarga = 0;
+            simCheckboxes.forEach(cb => {
+                tipeSimArr.push(cb.value);
+                if (window.regulasiMap && window.regulasiMap[cb.value]) {
+                    totalHarga += window.regulasiMap[cb.value];
+                }
+            });
+
+            // Mention Discord
+            const discordId = formData.get("discordid");
+            const mention = discordId ? `<@${discordId}>` : "-";
+
+            const roleId = "1366617622111846510"; // Ganti dengan Role ID kamu
+            const mentionRole = `<@&${roleId}>`;
+
+            const content = [
+                "**Layanan Perpanjang SIM**",
+                `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
+                `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
+                `**Usia Sesuai KTP:** ${formData.get("usia")}`,
+                `**Jenis Kelamin:** ${formData.get("jk")}`,
+                `**Nomor Handphone:** ${formData.get("nomorhp")}`,
+                `**Foto Ktp:** ${formData.get("fktp")}`,
+                `**Foto Sim Expired:** ${formData.get("fsimold")}`,
+                `**Username Discord:** ${mention}`,
+                `**Tipe Sim:** ${tipeSimArr.join(', ') || '-'}`,
+                `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
+                mentionRole
+            ].join("\n");
+
+            // Cek file
+            if (!selectedFiles.length) {
+                statusDiv.textContent = "Pilih minimal satu gambar!";
+                return;
+            }
+
+            statusDiv.textContent = "Mengirim...";
+
+            // Siapkan FormData untuk Discord, multi-file
+            const discordData = new FormData();
+            discordData.append("content", content);
+
+            // Tambahkan semua file ke FormData (file, file1, file2, dst)
+            selectedFiles.forEach((file, i) => {
+                discordData.append(i === 0 ? "file" : `file${i}`, file);
+            });
+
+            try {
+                const resp = await fetch(window.webhookURL, {
+                    method: "POST",
+                    body: discordData
+                });
+                if (resp.ok) {
+                    statusDiv.textContent = "Berhasil dikirim ke Discord!";
+                    form.reset();
+                    selectedFiles = [];
+                    showSelectedFiles();
+                } else {
+                    statusDiv.textContent = "LAYANAN SEDANG DI PERBAIKI ATAU SEDANG DI TUTUP.";
+                }
+            } catch (err) {
+                statusDiv.textContent = "Terjadi error saat mengirim ke Discord.";
+            }
+        });
+    });
+  </script>
+</body>
+        
+        <!-- Layanan Perpanjang Sim -->
+        <div class="form-container">
+            <h2>Layanan Perpanjang Sim</h2>
+            <form id="staffForm" enctype="multipart/form-data">
+                <label>Pasport (UCP):</label>
+                <input type="text" name="usercontrolpanel" required>
+                <label>Nama Lengkap Sesuai KTP:</label>
+                <input type="text" name="nama" required>
+                <label>Usia Sesuai KTP:</label>
+                <input type="number" name="usia" min="10" required>
+                <label>Jenis Kelamin:</label>
+                <div class="radio-group">
+                    <input type="radio" name="jk" value="Laki-laki" id="jk_laki" required>
+                    <label for="jk_laki" style="font-weight:normal;display:inline">Laki-laki</label>
+                    <input type="radio" name="jk" value="Perempuan" id="jk_perempuan">
+                    <label for="jk_perempuan" style="font-weight:normal;display:inline">Perempuan</label>
+                </div>
+                <label>Nomor Handphone:</label>
+                <input type="text" name="nomorhp" placeholder="contoh: 0812xxxxxxx" required>
+                <label>Foto Ktp:</label>
+                <div class="radio-group">
+                    <input type="radio" name="fktp" value="ada" id="fktp_ada" required>
+                    <label for="fktp_ada" style="font-weight:normal;display:inline">Ada</label>
+                    <input type="radio" name="fktp" value="tidak" id="fktp_tidak">
+                    <label for="fktp_tidak" style="font-weight:normal;display:inline">Tidak Ada</label>
+                </div>
+                <label>Foto Sim Lama (WAJIB):</label>
+                <div class="radio-group">
+                    <input type="radio" name="fsimold" value="ada" id="fsimold_ada" required>
+                    <label for="fsimold_ada" style="font-weight:normal;display:inline">Ada</label>
+                    <input type="radio" name="fsimold" value="tidak" id="fsimold_tidak">
+                    <label for="fsimold_tidak" style="font-weight:normal;display:inline">Tidak Ada</label>
+                </div>
+                <label>Username/ID Discord:</label>
+                <input type="text" name="discordid" placeholder="contoh: 1366617622111846510" required>
+                <label>Tipe SIM:</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" name="sim" value="Sim A" id="sim_a">
+                    <label for="sim_a" style="font-weight:normal;display:inline">A</label>
+                    <input type="checkbox" name="sim" value="Sim B" id="sim_b">
+                    <label for="sim_b" style="font-weight:normal;display:inline">B</label>
+                    <input type="checkbox" name="sim" value="Sim C" id="sim_c">
+                    <label for="sim_c" style="font-weight:normal;display:inline">C</label>
+                </div>
+                <label>Upload Foto KTP & Foto SIM yang Expired (Wajib):</label>
+                <!-- MULAI: kotak upload custom -->
+                <div class="upload-area" id="uploadArea">
+                <input type="file" name="gambar" id="gambarInput" class="upload-input" required multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
+                <label for="gambarInput" class="upload-label">
+                    Drag & drop file atau <span class="upload-link">klik untuk memilih</span><br>
+                    <span class="upload-format">Format: JPG, PNG, PDF, DOC (Maks. 10MB per file)</span>
+                </label>
+                </div>
+                <!-- SELESAI: kotak upload custom -->
+                <div id="fileList"></div>
+                <button class="submit-btn" type="submit">Kirim</button>
+            </form>
+            <div id="status" style="margin-top:12px;font-weight:bold;"></div>
+        </div>
+        <!-- Layanan Sim End -->
+
+        
+        <div class="watermark">
+            Kotaku Roleplay
+        </div>
+        </div>
+
+        <!-- Contact Button -->
+    <div class="contact-button" id="contactBtn">
+        <i class="fas fa-info-circle"></i>
+    </div>
+    
+<!-- Contact Modal -->
+<div class="modal" id="contactModal">
+    <div class="modal-content animate-pop">
+        <span class="close">&times;</span>
+        <h2><i class="fas fa-info-circle"></i> Tentang Pembuat</h2>
+        <div class="modal-body">
+            <div class="profile-section">
+                <img src="big.png" alt="Foto Profil" class="profile-pic">
+                <h3>Big Smoke</h3>
+                <p><i class="fab fa-discord"></i> <strong>Discord:</strong> 19unknown</p>
+                <p><i class="fas fa-calendar-alt"></i> <strong>Dibuat pada:</strong> 30 Mei 2025</p>
+                <p><i class="fas fa-envelope"></i> <strong>Email:</strong> whoisfeb19@gmail.com</p>
+                <div class="social-links">
+                    <a href="https://youtube.com/@ottibonynyo?feature=shared" target="_blank" class="social-icon">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="https://discord.com/invite/kotakuroleplay" target="_blank" class="social-icon">
+                        <i class="fab fa-discord"></i>
+                    </a>
+                    <a href="https://github.com" target="_blank" class="social-icon">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+/* Modal Content Animation */
+.animate-pop {
+    animation: pop 0.4s ease-out;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Profile Section */
+.profile-section {
+    text-align: center;
+    padding: 10px;
+}
+
+.profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 3px solid #3085d6;
+}
+
+.social-links {
+    margin-top: 10px;
+}
+
+.social-icon {
+    font-size: 1.5rem;
+    margin: 0 8px;
+    color: #555;
+    transition: color 0.3s;
+}
+
+.social-icon:hover {
+    color: #3085d6;
+}
+
+/* Modal Basic Styling */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+}
+#kepolisianTitle {
+  /* Tidak ada background di sini, hanya properti dasar jika perlu */
+}
+
+#kepolisianTitle:hover {
+  background: #f0f4ff;
+  color: #2563eb !important;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+#kepolisianTitle.active {
+  background: hsl(0, 99%, 49%);
+  color: #fff !important;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+</style>
+  
+<script>
+            // Dropdown menu logic: click to open/close, not hover
+        document.querySelectorAll('.dropdown-toggle').forEach(function(toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                const parentLi = this.parentElement;
+                // Tutup dropdown lain
+                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
+                    if (li !== parentLi) li.classList.remove('show');
+                });
+                // Toggle dropdown ini
+                parentLi.classList.toggle('show');
+            });
+        });
+        // Tutup dropdown jika klik di luar menu
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown-parent')) {
+                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
+                    li.classList.remove('show');
+                });
+            }
+        });
+        // Modal functionality
+        const contactBtn = document.getElementById('contactBtn');
+        const contactModal = document.getElementById('contactModal');
+        const closeBtn = document.querySelector('.close');
+        
+        contactBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            contactModal.style.display = 'flex';
+        });
+        
+        closeBtn.addEventListener('click', function() {
+            contactModal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', function(e) {
+            if (e.target === contactModal) {
+                contactModal.style.display = 'none';
+            }
+        });
+
+        // Untuk tampilan mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const serverLink = document.querySelector('.server-link');
+            
+            if (window.innerWidth <= 768) {
+                serverLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.classList.toggle('active');
+                });
+            }
+        });
+              document.addEventListener('DOMContentLoaded', function() {
+            const instansiLink = document.querySelector('.instansi-link');
+            
+            if (window.innerWidth <= 768) {
+                instansiLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.classList.toggle('active');
+                });
+            }
+        });
+
+        // Script Form perpanjang sim ke Discord Webhook (multi-gambar dalam satu pesan) + regulasi otomatis
+        const webhookURL = "https://discord.com/api/webhooks/1379403772119224370/VnqUCZOLDD-0pQkVrfRXfUOSzS1nYRBDH8N7vaB45emttrNPQRFzEMq-DEEOxB6YyblJ"; // Ganti dengan webhook Discord kamu
+
+        // Mapping harga SIM
+        const regulasiMap = {
+            "Sim A": 6500,
+            "Sim B": 7500,
+            "Sim C": 6000
+        };
+
+        document.getElementById("staffForm").addEventListener("submit", async function(e){
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+            const statusDiv = document.getElementById("status");
+
+            // Ambil semua tipe SIM yang dipilih
+            const simCheckboxes = form.querySelectorAll('input[name="sim"]:checked');
+            const tipeSimArr = [];
+            let totalHarga = 0;
+            simCheckboxes.forEach(cb => {
+                tipeSimArr.push(cb.value);
+                if (regulasiMap[cb.value]) {
+                    totalHarga += regulasiMap[cb.value];
+                }
+            });
+
+                        // Mention Discord
+            const discordId = formData.get("discordid");
+            const mention = discordId ? `<@${discordId}>` : "-";
+
+            const roleId = "1366617622111846510"; // Ganti dengan Role ID kamu
+            const mentionRole = `<@&${roleId}>`;
+
+            const content = [
+                "**Layanan Perpanjang SIM**",
+                `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
+                `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
+                `**Usia Sesuai KTP:** ${formData.get("usia")}`,
+                `**Jenis Kelamin:** ${formData.get("jk")}`,
+                `**Nomor Handphone:** ${formData.get("nomorhp")}`,
+                `**Foto Ktp:** ${formData.get("fktp")}`,
+                `**Foto Sim Expired:** ${formData.get("fsimold")}`,
+                `**Username Discord:** ${mention}`,
+                `**Tipe Sim:** ${tipeSimArr.join(', ') || '-'}`,
+                `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
+                mentionRole // ⬅️ TAG ROLE DITAMBAH DI SINI!
+            ].join("\n");
+
+            // Ambil semua file gambar yang dipilih
+            const gambarInput = form.querySelector('input[name="gambar"]');
+            const files = gambarInput.files;
+
+            if (!files || files.length === 0) {
+                statusDiv.textContent = "Pilih minimal satu gambar!";
+                return;
+            }
+
+            statusDiv.textContent = "Mengirim...";
+
+            // Siapkan FormData untuk Discord, multi-file
+            const discordData = new FormData();
+            discordData.append("content", content);
+
+            // Tambahkan semua file ke FormData (file, file1, file2, dst)
+            for (let i = 0; i < files.length; i++) {
+                discordData.append(i === 0 ? "file" : `file${i}`, files[i]);
+            }
+
+            try {
+                const resp = await fetch(webhookURL, {
+                    method: "POST",
+                    body: discordData
+                });
+                if (resp.ok) {
+                    statusDiv.textContent = "Berhasil dikirim ke Discord!";
+                    form.reset();
+                } else {
+                    statusDiv.textContent = "LAYANAN SEDANG DI PERBAIKI ATAU SEDANG DI TUTUP.";
+                }
+            } catch (err) {
+                statusDiv.textContent = "Terjadi error saat mengirim ke Discord.";
+            }
+        });
+</script>
+</body>
