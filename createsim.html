@@ -150,7 +150,7 @@
         .navbar-custom .nav li.show > .dropdown-menu-custom {
             display: block;
         }
-        @media (max-width: 900px) {
+        @media (max-width: 600px) {
             .navbar-custom {
                 flex-direction: column;
                 align-items: stretch;
@@ -302,64 +302,11 @@
             transform: scale(1.05);
         }
 
-        /* Upload Box custom & file list */
-        .upload-area {
-          border: 2px dashed #bdbdbd;
-          border-radius: 8px;
-          padding: 24px 18px;
-          text-align: center;
-          margin-bottom: 18px;
-          transition: border-color 0.2s, background 0.2s;
-          background: #fafbfc;
-          position: relative;
-        }
-        .upload-area.dragover {
-          border-color: #3b82f6;
-          background: #e6f0ff;
-        }
-        .upload-input {
-          opacity: 0;
-          width: 100%;
-          height: 70px;
-          position: absolute;
-          left: 0; top: 0;
-          cursor: pointer;
-        }
-        .upload-label {
-          display: block;
-          cursor: pointer;
-          color: #444;
-          font-size: 1em;
-          position: relative;
-          z-index: 2;
-        }
-        .upload-link {
-          color: #2563eb;
-          text-decoration: underline;
-          cursor: pointer;
-        }
-        .upload-format {
-          display: block;
-          margin-top: 6px;
-          color: #888;
-          font-size: 0.93em;
-        }
-        #fileList {
-          margin-top: 8px;
-          font-size: 0.96em;
-          color: #222;
-          word-break: break-all;
-        }
-        #fileList li {
-          margin-bottom: 3px;
-          list-style: disc inside;
-        }
-        /* Responsive: pastikan kotak upload tetap rapi di HP */
-        @media (max-width: 600px) {
-          .upload-area {
-            padding: 14px 4vw;
-            font-size: 0.98em;
-          }
+        @media (max-width: 400px) {
+            .remove-btn {
+                padding: 0.15rem 0.3rem;
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
@@ -378,14 +325,14 @@
                 <div class="dropdown-menu-custom">
                     <a href="createsim.html">Pembuatan SIM</a>
                     <a href="perpanjangsim.html">Perpanjang SIM</a>
-                    <a href="#">Pengambilan Impound</a>
                     <a href="#">Pembuatan SKCK</a>
+                    <a href="#">Pengambilan Impound</a>
                 </div>
             </li>
             <li class="dropdown-parent">
-                <a class="nav-link dropdown-toggle"><i class="fas fa-sitemap"></i> Informasi<i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
+                <a class="nav-link dropdown-toggle"><i class="fas fa-sitemap"></i> Informasi <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
                 <div class="dropdown-menu-custom">
-                    <a href="#">Pendaftaran</a>
+                    <a href="#">Coming Soon</a>
                     <a href="#">Coming Soon</a>
                     <a href="#">Coming Soon</a>
                 </div>
@@ -516,55 +463,6 @@
         .form-container .submit-btn:hover {
             background: #1e40af;
         }
-
-        .upload-area {
-        border: 2px dashed #bdbdbd;
-        border-radius: 8px;
-        padding: 24px 18px;
-        text-align: center;
-        margin-bottom: 18px;
-        transition: border-color 0.2s, background 0.2s;
-        background: #fafbfc;
-        position: relative;
-        }
-        .upload-area.dragover {
-        border-color: #3b82f6;
-        background: #e6f0ff;
-        }
-        .upload-input {
-        opacity: 0;
-        width: 100%;
-        height: 70px;
-        position: absolute;
-        left: 0; top: 0;
-        cursor: pointer;
-        }
-        .upload-label {
-        display: block;
-        cursor: pointer;
-        color: #444;
-        font-size: 1em;
-        position: relative;
-        z-index: 2;
-        }
-        .upload-link {
-        color: #2563eb;
-        text-decoration: underline;
-        cursor: pointer;
-        }
-        .upload-format {
-        display: block;
-        margin-top: 6px;
-        color: #888;
-        font-size: 0.93em;
-        }
-        /* Responsive: pastikan kotak upload tetap rapi di HP */
-        @media (max-width: 600px) {
-        .upload-area {
-            padding: 14px 4vw;
-            font-size: 0.98em;
-        }
-        }
   </style>
 </head>
 <body>
@@ -597,203 +495,56 @@
         });
       }
     });
-
-     // === Penambahan: Multi-file array agar file tidak ter-reset saat tambah satu per satu ===
-    document.addEventListener('DOMContentLoaded', function () {
-        const uploadArea = document.getElementById('uploadArea');
-        const uploadInput = document.getElementById('gambarInput');
-        const fileList = document.getElementById('fileList');
-        let selectedFiles = [];
-
-        // Drag & drop feedback
-        if(uploadArea && uploadInput) {
-            uploadArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
-            uploadArea.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-            });
-            uploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                // Tambah file dari drop ke array
-                addFilesToList(e.dataTransfer.files);
-            });
-            uploadInput.addEventListener('change', function() {
-                uploadArea.classList.remove('dragover');
-                // Tambah file dari picker ke array
-                addFilesToList(uploadInput.files);
-                // Reset input supaya bisa pilih file sama lagi jika perlu
-                uploadInput.value = '';
-            });
-        }
-
-        function addFilesToList(fileListInput) {
-            for (let file of fileListInput) {
-                // Cegah duplikat berdasarkan nama dan ukuran (optional)
-                if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
-                    selectedFiles.push(file);
-                }
-            }
-            showSelectedFiles();
-        }
-
-        function showSelectedFiles() {
-            fileList.innerHTML = '';
-            if (selectedFiles.length > 0) {
-                const ul = document.createElement('ul');
-                selectedFiles.forEach((file, idx) => {
-                    const li = document.createElement('li');
-                    li.textContent = file.name;
-                    // Tombol hapus
-                    const removeBtn = document.createElement('button');
-                    removeBtn.type = 'button';
-                    removeBtn.textContent = 'Hapus';
-                    removeBtn.style.marginLeft = "10px";
-                    removeBtn.className = 'remove-btn';
-                    removeBtn.onclick = function() {
-                        selectedFiles.splice(idx, 1);
-                        showSelectedFiles();
-                    };
-                    li.appendChild(removeBtn);
-                    ul.appendChild(li);
-                });
-                fileList.appendChild(ul);
-            }
-        }
-
-        // Override submit untuk pakai selectedFiles
-        document.getElementById("staffForm").addEventListener("submit", async function(e){
-            e.preventDefault();
-
-            const form = e.target;
-            const formData = new FormData(form);
-            const statusDiv = document.getElementById("status");
-
-            // Ambil semua tipe SIM yang dipilih
-            const simCheckboxes = form.querySelectorAll('input[name="sim"]:checked');
-            const tipeSimArr = [];
-            let totalHarga = 0;
-            simCheckboxes.forEach(cb => {
-                tipeSimArr.push(cb.value);
-                if (window.regulasiMap && window.regulasiMap[cb.value]) {
-                    totalHarga += window.regulasiMap[cb.value];
-                }
-            });
-
-            // Mention Discord
-            const discordId = formData.get("discordid");
-            const mention = discordId ? `<@${discordId}>` : "-";
-
-            const roleId = "1366617622111846510"; // Ganti dengan Role ID kamu
-            const mentionRole = `<@&${roleId}>`;
-
-            const content = [
-                "**Layanan Perpanjang SIM**",
-                `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
-                `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
-                `**Usia Sesuai KTP:** ${formData.get("usia")}`,
-                `**Jenis Kelamin:** ${formData.get("jk")}`,
-                `**Nomor Handphone:** ${formData.get("nomorhp")}`,
-                `**Foto Ktp:** ${formData.get("fktp")}`,
-                `**Username Discord:** ${mention}`,
-                `**Tipe Sim:** ${tipeSimArr.join(', ') || '-'}`,
-                `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
-                mentionRole
-            ].join("\n");
-
-            // Cek file
-            if (!selectedFiles.length) {
-                statusDiv.textContent = "Pilih minimal satu gambar!";
-                return;
-            }
-
-            statusDiv.textContent = "Mengirim...";
-
-            // Siapkan FormData untuk Discord, multi-file
-            const discordData = new FormData();
-            discordData.append("content", content);
-
-            // Tambahkan semua file ke FormData (file, file1, file2, dst)
-            selectedFiles.forEach((file, i) => {
-                discordData.append(i === 0 ? "file" : `file${i}`, file);
-            });
-
-            try {
-                const resp = await fetch(window.webhookURL, {
-                    method: "POST",
-                    body: discordData
-                });
-                if (resp.ok) {
-                    statusDiv.textContent = "Berhasil dikirim ke Discord!";
-                    form.reset();
-                    selectedFiles = [];
-                    showSelectedFiles();
-                } else {
-                    statusDiv.textContent = "LAYANAN SEDANG DI PERBAIKI ATAU SEDANG DI TUTUP.";
-                }
-            } catch (err) {
-                statusDiv.textContent = "Terjadi error saat mengirim ke Discord.";
-            }
-        });
-    });
   </script>
 </body>
         
-        <!-- Layanan Perpanjang Sim -->
-        <div class="form-container">
-            <h2>Layanan Perpanjang Sim</h2>
-            <form id="staffForm" enctype="multipart/form-data">
-                <label>Pasport (UCP):</label>
-                <input type="text" name="usercontrolpanel" required>
-                <label>Nama Lengkap Sesuai KTP:</label>
-                <input type="text" name="nama" required>
-                <label>Usia Sesuai KTP:</label>
-                <input type="number" name="usia" min="10" required>
-                <label>Jenis Kelamin:</label>
-                <div class="radio-group">
-                    <input type="radio" name="jk" value="Laki-laki" id="jk_laki" required>
-                    <label for="jk_laki" style="font-weight:normal;display:inline">Laki-laki</label>
-                    <input type="radio" name="jk" value="Perempuan" id="jk_perempuan">
-                    <label for="jk_perempuan" style="font-weight:normal;display:inline">Perempuan</label>
-                </div>
-                <label>Nomor Handphone:</label>
-                <input type="text" name="nomorhp" placeholder="contoh: 0812xxxxxxx" required>
-                <label>Foto Ktp:</label>
-                <div class="radio-group">
-                    <input type="radio" name="fktp" value="ada" id="fktp_ada" required>
-                    <label for="fktp_ada" style="font-weight:normal;display:inline">Ada</label>
-                    <input type="radio" name="fktp" value="tidak" id="fktp_tidak">
-                    <label for="fktp_tidak" style="font-weight:normal;display:inline">Tidak Ada</label>
-                </div>
-                <label>Username/ID Discord:</label>
-                <input type="text" name="discordid" placeholder="contoh: 1366617622111846510" required>
-                <label>Tipe SIM:</label>
-                <div class="checkbox-group">
-                    <input type="checkbox" name="sim" value="Sim A" id="sim_a">
-                    <label for="sim_a" style="font-weight:normal;display:inline">A</label>
-                    <input type="checkbox" name="sim" value="Sim B" id="sim_b">
-                    <label for="sim_b" style="font-weight:normal;display:inline">B</label>
-                    <input type="checkbox" name="sim" value="Sim C" id="sim_c">
-                    <label for="sim_c" style="font-weight:normal;display:inline">C</label>
-                </div>
-                <label>Upload Foto KTP :</label>
-                <!-- MULAI: kotak upload custom -->
-                <div class="upload-area" id="uploadArea">
+        <!-- Layanan Pembuatan Sim -->
+    <div class="form-container">
+    <h2>Layanan Pembuatan Sim</h2>
+    <form id="staffForm" enctype="multipart/form-data" autocomplete="off">
+            <label>Pasport (UCP):</label>
+            <input type="text" name="usercontrolpanel" required>
+            <label>Nama Lengkap Sesuai KTP:</label>
+            <input type="text" name="nama" required>
+            <label>Usia Sesuai KTP:</label>
+            <input type="number" name="usia" min="10" required>
+            <label>Jenis Kelamin:</label>
+            <div class="radio-group">
+                <input type="radio" name="jk" value="Laki-laki" id="jk_laki" required>
+                <label for="jk_laki" style="font-weight:normal;display:inline">Laki-laki</label>
+                <input type="radio" name="jk" value="Perempuan" id="jk_perempuan">
+                <label for="jk_perempuan" style="font-weight:normal;display:inline">Perempuan</label>
+            </div>
+            <label>Nomor Handphone:</label>
+            <input type="text" name="nomorhp" placeholder="contoh: 0812xxxxxxx" required>
+            <label>Foto KTP (wajib):</label>
+            <div class="radio-group">
+                <input type="radio" name="jk" value="Ada" id="fktp_ada" required>
+                <label for="fktp_ada" style="font-weight:normal;display:inline">Ada</label>
+                <input type="radio" name="jk" value="Tidak Ada" id="fktp_tidak">
+                <label for="fktp_tidak" style="font-weight:normal;display:inline">Tidak Ada</label>
+            </div>
+            <label>Username/ID Discord:</label>
+            <input type="text" name="discordid" placeholder="contoh: 1366617622111846510" required>
+            <label>Tipe SIM:</label>
+            <div class="checkbox-group">
+                <input type="checkbox" name="sim" value="Sim A" id="sim_a">
+                <label for="sim_a" style="font-weight:normal;display:inline">A</label>
+                <input type="checkbox" name="sim" value="Sim B" id="sim_b">
+                <label for="sim_b" style="font-weight:normal;display:inline">B</label>
+                <input type="checkbox" name="sim" value="Sim C" id="sim_c">
+                <label for="sim_c" style="font-weight:normal;display:inline">C</label>
+            </div>
+                <label>Upload Foto KTP & Foto SIM yang Expired (Wajib):</label>
+            <div class="upload-area" id="uploadArea">
+                <!-- HAPUS: required dari input file karena validasi pakai JS -->
                 <input type="file" name="gambar" id="gambarInput" class="upload-input" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
-                <label for="gambarInput" class="upload-label">
-                    Drag & drop file atau <span class="upload-link">klik untuk memilih</span><br>
-                    <span class="upload-format">Format: JPG, PNG, PDF, DOC (Maks. 10MB per file)</span>
-                </label>
-                </div>
-                <!-- SELESAI: kotak upload custom -->
-                <div id="fileList"></div>
-                <button class="submit-btn" type="submit">Kirim</button>
-            </form>
-            <div id="status" style="margin-top:12px;font-weight:bold;"></div>
-        </div>
+            </div>
+            <div id="fileList" style="margin-bottom:10px;"></div>
+            <button class="submit-btn" type="submit">Kirim</button>
+        </form>
+        <div id="status" style="margin-top:12px;font-weight:bold;"></div>
+    </div>
         <!-- Layanan Sim End -->
 
         
@@ -992,14 +743,55 @@
             }
         });
 
-        // Script Form perpanjang sim ke Discord Webhook (multi-gambar dalam satu pesan) + regulasi otomatis
+        // Script Form layanan pembuatan sim ke Discord Webhook (multi-gambar dalam satu pesan) + regulasi otomatis
         const webhookURL = "https://discord.com/api/webhooks/1379081496685445131/mKxJ46X346L3kWq9cnQY9Af9TnbnjijxWX6lu_ieQ20njfXp-iecjVS1CnFpuj-NkwKY"; // Ganti dengan webhook Discord kamu
 
-        // Mapping harga SIM
+        // MULTI PILIH FILE SATU PERSATU TANPA KERESET & TANPA ERROR "wajib pilih file"
+    document.addEventListener('DOMContentLoaded', function () {
+        const gambarInput = document.getElementById('gambarInput');
+        const fileListDiv = document.getElementById('fileList');
+        let selectedFiles = [];
+
+        gambarInput.addEventListener('change', function() {
+            for (let file of this.files) {
+                // Cegah file dobel (nama & ukuran)
+                if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    selectedFiles.push(file);
+                }
+            }
+            this.value = ''; // Supaya bisa pilih file yang sama lagi
+            showSelectedFiles();
+        });
+
+        function showSelectedFiles() {
+            fileListDiv.innerHTML = '';
+            if (selectedFiles.length > 0) {
+                const ul = document.createElement('ul');
+                selectedFiles.forEach((file, idx) => {
+                    const li = document.createElement('li');
+                    li.textContent = file.name;
+                    // Tombol hapus
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.textContent = 'Hapus';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.onclick = function() {
+                        selectedFiles.splice(idx, 1);
+                        showSelectedFiles();
+                    };
+                    li.appendChild(removeBtn);
+                    ul.appendChild(li);
+                });
+                fileListDiv.appendChild(ul);
+            }
+        }
+
+        // Script REGULASI & SUBMIT
+        const webhookURL = "https://discord.com/api/webhooks/1379081496685445131/mKxJ46X346L3kWq9cnQY9Af9TnbnjijxWX6lu_ieQ20njfXp-iecjVS1CnFpuj-NkwKY";
         const regulasiMap = {
-            "Sim A": 6500,
-            "Sim B": 7500,
-            "Sim C": 6000
+            "Sim A": 13000,
+            "Sim B": 15000,
+            "Sim C": 12000
         };
 
         document.getElementById("staffForm").addEventListener("submit", async function(e){
@@ -1009,7 +801,7 @@
             const formData = new FormData(form);
             const statusDiv = document.getElementById("status");
 
-            // Ambil semua tipe SIM yang dipilih
+            // Ambil tipe SIM
             const simCheckboxes = form.querySelectorAll('input[name="sim"]:checked');
             const tipeSimArr = [];
             let totalHarga = 0;
@@ -1020,47 +812,40 @@
                 }
             });
 
-                        // Mention Discord
+            // Mention Discord
             const discordId = formData.get("discordid");
             const mention = discordId ? `<@${discordId}>` : "-";
-
-            const roleId = "1366617622111846510"; // Ganti dengan Role ID kamu
+            const roleId = "1366617622111846510";
             const mentionRole = `<@&${roleId}>`;
 
             const content = [
-                "**Layanan Perpanjang SIM**",
+                "**Layanan Pembuatan SIM**",
                 `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
                 `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
                 `**Usia Sesuai KTP:** ${formData.get("usia")}`,
                 `**Jenis Kelamin:** ${formData.get("jk")}`,
                 `**Nomor Handphone:** ${formData.get("nomorhp")}`,
                 `**Foto Ktp:** ${formData.get("fktp")}`,
-                `**Foto Sim Expired:** ${formData.get("fsimold")}`,
                 `**Username Discord:** ${mention}`,
                 `**Tipe Sim:** ${tipeSimArr.join(', ') || '-'}`,
                 `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
-                mentionRole // ⬅️ TAG ROLE DITAMBAH DI SINI!
+                mentionRole
             ].join("\n");
 
-            // Ambil semua file gambar yang dipilih
-            const gambarInput = form.querySelector('input[name="gambar"]');
-            const files = gambarInput.files;
-
-            if (!files || files.length === 0) {
+            // VALIDASI FILE: HARUS ADA
+            if (!selectedFiles.length) {
                 statusDiv.textContent = "Pilih minimal satu gambar!";
                 return;
             }
 
             statusDiv.textContent = "Mengirim...";
 
-            // Siapkan FormData untuk Discord, multi-file
             const discordData = new FormData();
             discordData.append("content", content);
 
-            // Tambahkan semua file ke FormData (file, file1, file2, dst)
-            for (let i = 0; i < files.length; i++) {
-                discordData.append(i === 0 ? "file" : `file${i}`, files[i]);
-            }
+            selectedFiles.forEach((file, i) => {
+                discordData.append(i === 0 ? "file" : `file${i}`, file);
+            });
 
             try {
                 const resp = await fetch(webhookURL, {
@@ -1070,6 +855,8 @@
                 if (resp.ok) {
                     statusDiv.textContent = "Berhasil dikirim ke Discord!";
                     form.reset();
+                    selectedFiles = [];
+                    showSelectedFiles();
                 } else {
                     statusDiv.textContent = "LAYANAN SEDANG DI PERBAIKI ATAU SEDANG DI TUTUP.";
                 }
@@ -1077,5 +864,6 @@
                 statusDiv.textContent = "Terjadi error saat mengirim ke Discord.";
             }
         });
+    });
 </script>
 </body>
