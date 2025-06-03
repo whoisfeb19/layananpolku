@@ -706,7 +706,7 @@
             ].join("\n");
 
             // Cek file
-            if (!selectedFiles.length) {
+           if (!selectedFiles.length) {
                 statusDiv.textContent = "Pilih minimal satu gambar!";
                 return;
             }
@@ -790,7 +790,7 @@
                 <label>Upload Foto KTP & Foto SIM yang Expired (Wajib):</label>
                 <!-- MULAI: kotak upload custom -->
                 <div class="upload-area" id="uploadArea">
-                <input type="file" name="gambar" id="gambarInput" class="upload-input" required multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
+                <input type="file" name="gambar" id="gambarInput" class="upload-input" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
                 <label for="gambarInput" class="upload-label">
                     Drag & drop file atau <span class="upload-link">klik untuk memilih</span><br>
                     <span class="upload-format">Format: JPG, PNG, PDF, DOC (Maks. 10MB per file)</span>
