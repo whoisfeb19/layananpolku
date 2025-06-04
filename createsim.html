@@ -519,9 +519,9 @@
             <input type="text" name="nomorhp" placeholder="contoh: 0812xxxxxxx" required>
             <label>Foto KTP (wajib):</label>
             <div class="radio-group">
-                <input type="radio" name="jk" value="Ada" id="fktp_ada" required>
+                <input type="radio" name="fktp" value="Ada" id="fktp_ada" required>
                 <label for="fktp_ada" style="font-weight:normal;display:inline">Ada</label>
-                <input type="radio" name="jk" value="Tidak Ada" id="fktp_tidak">
+                <input type="radio" name="fktp" value="Tidak Ada" id="fktp_tidak">
                 <label for="fktp_tidak" style="font-weight:normal;display:inline">Tidak Ada</label>
             </div>
             <label>Username/ID Discord:</label>
@@ -746,6 +746,20 @@
         // Script Form layanan pembuatan sim ke Discord Webhook (multi-gambar dalam satu pesan) + regulasi otomatis
         const webhookURL = "https://discord.com/api/webhooks/1379081496685445131/mKxJ46X346L3kWq9cnQY9Af9TnbnjijxWX6lu_ieQ20njfXp-iecjVS1CnFpuj-NkwKY"; // Ganti dengan webhook Discord kamu
 
+    // --- AUTO TAG DISCORD DI FORM ---
+        // Ambil discord_id dari localStorage (harus sudah login via login.html)
+        const discordId = localStorage.getItem("discord_id");
+        if (!discordId) {
+            // Kalau belum login, redirect ke login.html
+            window.location.href = "login.html";
+            return;
+        }
+        // Otomatis isi input discordid (readonly)
+        const discordInput = document.querySelector('input[name="discordid"]');
+        if (discordInput) {
+            discordInput.value = discordId;
+            discordInput.readOnly = true;
+        }
         // MULTI PILIH FILE SATU PERSATU TANPA KERESET & TANPA ERROR "wajib pilih file"
     document.addEventListener('DOMContentLoaded', function () {
         const gambarInput = document.getElementById('gambarInput');
@@ -813,7 +827,8 @@
             });
 
             // Mention Discord
-            const discordId = formData.get("discordid");
+            // Lebih aman tetap ambil dari localStorage (bukan dari input)
+            const discordId = localStorage.getItem("discord_id");
             const mention = discordId ? `<@${discordId}>` : "-";
             const roleId = "1366617622111846510";
             const mentionRole = `<@&${roleId}>`;
