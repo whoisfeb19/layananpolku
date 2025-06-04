@@ -722,7 +722,7 @@
     const discordId = localStorage.getItem("discord_id");
     if (!discordId) {
         // Kalau belum login, redirect ke login.html
-        window.location.href = "login.html";
+        window.location.href = "index.html";
     } else {
         // Otomatis isi input discordid (readonly)
         const discordInput = document.querySelector('input[name="discordid"]');
