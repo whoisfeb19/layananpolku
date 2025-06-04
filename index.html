@@ -117,10 +117,9 @@ window.onload = function() {
       window.location.hash = "";
     }
   }
-  const token = localStorage.getItem("discord_token");
-  if (token) {
-    fetch("https://discord.com/api/users/@me", {
-      headers: { "Authorization": "Bearer " + token }
+  // Setelah login sukses OAuth Discord dan dapat user info:
+localStorage.setItem("discord_id", user.id); // Simpan ID
+localStorage.setItem("discord_username", user.username + "#" + user.discriminator); // Simpan username
     })
     .then(r => r.json())
     .then(user => {
