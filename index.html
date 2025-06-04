@@ -117,13 +117,18 @@ window.onload = function() {
       window.location.hash = "";
     }
   }
-  // Setelah login sukses OAuth Discord dan dapat user info:
-localStorage.setItem("discord_id", user.id); // Simpan ID
-localStorage.setItem("discord_username", user.username + "#" + user.discriminator); // Simpan username
+  const token = localStorage.getItem("discord_token");
+  if (token) {
+    fetch("https://discord.com/api/users/@me", {
+      headers: { "Authorization": "Bearer " + token }
     })
     .then(r => r.json())
     .then(user => {
       if (user.id) {
+        // Simpan user.id & username ke localStorage untuk digunakan di halaman lain (formulir)
+        localStorage.setItem("discord_id", user.id);
+        localStorage.setItem("discord_username", user.username + "#" + user.discriminator);
+
         document.getElementById('userinfo').style.display = "";
         document.getElementById('loginBtn').style.display = "none";
         document.getElementById('username').textContent = user.username + "#" + user.discriminator;
@@ -138,11 +143,15 @@ localStorage.setItem("discord_username", user.username + "#" + user.discriminato
         }, 1200); // Tampilkan info user sebentar, lalu redirect
       } else {
         localStorage.removeItem("discord_token");
+        localStorage.removeItem("discord_id");
+        localStorage.removeItem("discord_username");
         location.reload();
       }
     })
     .catch(() => {
       localStorage.removeItem("discord_token");
+      localStorage.removeItem("discord_id");
+      localStorage.removeItem("discord_username");
       location.reload();
     });
   }
@@ -150,6 +159,8 @@ localStorage.setItem("discord_username", user.username + "#" + user.discriminato
 
 function logout() {
   localStorage.removeItem("discord_token");
+  localStorage.removeItem("discord_id");
+  localStorage.removeItem("discord_username");
   location.reload();
 }
 </script>
