@@ -318,7 +318,7 @@
         </div>
         <ul class="nav">
             <li>
-                <a href="beranda.html" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
             </li>
             <li class="dropdown-parent">
                 <a class="nav-link dropdown-toggle"><i class="fas fa-file-alt"></i> Layanan <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
@@ -345,83 +345,124 @@
             </li>
         </ul>
     </nav>
-    <div class="container">
-        <div class="form-container">
-            <h2>Layanan Pembuatan Sim</h2>
-            <form id="staffForm" enctype="multipart/form-data" autocomplete="off">
-                <label>Pasport (UCP):</label>
-                <input type="text" name="usercontrolpanel" required>
-                <label>Nama Lengkap Sesuai KTP:</label>
-                <input type="text" name="nama" required>
-                <label>Usia Sesuai KTP:</label>
-                <input type="number" name="usia" min="10" required>
-                <label>Jenis Kelamin:</label>
-                <div class="radio-group">
-                    <input type="radio" name="jk" value="Laki-laki" id="jk_laki" required>
-                    <label for="jk_laki" style="font-weight:normal;display:inline">Laki-laki</label>
-                    <input type="radio" name="jk" value="Perempuan" id="jk_perempuan">
-                    <label for="jk_perempuan" style="font-weight:normal;display:inline">Perempuan</label>
-                </div>
-                <label>Nomor Handphone:</label>
-                <input type="text" name="nomorhp" placeholder="contoh: 0812xxxxxxx" required>
-                <label>Foto KTP (wajib):</label>
-                <div class="radio-group">
-                    <input type="radio" name="fktp" value="Ada" id="fktp_ada" required>
-                    <label for="fktp_ada" style="font-weight:normal;display:inline">Ada</label>
-                    <input type="radio" name="fktp" value="Tidak Ada" id="fktp_tidak">
-                    <label for="fktp_tidak" style="font-weight:normal;display:inline">Tidak Ada</label>
-                </div>
-                <label>Username/ID Discord:</label>
-                <input type="text" name="discordid" placeholder="contoh: 1366617622111846510" required>
-                <label>Tipe SIM:</label>
-                <div class="checkbox-group">
-                    <input type="checkbox" name="sim" value="Sim A" id="sim_a">
-                    <label for="sim_a" style="font-weight:normal;display:inline">A</label>
-                    <input type="checkbox" name="sim" value="Sim B" id="sim_b">
-                    <label for="sim_b" style="font-weight:normal;display:inline">B</label>
-                    <input type="checkbox" name="sim" value="Sim C" id="sim_c">
-                    <label for="sim_c" style="font-weight:normal;display:inline">C</label>
-                </div>
-                <label>Upload Foto KTP (Wajib):</label>
-                <div class="upload-area" id="uploadArea">
-                    <input type="file" name="gambar" id="gambarInput" class="upload-input" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
-                </div>
-                <div id="fileList" style="margin-bottom:10px;"></div>
-                <button class="submit-btn" type="submit">Kirim</button>
-            </form>
-            <div id="status" style="margin-top:12px;font-weight:bold;"></div>
-        </div>
-        <div class="watermark">
-            Kotaku Roleplay
-        </div>
-    </div>
-    <!-- Contact Modal -->
-    <div class="modal" id="contactModal">
-        <div class="modal-content animate-pop">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-info-circle"></i> Tentang Pembuat</h2>
-            <div class="modal-body">
-                <div class="profile-section">
-                    <img src="big.png" alt="Foto Profil" class="profile-pic">
-                    <h3>Big Smoke</h3>
-                    <p><i class="fab fa-discord"></i> <strong>Discord:</strong> 19unknown</p>
-                    <p><i class="fas fa-calendar-alt"></i> <strong>Dibuat pada:</strong> 30 Mei 2025</p>
-                    <p><i class="fas fa-envelope"></i> <strong>Email:</strong> whoisfeb19@gmail.com</p>
-                    <div class="social-links">
-                        <a href="https://youtube.com/@ottibonynyo?feature=shared" target="_blank" class="social-icon">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                        <a href="https://discord.com/invite/kotakuroleplay" target="_blank" class="social-icon">
-                            <i class="fab fa-discord"></i>
-                        </a>
-                        <a href="https://github.com" target="_blank" class="social-icon">
-                            <i class="fab fa-github"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        <div class="container">
+<head>
+  <meta charset="UTF-8">
+  <title>Kepolisian Kotaku</title>
+  <style>
+    .navbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      margin: 0 auto;
+      width: 90%;
+      max-width: 1000px;
+    }
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropbtn {
+      background-color: #2980b9;
+      color: white;
+      padding: 10px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f6f6f6;
+      min-width: 180px;
+      border-radius: 6px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+      z-index: 1;
+      right: 0;
+      margin-top: 4px;
+    }
+    .dropdown-content a {
+      color: #333;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      border-bottom: 1px solid #e1e1e1;
+    }
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+    .dropdown-content a:hover { background-color: #e3eefd;}
+    .title-area {
+      text-align: center;
+      font-size: 2em;
+      font-weight: bold;
+      color: #222;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .title-area .underline {
+      width: 60px;
+      height: 3px;
+      background: #3498db;
+      margin-top: 6px;
+      border-radius: 2px;
+    }
+
+            /* Tambahan style untuk form pembuatan sim */
+        .form-container {
+            background: rgba(255,255,255,0.95);
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.13);
+        }
+        .form-container h2 {
+            margin-top: 0;
+        }
+        .form-container label {
+            font-weight: bold;
+            display: block;
+            margin-top: 14px;
+            margin-bottom: 4px;
+        }
+        .form-container input[type="text"], 
+        .form-container input[type="email"], 
+        .form-container input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin: 3px 0 10px 0;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+            font-size: 1em;
+        }
+        .form-container input[type="file"] {
+            margin-bottom: 10px;
+        }
+        .form-container .radio-group {
+            margin-bottom: 10px;
+        }
+        .form-container .submit-btn {
+            margin-top: 18px;
+            padding: 10px 28px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .form-container .submit-btn:hover {
+            background: #1e40af;
+        }
   </style>
 </head>
 <body>
@@ -432,59 +473,280 @@
         </a>
     </div>
   <script>
-    // Dropdown menu logic: click to open/close, not hover
-    document.querySelectorAll('.dropdown-toggle').forEach(function(toggle) {
-        toggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            const parentLi = this.parentElement;
-            document.querySelectorAll('.dropdown-parent').forEach(function(li) {
-                if (li !== parentLi) li.classList.remove('show');
-            });
-            parentLi.classList.toggle('show');
-        });
-    });
-    // Tutup dropdown jika klik di luar menu
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.dropdown-parent')) {
-            document.querySelectorAll('.dropdown-parent').forEach(function(li) {
-                li.classList.remove('show');
-            });
-        }
-    });
-
-    // Modal functionality
-    const contactBtn = document.getElementById('contactBtn');
-    const contactModal = document.getElementById('contactModal');
-    const closeBtn = document.querySelector('.close');
-    contactBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        contactModal.style.display = 'flex';
-    });
-    closeBtn.addEventListener('click', function() {
-        contactModal.style.display = 'none';
-    });
-    window.addEventListener('click', function(e) {
-        if (e.target === contactModal) {
-            contactModal.style.display = 'none';
-        }
-    });
-
-    // --- AUTO TAG DISCORD DI FORM ---
-    // Ambil discord_id dari localStorage (harus sudah login via login.html)
-    const discordId = localStorage.getItem("discord_id");
-    if (!discordId) {
-        // Kalau belum login, redirect ke login.html
-        window.location.href = "login.html";
-    } else {
-        // Otomatis isi input discordid (readonly)
-        const discordInput = document.querySelector('input[name="discordid"]');
-        if (discordInput) {
-            discordInput.value = discordId;
-            discordInput.readOnly = true;
-        }
+    // Fungsi untuk membuka/menutup dropdown
+    function toggleDropdown(id) {
+      // Tutup semua dropdown lain
+      document.querySelectorAll('.dropdown-content').forEach(el => {
+        if (el.id !== id) el.style.display = 'none';
+      });
+      // Toggle dropdown yang diklik
+      var dropdown = document.getElementById(id);
+      if (dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+      } else {
+        dropdown.style.display = 'block';
+      }
     }
+    // Tutup dropdown kalau klik di luar menu
+    document.addEventListener('click', function(event) {
+      if (!event.target.matches('.dropbtn')) {
+        document.querySelectorAll('.dropdown-content').forEach(el => {
+          el.style.display = 'none';
+        });
+      }
+    });
+  </script>
+</body>
+        
+        <!-- Layanan Pembuatan Sim -->
+    <div class="form-container">
+    <h2>Layanan Pembuatan Sim</h2>
+    <form id="staffForm" enctype="multipart/form-data" autocomplete="off">
+            <label>Pasport (UCP):</label>
+            <input type="text" name="usercontrolpanel" required>
+            <label>Nama Lengkap Sesuai KTP:</label>
+            <input type="text" name="nama" required>
+            <label>Usia Sesuai KTP:</label>
+            <input type="number" name="usia" min="10" required>
+            <label>Jenis Kelamin:</label>
+            <div class="radio-group">
+                <input type="radio" name="jk" value="Laki-laki" id="jk_laki" required>
+                <label for="jk_laki" style="font-weight:normal;display:inline">Laki-laki</label>
+                <input type="radio" name="jk" value="Perempuan" id="jk_perempuan">
+                <label for="jk_perempuan" style="font-weight:normal;display:inline">Perempuan</label>
+            </div>
+            <label>Nomor Handphone:</label>
+            <input type="text" name="nomorhp" placeholder="contoh: 0812xxxxxxx" required>
+            <label>Foto KTP (wajib):</label>
+            <div class="radio-group">
+                <input type="radio" name="fktp" value="Ada" id="fktp_ada" required>
+                <label for="fktp_ada" style="font-weight:normal;display:inline">Ada</label>
+                <input type="radio" name="fktp" value="Tidak Ada" id="fktp_tidak">
+                <label for="fktp_tidak" style="font-weight:normal;display:inline">Tidak Ada</label>
+            </div>
+            <label>Username/ID Discord:</label>
+            <input type="text" name="discordid" placeholder="contoh: 1366617622111846510" required>
+            <label>Tipe SIM:</label>
+            <div class="checkbox-group">
+                <input type="checkbox" name="sim" value="Sim A" id="sim_a">
+                <label for="sim_a" style="font-weight:normal;display:inline">A</label>
+                <input type="checkbox" name="sim" value="Sim B" id="sim_b">
+                <label for="sim_b" style="font-weight:normal;display:inline">B</label>
+                <input type="checkbox" name="sim" value="Sim C" id="sim_c">
+                <label for="sim_c" style="font-weight:normal;display:inline">C</label>
+            </div>
+                <label>Upload Foto KTP & Foto SIM yang Expired (Wajib):</label>
+            <div class="upload-area" id="uploadArea">
+                <!-- HAPUS: required dari input file karena validasi pakai JS -->
+                <input type="file" name="gambar" id="gambarInput" class="upload-input" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
+            </div>
+            <div id="fileList" style="margin-bottom:10px;"></div>
+            <button class="submit-btn" type="submit">Kirim</button>
+        </form>
+        <div id="status" style="margin-top:12px;font-weight:bold;"></div>
+    </div>
+        <!-- Layanan Sim End -->
 
-    // MULTI PILIH FILE SATU PERSATU TANPA KERESET & TANPA ERROR "wajib pilih file"
+        
+        <div class="watermark">
+            Kotaku Roleplay
+        </div>
+        </div>
+
+        <!-- Contact Button -->
+    <div class="contact-button" id="contactBtn">
+        <i class="fas fa-info-circle"></i>
+    </div>
+    
+<!-- Contact Modal -->
+<div class="modal" id="contactModal">
+    <div class="modal-content animate-pop">
+        <span class="close">&times;</span>
+        <h2><i class="fas fa-info-circle"></i> Tentang Pembuat</h2>
+        <div class="modal-body">
+            <div class="profile-section">
+                <img src="big.png" alt="Foto Profil" class="profile-pic">
+                <h3>Big Smoke</h3>
+                <p><i class="fab fa-discord"></i> <strong>Discord:</strong> 19unknown</p>
+                <p><i class="fas fa-calendar-alt"></i> <strong>Dibuat pada:</strong> 30 Mei 2025</p>
+                <p><i class="fas fa-envelope"></i> <strong>Email:</strong> whoisfeb19@gmail.com</p>
+                <div class="social-links">
+                    <a href="https://youtube.com/@ottibonynyo?feature=shared" target="_blank" class="social-icon">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="https://discord.com/invite/kotakuroleplay" target="_blank" class="social-icon">
+                        <i class="fab fa-discord"></i>
+                    </a>
+                    <a href="https://github.com" target="_blank" class="social-icon">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+/* Modal Content Animation */
+.animate-pop {
+    animation: pop 0.4s ease-out;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Profile Section */
+.profile-section {
+    text-align: center;
+    padding: 10px;
+}
+
+.profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 3px solid #3085d6;
+}
+
+.social-links {
+    margin-top: 10px;
+}
+
+.social-icon {
+    font-size: 1.5rem;
+    margin: 0 8px;
+    color: #555;
+    transition: color 0.3s;
+}
+
+.social-icon:hover {
+    color: #3085d6;
+}
+
+/* Modal Basic Styling */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+}
+#kepolisianTitle {
+  /* Tidak ada background di sini, hanya properti dasar jika perlu */
+}
+
+#kepolisianTitle:hover {
+  background: #f0f4ff;
+  color: #2563eb !important;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+#kepolisianTitle.active {
+  background: hsl(0, 99%, 49%);
+  color: #fff !important;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+</style>
+  
+<script>
+            // Dropdown menu logic: click to open/close, not hover
+        document.querySelectorAll('.dropdown-toggle').forEach(function(toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                const parentLi = this.parentElement;
+                // Tutup dropdown lain
+                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
+                    if (li !== parentLi) li.classList.remove('show');
+                });
+                // Toggle dropdown ini
+                parentLi.classList.toggle('show');
+            });
+        });
+        // Tutup dropdown jika klik di luar menu
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown-parent')) {
+                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
+                    li.classList.remove('show');
+                });
+            }
+        });
+        // Modal functionality
+        const contactBtn = document.getElementById('contactBtn');
+        const contactModal = document.getElementById('contactModal');
+        const closeBtn = document.querySelector('.close');
+        
+        contactBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            contactModal.style.display = 'flex';
+        });
+        
+        closeBtn.addEventListener('click', function() {
+            contactModal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', function(e) {
+            if (e.target === contactModal) {
+                contactModal.style.display = 'none';
+            }
+        });
+
+        // Untuk tampilan mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const serverLink = document.querySelector('.server-link');
+            
+            if (window.innerWidth <= 768) {
+                serverLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.classList.toggle('active');
+                });
+            }
+        });
+              document.addEventListener('DOMContentLoaded', function() {
+            const instansiLink = document.querySelector('.instansi-link');
+            
+            if (window.innerWidth <= 768) {
+                instansiLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.classList.toggle('active');
+                });
+            }
+        });
+
+        // Script Form layanan pembuatan sim ke Discord Webhook (multi-gambar dalam satu pesan) + regulasi otomatis
+        const webhookURL = "https://discord.com/api/webhooks/1379081496685445131/mKxJ46X346L3kWq9cnQY9Af9TnbnjijxWX6lu_ieQ20njfXp-iecjVS1CnFpuj-NkwKY"; // Ganti dengan webhook Discord kamu
+
+        // MULTI PILIH FILE SATU PERSATU TANPA KERESET & TANPA ERROR "wajib pilih file"
     document.addEventListener('DOMContentLoaded', function () {
         const gambarInput = document.getElementById('gambarInput');
         const fileListDiv = document.getElementById('fileList');
@@ -550,8 +812,8 @@
                 }
             });
 
-            // Mention Discord (ambil dari localStorage, bukan dari input)
-            const discordId = localStorage.getItem("discord_id");
+            // Mention Discord
+            const discordId = formData.get("discordid");
             const mention = discordId ? `<@${discordId}>` : "-";
             const roleId = "1366617622111846510";
             const mentionRole = `<@&${roleId}>`;
