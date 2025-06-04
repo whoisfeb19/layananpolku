@@ -1,419 +1,158 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kotaku Roleplay</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #1f2937;
-            --secondary-color: #3b82f6;
-            --danger-color: #dc2626;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --light-color: #f9fafb;
-            --dark-color: #111827;
-        }
-        
-        body {
-            background-image: url('home.png');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--dark-color);
-            min-height: 100vh;
-        }
-        
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px auto;
-            max-width: 1200px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 2.2rem;
-            position: relative;
-            padding-bottom: 10px;
-        }
-        
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 3px;
-            background: var(--secondary-color);
-            border-radius: 3px;
-        }
-        .navbar-custom {
-            background: #111827;
-            border-radius: 1.2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.16);
-            margin: 24px auto 0 auto;
-            max-width: 1300px;
-            padding: 0.45rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-            z-index: 10;
-        }
-        .navbar-custom .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .navbar-custom .brand img {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-        }
-        .navbar-custom .brand span {
-            color: #fff;
-            font-weight: bold;
-            font-size: 20px;
-            letter-spacing: 0.5px;
-        }
-        .navbar-custom .nav {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-        .navbar-custom .nav li {
-            position: relative;
-        }
-        .navbar-custom .nav-link {
-            color: #fff !important;
-            font-weight: 500;
-            padding: 0.7rem 1.2rem;
-            border-radius: 0.6rem;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .navbar-custom .nav-link:hover,
-        .navbar-custom .nav-link:focus {
-            background: #1f2937;
-            color: #fff !important;
-            text-decoration: none;
-        }
-        .navbar-custom .nav-link:visited,
-        .navbar-custom .nav-link:active {
-            color: #fff !important;
-            text-decoration: none;
-        }
-        /* Dropdown menu: default hidden, only shown by JS .show class */
-        .dropdown-menu-custom {
-            display: none;
-            position: absolute;
-            top: 110%;
-            left: 0;
-            background: #fff;
-            min-width: 170px;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.13);
-            z-index: 99;
-        }
-        .dropdown-menu-custom a {
-            color: #222;
-            text-decoration: none;
-            display: block;
-            padding: 10px 18px;
-            border-radius: 0.5rem;
-            font-size: 15px;
-            transition: background 0.18s;
-        }
-        .dropdown-menu-custom a:hover {
-            background: #e5e7eb;
-            color: #1e40af;
-        }
-        /* Only show dropdown on .show class (handled by JS, not hover) */
-        .navbar-custom .nav li.show > .dropdown-menu-custom {
-            display: block;
-        }
-        @media (max-width: 900px) {
-            .navbar-custom {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 1rem;
-            }
-            .navbar-custom .nav {
-                flex-direction: column;
-                gap: 0.7rem;
-                align-items: stretch;
-                margin-top: 0.6rem;
-            }
-            .navbar-custom .nav-link {
-                justify-content: flex-start;
-                width: 100%;
-            }
-            .dropdown-menu-custom {
-                position: static;
-                min-width: unset;
-                box-shadow: none;
-                border-radius: 0.5rem;
-            }
-        }
-        .hero-box {
-            background: rgba(255,255,255,0.92);
-            border-radius: 1.2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.10);
-            max-width: 1000px;
-            margin: 48px auto 0 auto;
-            padding: 2rem 2.6rem 1.2rem 2.6rem;
-            text-align: center;
-        }
-        .hero-title {
-            font-size: 2.3rem;
-            color: #1f2937;
-            margin-bottom: 0.1rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-            position: relative;
-            display: inline-block;
-        }
-        .hero-title::after {
-            content: '';
-            display: block;
-            width: 120px;
-            height: 3.8px;
-            background: #3b82f6;
-            border-radius: 2px;
-            margin: 0.4rem auto 0 auto;
-        }
-        .main-bg-img {
-            display: block;
-            width: 100%;
-            max-width: 1140px;
-            margin: 32px auto 0 auto;
-            border-radius: 1.3rem;
-            box-shadow: 0 1.5px 12px rgba(0,0,0,0.14);
-            border: 3px solid #fff;
-        }
-        /* Modal Content Animation */
-        .animate-pop {
-            animation: pop 0.4s ease-out;
-        }
-
-        @keyframes pop {
-            0% { transform: scale(0.7); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* Profile Section */
-        .profile-section {
-            text-align: center;
-            padding: 10px;
-        }
-
-        .profile-pic {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 10px;
-            border: 3px solid #3085d6;
-        }
-
-        .social-links {
-            margin-top: 10px;
-        }
-
-        .social-icon {
-            font-size: 1.5rem;
-            margin: 0 8px;
-            color: #555;
-            transition: color 0.3s;
-        }
-
-        .social-icon:hover {
-            color: #3085d6;
-        }
-
-        /* Modal Basic Styling */
-        .modal {
-            display: none; 
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background: rgba(0,0,0,0.7);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-        }
-
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .summary-checkbox {
-            transform: scale(1.2);
-            cursor: pointer;
-        }
-
-        .remove-btn {
-            padding: 0.2rem 0.4rem;
-            font-size: 0.75rem;
-            background-color: #dc3545;
-            border-color: #dc3545;
-            color: white;
-            border-radius: 3px;
-            transition: all 0.2s;
-        }
-
-        .remove-btn:hover {
-            background-color: #c82333;
-            border-color: #bd2130;
-            transform: scale(1.05);
-        }
-
-        @media (max-width: 576px) {
-            .remove-btn {
-                padding: 0.15rem 0.3rem;
-                font-size: 0.7rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Login Discord OAuth2</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      height: 100vh;
+      min-height: 100vh;
+      background: url('home.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(25, 25, 25, 0.48);
+      z-index: 1;
+    }
+    .container {
+      position: relative;
+      z-index: 2;
+      background: rgba(44,47,51,0.95);
+      border-radius: 16px;
+      box-shadow: 0 4px 32px #000a, 0 0 0 4px #2226;
+      padding: 42px 30px 34px 30px;
+      min-width: 320px;
+      max-width: 350px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      animation: pop 0.7s cubic-bezier(.42,1.56,.41,.87);
+    }
+    @keyframes pop {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .btn-discord {
+      background: #5865F2; color: #fff; border: none; border-radius: 7px;
+      font-size: 1.15em; padding: 14px 32px; cursor:pointer; transition:.16s;
+      display:inline-flex;align-items:center;gap:12px;margin-top:17px; font-weight:600;
+      box-shadow: 0 2px 10px #20244722;
+    }
+    .btn-discord:hover { background: #4752c4; }
+    .discord-icon { font-size:1.55em; }
+    .userinfo { margin:18px 0 0 0; }
+    .avatar { border-radius:50%;margin-bottom:8px;box-shadow:0 2px 6px #0008;}
+    .judul-gta {
+      font-family: Impact, 'Arial Black', Arial, sans-serif;
+      color: #fff;
+      text-shadow: 2px 3px 8px #000, 0 0 12px #222;
+      font-size: 2.1em;
+      letter-spacing: 2px;
+      margin-bottom: 0.8em;
+      margin-top: 0;
+      line-height: 1.1;
+    }
+    .kotaku-rp {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #f8fafc;
+      font-size: 1.15em;
+      letter-spacing: 1.2px;
+      margin-bottom: 1.5em;
+      margin-top: 0;
+    }
+    @media (max-width: 540px) {
+      .container { min-width: unset; max-width: 96vw; padding: 25px 7vw; }
+      .judul-gta { font-size: 1.45em;}
+    }
+  </style>
+  <script src="https://kit.fontawesome.com/31c7e3c6a6.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <nav class="navbar-custom">
-        <div class="brand">
-            <img src="logo.png" alt="Logo">
-            <span>Kotaku Roleplay</span>
-        </div>
-        <ul class="nav">
-            <li>
-                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
-            </li>
-            <li class="dropdown-parent">
-                <a class="nav-link dropdown-toggle"><i class="fas fa-file-alt"></i> Server <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
-                <div class="dropdown-menu-custom">
-                    <a href="testing.html">Pengumuman</a>
-                    <a href="#">List Staff</a>
-                    <a href="admin.html">Pendaftaran Staff</a>
-                </div>
-            </li>
-            <li class="dropdown-parent">
-                <a class="nav-link dropdown-toggle"><i class="fas fa-sitemap"></i> Instansi <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
-                <div class="dropdown-menu-custom">
-                    <a href="gov.html">Pemerintah</a>
-                    <a href="polku.html">Kepolisian</a>
-                    <a href="ems.html">Emergency Medical Service</a>
-                </div>
-            </li>
-            <li>
-                <a href="#" class="nav-link" id="contactBtn"><i class="fas fa-address-book"></i> Kontak</a>
-            </li>
-        </ul>
-    </nav>
+  <div class="overlay"></div>
+  <div class="container">
+    <div>
+      <div class="judul-gta">Grand Theft Auto<br>San Andreas</div>
+      <div class="kotaku-rp">Kotaku Roleplay - Login Discord</div>
+    </div>
+    <button class="btn-discord" id="loginBtn">
+      <i class="fab fa-discord discord-icon"></i> Login Discord
+    </button>
+    <div class="userinfo" id="userinfo" style="display:none;">
+      <img id="avatar" class="avatar" width="80" height="80" alt="User Avatar"/><br>
+      <b id="username"></b><br>
+      <span id="userid" style="font-size:0.95em; color:#b9bbbe;"></span><br>
+      <button class="btn-discord" onclick="logout()">Logout Discord</button>
+    </div>
+  </div>
+<script>
+const clientId = "1356210770559504398"; // Ganti dengan Client ID Discord App kamu
+const redirectUri = window.location.origin + window.location.pathname;
+const scopes = "identify";
 
-    <div class="container">
-        <h1>KOTAKU ROLEPLAY</h1>
-        
-        <h2>APA ITU KOTAKU ROLEPLAY</h2>
-        <p>Kotaku Roleplay adalah sebuah komunitas yang bergerak di platform Discord dan pada game roleplay yaitu Grand Theft Auto San Andreas Multiplayer</p>
-        
-        <!-- Contact Modal -->
-        <div class="modal" id="contactModal">
-            <div class="modal-content animate-pop">
-                <span class="close">&times;</span>
-                <h2><i class="fas fa-info-circle"></i> Tentang Pembuat</h2>
-                <div class="modal-body">
-                    <div class="profile-section">
-                        <img src="big.png" alt="Foto Profil" class="profile-pic">
-                        <h3>Big Smoke</h3>
-                        <p><i class="fab fa-discord"></i> <strong>Discord:</strong> 19unknown</p>
-                        <p><i class="fas fa-calendar-alt"></i> <strong>Dibuat pada:</strong> 30 Mei 2025</p>
-                        <p><i class="fas fa-envelope"></i> <strong>Email:</strong> whoisfeb19@gmail.com</p>
-                        <div class="social-links">
-                            <a href="https://youtube.com/@ottibonynyo?feature=shared" target="_blank" class="social-icon">
-                                <i class="fab fa-youtube"></i>
-                            </a>
-                            <a href="https://discord.com/invite/kotakuroleplay" target="_blank" class="social-icon">
-                                <i class="fab fa-discord"></i>
-                            </a>
-                            <a href="https://github.com" target="_blank" class="social-icon">
-                                <i class="fab fa-github"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <script>
-        // Dropdown menu logic: click to open/close, not hover
-        document.querySelectorAll('.dropdown-toggle').forEach(function(toggle) {
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                const parentLi = this.parentElement;
-                // Tutup dropdown lain
-                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
-                    if (li !== parentLi) li.classList.remove('show');
-                });
-                // Toggle dropdown ini
-                parentLi.classList.toggle('show');
-            });
-        });
-        // Tutup dropdown jika klik di luar menu
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown-parent')) {
-                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
-                    li.classList.remove('show');
-                });
-            }
-        });
+document.getElementById('loginBtn').onclick = function() {
+  const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scopes)}`;
+  window.location.href = url;
+};
 
-        // Modal functionality
-        const contactBtn = document.getElementById('contactBtn');
-        const contactModal = document.getElementById('contactModal');
-        const closeBtn = document.querySelector('.close');
-        
-        contactBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            contactModal.style.display = 'flex';
-        });
-        closeBtn.addEventListener('click', function() {
-            contactModal.style.display = 'none';
-        });
-        window.addEventListener('click', function(e) {
-            if (e.target === contactModal) {
-                contactModal.style.display = 'none';
-            }
-        });
-    </script>
+window.onload = function() {
+  if (window.location.hash && window.location.hash.includes("access_token")) {
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const token = params.get("access_token");
+    if (token) {
+      localStorage.setItem("discord_token", token);
+      window.location.hash = "";
+    }
+  }
+  const token = localStorage.getItem("discord_token");
+  if (token) {
+    fetch("https://discord.com/api/users/@me", {
+      headers: { "Authorization": "Bearer " + token }
+    })
+    .then(r => r.json())
+    .then(user => {
+      if (user.id) {
+        document.getElementById('userinfo').style.display = "";
+        document.getElementById('loginBtn').style.display = "none";
+        document.getElementById('username').textContent = user.username + "#" + user.discriminator;
+        document.getElementById('userid').textContent = "ID: " + user.id;
+        document.getElementById('avatar').src = user.avatar
+          ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+          : "https://cdn.discordapp.com/embed/avatars/0.png";
+        window.discordUser = user;
+        // Setelah login sukses, redirect ke halaman utama/dashboard
+        setTimeout(() => {
+          window.location.href = "beranda.html"; // GANTI dengan halaman tujuanmu!
+        }, 1200); // Tampilkan info user sebentar, lalu redirect
+      } else {
+        localStorage.removeItem("discord_token");
+        location.reload();
+      }
+    })
+    .catch(() => {
+      localStorage.removeItem("discord_token");
+      location.reload();
+    });
+  }
+};
+
+function logout() {
+  localStorage.removeItem("discord_token");
+  location.reload();
+}
+</script>
 </body>
 </html>
