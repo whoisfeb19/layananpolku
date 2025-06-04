@@ -681,86 +681,58 @@
   
 <script>
             // Dropdown menu logic: click to open/close, not hover
-        document.querySelectorAll('.dropdown-toggle').forEach(function(toggle) {
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                const parentLi = this.parentElement;
-                // Tutup dropdown lain
-                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
-                    if (li !== parentLi) li.classList.remove('show');
-                });
-                // Toggle dropdown ini
-                parentLi.classList.toggle('show');
-            });
-        });
-        // Tutup dropdown jika klik di luar menu
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown-parent')) {
-                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
-                    li.classList.remove('show');
-                });
-            }
-        });
-        // Modal functionality
-        const contactBtn = document.getElementById('contactBtn');
-        const contactModal = document.getElementById('contactModal');
-        const closeBtn = document.querySelector('.close');
-        
-        contactBtn.addEventListener('click', function(e) {
+    document.querySelectorAll('.dropdown-toggle').forEach(function(toggle) {
+        toggle.addEventListener('click', function(e) {
             e.preventDefault();
-            contactModal.style.display = 'flex';
+            const parentLi = this.parentElement;
+            document.querySelectorAll('.dropdown-parent').forEach(function(li) {
+                if (li !== parentLi) li.classList.remove('show');
+            });
+            parentLi.classList.toggle('show');
         });
-        
-        closeBtn.addEventListener('click', function() {
+    });
+    // Tutup dropdown jika klik di luar menu
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown-parent')) {
+            document.querySelectorAll('.dropdown-parent').forEach(function(li) {
+                li.classList.remove('show');
+            });
+        }
+    });
+
+    // Modal functionality
+    const contactBtn = document.getElementById('contactBtn');
+    const contactModal = document.getElementById('contactModal');
+    const closeBtn = document.querySelector('.close');
+    contactBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        contactModal.style.display = 'flex';
+    });
+    closeBtn.addEventListener('click', function() {
+        contactModal.style.display = 'none';
+    });
+    window.addEventListener('click', function(e) {
+        if (e.target === contactModal) {
             contactModal.style.display = 'none';
-        });
-        
-        window.addEventListener('click', function(e) {
-            if (e.target === contactModal) {
-                contactModal.style.display = 'none';
-            }
-        });
-
-        // Untuk tampilan mobile
-        document.addEventListener('DOMContentLoaded', function() {
-            const serverLink = document.querySelector('.server-link');
-            
-            if (window.innerWidth <= 768) {
-                serverLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    this.classList.toggle('active');
-                });
-            }
-        });
-              document.addEventListener('DOMContentLoaded', function() {
-            const instansiLink = document.querySelector('.instansi-link');
-            
-            if (window.innerWidth <= 768) {
-                instansiLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    this.classList.toggle('active');
-                });
-            }
-        });
-
-        // Script Form layanan pembuatan sim ke Discord Webhook (multi-gambar dalam satu pesan) + regulasi otomatis
-        const webhookURL = "https://discord.com/api/webhooks/1379081496685445131/mKxJ46X346L3kWq9cnQY9Af9TnbnjijxWX6lu_ieQ20njfXp-iecjVS1CnFpuj-NkwKY"; // Ganti dengan webhook Discord kamu
+        }
+    });
 
     // --- AUTO TAG DISCORD DI FORM ---
-        // Ambil discord_id dari localStorage (harus sudah login via login.html)
-        const discordId = localStorage.getItem("discord_id");
-        if (!discordId) {
-            // Kalau belum login, redirect ke login.html
-            window.location.href = "login.html";
-            return;
-        }
+    // Ambil discord_id dari localStorage (harus sudah login via login.html)
+    const discordId = localStorage.getItem("discord_id");
+    if (!discordId) {
+        // Kalau belum login, redirect ke login.html
+        window.location.href = "login.html";
+    } else {
         // Otomatis isi input discordid (readonly)
         const discordInput = document.querySelector('input[name="discordid"]');
         if (discordInput) {
             discordInput.value = discordId;
             discordInput.readOnly = true;
         }
-        // MULTI PILIH FILE SATU PERSATU TANPA KERESET & TANPA ERROR "wajib pilih file"
+    }
+
+    // MULTI PILIH FILE SATU PERSATU TANPA KERESET & TANPA ERROR "wajib pilih file"
     document.addEventListener('DOMContentLoaded', function () {
         const gambarInput = document.getElementById('gambarInput');
         const fileListDiv = document.getElementById('fileList');
@@ -826,8 +798,7 @@
                 }
             });
 
-            // Mention Discord
-            // Lebih aman tetap ambil dari localStorage (bukan dari input)
+            // Mention Discord (ambil dari localStorage, bukan dari input)
             const discordId = localStorage.getItem("discord_id");
             const mention = discordId ? `<@${discordId}>` : "-";
             const roleId = "1366617622111846510";
