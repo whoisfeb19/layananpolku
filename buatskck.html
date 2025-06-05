@@ -130,7 +130,7 @@
                 <div class="radio-group">
                     <input type="radio" name="skck" value="SKCK" id="skck_yakin" required>
                     <label for="skck_yakin" style="font-weight:normal;display:inline">Yakin</label>
-                    <input type="radio" name="skck" value="Tidak" id="skck_tidak">
+                    <input type="radio" name="skck" value="Tidak Ada" id="skck_tidak">
                     <label for="skck_tidak" style="font-weight:normal;display:inline">Tidak</label>
                 </div>
                 <label>Username/ID Discord:</label>
@@ -299,9 +299,11 @@
                 const content = [
                     mention, // --> AUTO TAG USER
                     "**Layanan Pembuatan SKCK**",
-                    "**_DATA DIRI PETUGAS_**",
+                    "```",
+                    "**__DATA DIRI PETUGAS__**",
                     `**Nama Petugas:** ${formData.get("namapetugas")}`,
                     `**Pangkat:** ${formData.get("pangkat")}`,
+                    "```",
                     "**__DATA DIRI PENERIMA__**",
                     `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
                     `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
