@@ -140,7 +140,6 @@
                 <option value="Garry Wackson">Garry Wackson</option>
                 <option value="Sanz Toretto">Sanz Toretto</option>
             </select>
-                <input type="text" name="pangkat" required>
                 <h2>DATA DIRI PENERIMA</h2>
                 <label>Pasport (UCP):</label>
                 <input type="text" name="usercontrolpanel" required>
@@ -337,12 +336,16 @@
                 const roleId = "1366617622111846509";
                 const mentionRole = `<@&${roleId}>`;
                 const content = [
-                    mention, // --> AUTO TAG USER
+                    
                     "**Layanan Pembuatan SKCK**",
+                      "",
                     "**DATA DIRI PETUGAS**",
-                    `**Nama Petugas:** ${formData.get("namapetugas")}`,
-                    `**Pangkat:** ${formData.get("pangkat")}`,
+                    "```",
+                    `**Nama Petugas:** ${formData.get("nama-petugas")}`,
+                    "```",
+                    "",
                     "**__DATA DIRI PENERIMA__**",
+                    "```",
                     `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
                     `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
                     `**Usia Sesuai KTP:** ${formData.get("usia")}`,
@@ -353,7 +356,9 @@
                     `**Username Discord:** ${mention}`,
                     `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
                     `**DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL**`,
+                    mention, // --> AUTO TAG USER
                     mentionRole
+                    "```"
                 ].join("\n");
                 // VALIDASI FILE: HARUS ADA
                 if (!selectedFiles.length) {
