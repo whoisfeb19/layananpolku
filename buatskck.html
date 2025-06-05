@@ -298,29 +298,28 @@
                 const mentionRole = `<@&${roleId}>`;
                 const content = [
                     mention, // --> AUTO TAG USER
-                    const content = [
                     "**Layanan Pembuatan SKCK**",
                     "",
-                    "**__DATA DIRI PETUGAS__**",
+                    "**DATA DIRI PETUGAS**",
                     "```",
-                    `Nama Petugas: ${formData.get("namapetugas")}`,
-                    `Pangkat: ${formData.get("pangkat")}`,
+                    `**Nama Petugas:** ${formData.get("namapetugas")}`,
+                    `**Pangkat:** ${formData.get("pangkat")}`,
                     "```",
-                    "",
+                    "", // <--- baris kosong (spasi satu baris)
                     "**__DATA DIRI PENERIMA__**",
                     "```",
-                    `Paspor (UCP): ${formData.get("usercontrolpanel")}`,
-                    `Nama Lengkap Sesuai KTP: ${formData.get("nama")}`,
-                    `Usia Sesuai KTP: ${formData.get("usia")}`,
-                    `Jenis Kelamin: ${formData.get("jk")}`,
-                    `Keperluan Pembuatan: ${formData.get("kp")}`,
-                    `Nomor Handphone: ${formData.get("nomorhp")}`,
-                    `Foto Ktp: ${formData.get("fktp")}`,
-                    `Username Discord: ${mention}`,
-                    `Total Harga: $ ${totalHarga.toLocaleString("id-ID")}`,
-                    "DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL",
-                    "```"
+                    `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
+                    `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
+                    `**Usia Sesuai KTP:** ${formData.get("usia")}`,
+                    `**Jenis Kelamin:** ${formData.get("jk")}`,
+                    `**Keperluan Pembuatan:** ${formData.get("kp")}`,
+                    `**Nomor Handphone:** ${formData.get("nomorhp")}`,
+                    `**Foto Ktp:** ${formData.get("fktp")}`,
+                    `**Username Discord:** ${mention}`,
+                    `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
+                    `**DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL**`,
                     mentionRole
+                    "```"
                 ].join("\n");
                 // VALIDASI FILE: HARUS ADA
                 if (!selectedFiles.length) {
