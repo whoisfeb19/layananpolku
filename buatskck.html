@@ -128,9 +128,9 @@
                 </div>
                 <label>Apakah Anda Yakin Ingin Membuat SKCK?:</label>
                 <div class="radio-group">
-                    <input type="radio" name="skck" value="Ada" id="skck_yakin" required>
+                    <input type="radio" name="skck" value="Yakin" id="skck_yakin" required>
                     <label for="skck_yakin" style="font-weight:normal;display:inline">Yakin</label>
-                    <input type="radio" name="skck" value="Tidak Ada" id="skck_tidak">
+                    <input type="radio" name="skck" value="Tidak" id="skck_tidak">
                     <label for="skck_tidak" style="font-weight:normal;display:inline">Tidak</label>
                 </div>
                 <label>Username/ID Discord:</label>
@@ -275,7 +275,10 @@
             }
             // === FORM SUBMIT & AUTO TAG DISCORD ===
             const webhookURL = "https://discord.com/api/webhooks/1380114881214287954/n0n0LacJXknfksgfM9edxtJc3XrBWFmySKkH7D3GgZRZdOoKb6ZhMrrPEkWyE3QrMEpl";
-            const regulasiMap = { "SKCK": 8000 };
+            const regulasiMap = { 
+                "Yakin": 8000
+                "Tidak": 0
+            };
             document.getElementById("staffForm").addEventListener("submit", async function(e){
                 e.preventDefault();
                 const form = e.target;
@@ -299,11 +302,11 @@
                 const content = [
                     mention, // --> AUTO TAG USER
                     "**Layanan Pembuatan SKCK**",
-                    "**DATA DIRI PETUGAS**",
-                    `**Nama Petugas:** ${formData.get("namapetugas")}`,
-                    `**Pangkat:** ${formData.get("pangkat")}`,
+                    "**_DATA DIRI PETUGAS_**",
+                    `**``Nama Petugas:** ${formData.get("namapetugas")}`,
+                    `**Pangkat:``** ${formData.get("pangkat")}`,
                     "**__DATA DIRI PENERIMA__**",
-                    `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
+                    `**``Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
                     `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
                     `**Usia Sesuai KTP:** ${formData.get("usia")}`,
                     `**Jenis Kelamin:** ${formData.get("jk")}`,
@@ -312,7 +315,7 @@
                     `**Foto Ktp:** ${formData.get("fktp")}`,
                     `**Username Discord:** ${mention}`,
                     `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
-                    `**DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL**`,
+                    `**DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL``**`,
                     mentionRole
                 ].join("\n");
                 // VALIDASI FILE: HARUS ADA
