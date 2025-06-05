@@ -52,9 +52,28 @@
         .form-container .radio-group { margin-bottom: 10px;}
         .form-container .submit-btn { margin-top: 18px; padding: 10px 28px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; transition: background .2s;}
         .form-container .submit-btn:hover { background: #1e40af;}
-        #kepolisianTitle {}
-        #kepolisianTitle:hover { background: #f0f4ff; color: #2563eb !important; border-radius: 8px; transition: background 0.2s, color 0.2s;}
-        #kepolisianTitle.active { background: hsl(0, 99%, 49%); color: #fff !important; border-radius: 8px; transition: background 0.2s, color 0.2s;}
+        .title-center {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 100%;
+              margin: 22px 0;
+            }
+            #kepolisianTitle {
+              font-size: 1.3em;
+              font-weight: bold;
+              color: #222;
+              text-decoration: none;
+              background: #fff;
+              padding: 6px 20px;
+              border-radius: 10px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+              transition: background 0.2s, color 0.2s;
+            }
+            #kepolisianTitle:hover {
+              background: #f0f4ff;
+              color: #2563eb;
+            }
     </style>
 </head>
 <body>
@@ -87,19 +106,32 @@
         </ul>
     </nav>
     <div class="container">
-        <div class="title-area">
-            <a href="index.html" id="kepolisianTitle" style="color:inherit;text-decoration:none;cursor:pointer;">
-                <span><span style="font-size:1.2em;">&#128196;</span> Kepolisian Kotaku</span>
-            </a>
+        <div class="title-center">
+          <a href="index.html" id="kepolisianTitle">Kepolisian Kotaku</a>
         </div>
         <!-- FORM SKCK -->
         <div class="form-container">
             <h2>Layanan Pembuatan SKCK</h2>
             <h2>DATA DIRI PETUGAS</h2>
             <form id="staffForm" enctype="multipart/form-data" autocomplete="off">
-                <label>Nama Petugas:</label>
-                <input type="text" name="namapetugas" required>
-                <label>Pangkat:</label>
+                <label for="nama-petugas">Nama Petugas:</label>
+            <select id="id-card" name="nama-petugas">
+                <option value="Ken Marcello">Ken Marcello</option>
+                <option value="Melvin Kanedrick">Melvin Kanedrick</option>
+                <option value="Haikal Pratama">Haikal Pratama</option>
+                <option value="Berlyn Wasylena">Berlyn Wasylena</option>
+                <option value="Elvino Pablo">Elvino Pablo</option>
+                <option value="Jennie Cathlyn">Jennie Cathlyn</option>
+                <option value="Bhagaskara Hindia">Bhagaskara Hindia</option>
+                <option value="Kenneth Yobs">Kenneth Yobs</option>
+                <option value="Ashabira Maharani">Ashabira Maharani</option>
+                <option value="Tycen Wright">Tycen Wright</option>
+                <option value="Agung Lafurqon">Agung Lafurqon</option>
+                <option value="Cheezy Abobo">Cheezy Abobo</option>
+                <option value="Youw Boy">Youw Boy</option>
+                <option value="Garry Wackson">Garry Wackson</option>
+                <option value="Sanz Toretto">Sanz Toretto</option>
+            </select>
                 <input type="text" name="pangkat" required>
                 <h2>DATA DIRI PENERIMA</h2>
                 <label>Pasport (UCP):</label>
