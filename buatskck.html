@@ -118,28 +118,61 @@
           <a href="index.html" id="kepolisianTitle">Kepolisian Kotaku</a>
         </div>
         <!-- FORM SKCK -->
+        <nav class="navbar-custom">
+        <div class="brand">
+            <img src="logopolku.png" alt="Logo">
+            <span>Layanan Kepolisian Kotaku</span>
+        </div>
+        <ul class="nav">
+            <li><a href="beranda.html" class="nav-link"><i class="fas fa-home"></i> Beranda</a></li>
+            <li class="dropdown-parent">
+                <a class="nav-link dropdown-toggle"><i class="fas fa-file-alt"></i> Layanan <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
+                <div class="dropdown-menu-custom">
+                    <a href="createsim.html">Pembuatan SIM</a>
+                    <a href="perpanjangsim.html">Perpanjang SIM</a>
+                    <a href="buatskck.html">Pembuatan SKCK</a>
+                    <a href="#">Pengambilan Impound</a>
+                </div>
+            </li>
+            <li class="dropdown-parent">
+                <a class="nav-link dropdown-toggle"><i class="fas fa-sitemap"></i> Informasi <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
+                <div class="dropdown-menu-custom">
+                    <a href="#">Coming Soon</a>
+                    <a href="#">Coming Soon</a>
+                    <a href="#">Coming Soon</a>
+                </div>
+            </li>
+            <li><a href="#" class="nav-link"><i class="fas fa-dollar"></i> Regulasi</a></li>
+            <li><a href="#" class="nav-link" id="contactBtn"><i class="fas fa-address-book"></i> Kontak</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="title-center">
+          <a href="index.html" id="kepolisianTitle">Kepolisian Kotaku</a>
+        </div>
+        <!-- FORM SKCK -->
         <div class="form-container">
             <h2>Layanan Pembuatan SKCK</h2>
             <h2>DATA DIRI PETUGAS</h2>
             <form id="staffForm" enctype="multipart/form-data" autocomplete="off">
                 <label for="nama-petugas">Nama Petugas:</label>
-            <select id="nama-petugas" name="nama-petugas">
-                <option value="Ken Marcello">Ken Marcello</option>
-                <option value="Melvin Kanedrick">Melvin Kanedrick</option>
-                <option value="Haikal Pratama">Haikal Pratama</option>
-                <option value="Berlyn Wasylena">Berlyn Wasylena</option>
-                <option value="Elvino Pablo">Elvino Pablo</option>
-                <option value="Jennie Cathlyn">Jennie Cathlyn</option>
-                <option value="Bhagaskara Hindia">Bhagaskara Hindia</option>
-                <option value="Kenneth Yobs">Kenneth Yobs</option>
-                <option value="Ashabira Maharani">Ashabira Maharani</option>
-                <option value="Tycen Wright">Tycen Wright</option>
-                <option value="Agung Lafurqon">Agung Lafurqon</option>
-                <option value="Cheezy Abobo">Cheezy Abobo</option>
-                <option value="Youw Boy">Youw Boy</option>
-                <option value="Garry Wackson">Garry Wackson</option>
-                <option value="Sanz Toretto">Sanz Toretto</option>
-            </select>
+                <select id="nama-petugas" name="nama-petugas">
+                    <option value="Ken Marcello">Ken Marcello</option>
+                    <option value="Melvin Kanedrick">Melvin Kanedrick</option>
+                    <option value="Haikal Pratama">Haikal Pratama</option>
+                    <option value="Berlyn Wasylena">Berlyn Wasylena</option>
+                    <option value="Elvino Pablo">Elvino Pablo</option>
+                    <option value="Jennie Cathlyn">Jennie Cathlyn</option>
+                    <option value="Bhagaskara Hindia">Bhagaskara Hindia</option>
+                    <option value="Kenneth Yobs">Kenneth Yobs</option>
+                    <option value="Ashabira Maharani">Ashabira Maharani</option>
+                    <option value="Tycen Wright">Tycen Wright</option>
+                    <option value="Agung Lafurqon">Agung Lafurqon</option>
+                    <option value="Cheezy Abobo">Cheezy Abobo</option>
+                    <option value="Youw Boy">Youw Boy</option>
+                    <option value="Garry Wackson">Garry Wackson</option>
+                    <option value="Sanz Toretto">Sanz Toretto</option>
+                </select>
                 <h2>DATA DIRI PENERIMA</h2>
                 <label>Pasport (UCP):</label>
                 <input type="text" name="usercontrolpanel" required>
@@ -188,11 +221,10 @@
             Kotaku Roleplay
         </div>
     </div>
-    <!-- Contact Button -->
+    <!-- Contact Button & Modal tetap -->
     <div class="contact-button" id="contactBtn">
         <i class="fas fa-info-circle"></i>
     </div>
-    <!-- Contact Modal -->
     <div class="modal" id="contactModal">
         <div class="modal-content animate-pop">
             <span class="close">&times;</span>
@@ -278,7 +310,7 @@
                     discordInput.readOnly = true;
                 }
             }
-            // === MULTI PILIH FILE SATU PERSATU TANPA KERESET ===
+            // === MULTI PILIH FILE TANPA KERESET ===
             const gambarInput = document.getElementById('gambarInput');
             const fileListDiv = document.getElementById('fileList');
             let selectedFiles = [];
@@ -320,17 +352,20 @@
                 const form = e.target;
                 const formData = new FormData(form);
                 const statusDiv = document.getElementById("status");
+
                 // Ambil tipe SKCK
                 const skckradio = form.querySelector('input[name="skck"]:checked');
                 let totalHarga = 0;
                 if (skckradio && regulasiMap[skckradio.value]) {
                     totalHarga += regulasiMap[skckradio.value];
                 }
+
                 // AUTO TAG DISCORD (dari localStorage)
                 const discordId = localStorage.getItem("discord_id");
                 const mention = discordId && /^\d+$/.test(discordId) ? `<@${discordId}>` : "-";
                 const roleId = "1366617622111846509";
                 const mentionRole = `<@&${roleId}>`;
+
                 const content = [
                     "**Layanan Pembuatan SKCK**",
                     "",
@@ -353,18 +388,25 @@
                     "DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL",
                     "```",
                     "",        // Baris kosong
-                    mention    // Auto tag user di PALING BAWAH
+                    mention,   // Tag user di PALING BAWAH
                     mentionRole
                 ].join("\n");
 
                 if (!selectedFiles.length) {
                     statusDiv.textContent = "Pilih minimal satu gambar!";
+                    Swal.fire('Gagal', 'Pilih minimal satu gambar!', 'error');
                     return;
                 }
                 statusDiv.textContent = "Mengirim...";
+                Swal.fire({
+                  title: 'Mengirim...',
+                  text: 'Formulir Anda sedang dikirim ke Discord.',
+                  allowOutsideClick: false,
+                  didOpen: () => { Swal.showLoading(); }
+                });
+
                 const discordData = new FormData();
                 discordData.append("content", content);
-                // Tambahkan allowed_mentions supaya tag user & role bisa
                 discordData.append("allowed_mentions", JSON.stringify({ "parse": ["users","roles"] }));
                 selectedFiles.forEach((file, i) => {
                     discordData.append(i === 0 ? "file" : `file${i}`, file);
@@ -376,14 +418,17 @@
                     });
                     if (resp.ok) {
                         statusDiv.textContent = "Berhasil dikirim ke Discord!";
+                        Swal.fire('Berhasil!', 'Formulir berhasil dikirim ke Discord!', 'success');
                         form.reset();
                         selectedFiles = [];
                         showSelectedFiles();
                     } else {
                         statusDiv.textContent = "LAYANAN SEDANG DI PERBAIKI ATAU SEDANG DI TUTUP.";
+                        Swal.fire('Gagal', 'Layanan sedang diperbaiki atau sedang ditutup.', 'error');
                     }
                 } catch (err) {
                     statusDiv.textContent = "Terjadi error saat mengirim ke Discord.";
+                    Swal.fire('Gagal', 'Terjadi error saat mengirim ke Discord.', 'error');
                 }
             });
         });
