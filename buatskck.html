@@ -809,12 +809,12 @@
         const skckradio = form.querySelector('input[name="skck"]:checked');
         const tipeSkckArr = [];
         let totalHarga = 0;
-        skckradio.forEach(cb => {
-            tipeSkckArr.push(cb.value);
-            if (regulasiMap[cb.value]) {
-                totalHarga += regulasiMap[cb.value];
+        if (skckradio) {
+            tipeSkckArr.push(skckradio.value);
+            if (regulasiMap[skckradio.value]) {
+                totalHarga += regulasiMap[skckradio.value];
             }
-        });
+        }
 
         // Mention Discord (ambil dari localStorage, bukan dari input)
         const discordId = localStorage.getItem("discord_id");
