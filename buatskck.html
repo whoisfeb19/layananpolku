@@ -807,7 +807,7 @@
         const statusDiv = document.getElementById("status");
 
         // Ambil tipe SKCK
-        const skckradio = form.querySelectorAll('input[name="skck"]:checked');
+        const skckradio = form.querySelector('input[name="skck"]:checked');
         const tipeSkckArr = [];
         let totalHarga = 0;
         skckradio.forEach(cb => {
@@ -820,15 +820,15 @@
         // Mention Discord (ambil dari localStorage, bukan dari input)
         const discordId = localStorage.getItem("discord_id");
         const mention = discordId ? `<@${discordId}>` : "-";
-        const roleId = "1366617622111846510";
+        const roleId = "1366617622111846509";
         const mentionRole = `<@&${roleId}>`;
 
         const content = [
             mention, // --> AUTO TAG USER
             "**Layanan Pembuatan SKCK**",
-            "**DATA DIRI PENERIMA**",
-            `**Nama Petugas:** ${formData.get("namapetugas")}`,
-            `**Pangkat:** ${formData.get("pangkat")}`,
+            "**__DATA DIRI PENERIMA__**",
+            ```Nama Petugas: ${formData.get("namapetugas")}`,
+            ```Pangkat:`` ${formData.get("pangkat")}`,
 
             "**DATA DIRI PENERIMA**",
             `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
@@ -838,7 +838,6 @@
             `**Keperluan Pembuatan:** ${formData.get("kp")}`,
             `**Nomor Handphone:** ${formData.get("nomorhp")}`,
             `**Foto Ktp:** ${formData.get("fktp")}`,
-            `**Tipe Sim:** ${tipeSkckArr.join(', ') || '-'}`,
             `**Username Discord:** ${mention}`,
             `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
             `**DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL**`,
@@ -879,4 +878,3 @@
 });
 </script>
 </body>
-
