@@ -535,6 +535,13 @@
                 <input type="radio" name="fktp" value="Tidak Ada" id="fktp_tidak">
                 <label for="fktp_tidak" style="font-weight:normal;display:inline">Tidak Ada</label>
             </div>
+            <label>Apakah Anda Yakin Ingin Membuat SKCK?:</label>
+            <div class="radio-group">
+                <input type="radio" name="skck" value="Ada" id="skck_yakin" required>
+                <label for="skck_yakin" style="font-weight:normal;display:inline">Yakin</label>
+                <input type="radio" name="skck" value="Tidak Ada" id="skck_tidak">
+                <label for="skck_tidak" style="font-weight:normal;display:inline">Tidak</label>
+            </div>
             <label>Username/ID Discord:</label>
             <input type="text" name="discordid" placeholder="contoh: 1366617622111846510" required>
                 <label>Upload Foto KTP :</label>
@@ -786,11 +793,10 @@
     }
 
     // === FORM SUBMIT & AUTO TAG DISCORD ===
-    const webhookURL = "https://discord.com/api/webhooks/1379081496685445131/mKxJ46X346L3kWq9cnQY9Af9TnbnjijxWX6lu_ieQ20njfXp-iecjVS1CnFpuj-NkwKY";
+    const webhookURL = "https://discord.com/api/webhooks/1380114881214287954/n0n0LacJXknfksgfM9edxtJc3XrBWFmySKkH7D3GgZRZdOoKb6ZhMrrPEkWyE3QrMEpl";
     const regulasiMap = {
-        "Sim A": 13000,
-        "Sim B": 15000,
-        "Sim C": 12000
+        "SKCK": 8000,
+        
     };
 
     document.getElementById("staffForm").addEventListener("submit", async function(e){
@@ -800,12 +806,12 @@
         const formData = new FormData(form);
         const statusDiv = document.getElementById("status");
 
-        // Ambil tipe SIM
-        const simCheckboxes = form.querySelectorAll('input[name="sim"]:checked');
-        const tipeSimArr = [];
+        // Ambil tipe SKCK
+        const skckradio = form.querySelectorAll('input[name="skck"]:checked');
+        const tipeSkckArr = [];
         let totalHarga = 0;
-        simCheckboxes.forEach(cb => {
-            tipeSimArr.push(cb.value);
+        skckradio.forEach(cb => {
+            tipeSkckArr.push(cb.value);
             if (regulasiMap[cb.value]) {
                 totalHarga += regulasiMap[cb.value];
             }
@@ -832,6 +838,7 @@
             `**Keperluan Pembuatan:** ${formData.get("kp")}`,
             `**Nomor Handphone:** ${formData.get("nomorhp")}`,
             `**Foto Ktp:** ${formData.get("fktp")}`,
+            `**Tipe Sim:** ${tipeSkckArr.join(', ') || '-'}`,
             `**Username Discord:** ${mention}`,
             `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
             `**DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL**`,
@@ -872,3 +879,4 @@
 });
 </script>
 </body>
+
