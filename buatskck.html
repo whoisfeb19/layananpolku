@@ -845,23 +845,29 @@
         const mentionRole = `<@&${roleId}>`;
 
         const content = [
-            mention, // --> AUTO TAG USER
             "**Layanan Pembuatan SKCK**",
-            "**__DATA DIRI PENERIMA__**",
-            `**Nama Petugas:** ${formData.get("nama-petugas")}`,
-
-            "**__DATA DIRI PENERIMA__**",
-            `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
-            `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
-            `**Usia Sesuai KTP:** ${formData.get("usia")}`,
-            `**Jenis Kelamin:** ${formData.get("jk")}`,
-            `**Keperluan Pembuatan:** ${formData.get("kp")}`,
-            `**Nomor Handphone:** ${formData.get("nomorhp")}`,
-            `**Foto Ktp:** ${formData.get("fktp")}`,
-            `**Username Discord:** ${mention}`,
-            `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
-            `**DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL**`,
-            mentionRole
+                    "",
+                    "DATA DIRI PETUGAS",
+                    "```",
+                    `Nama Petugas: ${formData.get("nama-petugas")}`,
+                    "```",
+                    "",
+                    "DATA DIRI PENERIMA",
+                    "```",
+                    `Paspor (UCP): ${formData.get("usercontrolpanel")}`,
+                    `Nama Lengkap Sesuai KTP: ${formData.get("nama")}`,
+                    `Usia Sesuai KTP: ${formData.get("usia")}`,
+                    `Jenis Kelamin: ${formData.get("jk")}`,
+                    `Keperluan Pembuatan: ${formData.get("kp")}`,
+                    `Nomor Handphone: ${formData.get("nomorhp")}`,
+                    `Foto Ktp: ${formData.get("fktp")}`,
+                    `Username Discord: ${mention}`,
+                    `Total Harga: $ ${totalHarga.toLocaleString("id-ID")}`,
+                    "DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL",
+                    "```",
+                    "",        // Baris kosong
+                    mention,   // Tag user di PALING BAWAH
+                    mentionRole
         ].join("\n");
 
         // VALIDASI FILE: HARUS ADA
