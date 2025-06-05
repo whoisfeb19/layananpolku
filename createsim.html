@@ -816,7 +816,7 @@
         const mentionRole = `<@&${roleId}>`;
 
         const content = [
-            mention, // --> AUTO TAG USER
+
             "**Layanan Pembuatan SIM**",
             `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
             `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
@@ -827,6 +827,7 @@
             `**Username Discord:** ${mention}`,
             `**Tipe Sim:** ${tipeSimArr.join(', ') || '-'}`,
             `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
+            mention,   // Tag user di PALING BAWAH
             mentionRole
         ].join("\n");
 
