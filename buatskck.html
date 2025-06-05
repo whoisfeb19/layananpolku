@@ -312,6 +312,8 @@
                 }
             }
             // === FORM SUBMIT & AUTO TAG DISCORD ===
+            // PERHATIAN: CORS tidak akan bisa mengirim langsung ke Discord dari browser!
+            // Pakai backend/proxy jika ingin real working!
             const webhookURL = "https://discord.com/api/webhooks/1380114881214287954/n0n0LacJXknfksgfM9edxtJc3XrBWFmySKkH7D3GgZRZdOoKb6ZhMrrPEkWyE3QrMEpl";
             const regulasiMap = { "SKCK": 8000 };
             document.getElementById("staffForm").addEventListener("submit", async function(e){
@@ -390,12 +392,13 @@
                         selectedFiles = [];
                         showSelectedFiles();
                     } else {
+                        // CORS kemungkinan besar jadi penyebab jika dari GitHub Pages!
                         statusDiv.textContent = "LAYANAN SEDANG DI PERBAIKI ATAU SEDANG DI TUTUP.";
-                        Swal.fire('Gagal', 'Layanan sedang diperbaiki atau sedang ditutup.', 'error');
+                        Swal.fire('Gagal', 'Layanan sedang diperbaiki, ditutup, atau CORS tidak diizinkan.<br><br>Coba gunakan backend/proxy.', 'error');
                     }
                 } catch (err) {
                     statusDiv.textContent = "Terjadi error saat mengirim ke Discord.";
-                    Swal.fire('Gagal', 'Terjadi error saat mengirim ke Discord.', 'error');
+                    Swal.fire('Gagal', 'Terjadi error saat mengirim ke Discord.<br><br>Jika error CORS, hanya bisa lewat backend/proxy!', 'error');
                 }
             });
         });
