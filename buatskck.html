@@ -311,111 +311,13 @@
         </li>
     </ul>
 </nav>
-    <div class="container">
-        <div class="title-area">
-            <a href="index.html" id="kepolisianTitle" style="color:inherit;text-decoration:none;cursor:pointer;">
-                <span><span style="font-size:1.2em;">&#128196;</span> Kepolisian Kotaku</span>
-            </a>
-        </div>
-        <!-- Layanan Pembuatan SKCK -->
-        <div class="form-container">
-            <h2>Layanan Pembuatan SKCK</h2>
-            <h2>DATA DIRI PETUGAS</h2>
-            <form id="staffForm" enctype="multipart/form-data" autocomplete="off">
-                <label for="nama-petugas">Nama Petugas:</label>
-                <select id="nama-petugas" name="nama-petugas">
-                    <option value="Ken Marcello">Ken Marcello</option>
-                    <option value="Melvin Kanedrick">Melvin Kanedrick</option>
-                    <option value="Haikal Pratama">Haikal Pratama</option>
-                    <option value="Berlyn Wasylena">Berlyn Wasylena</option>
-                    <option value="Elvino Pablo">Elvino Pablo</option>
-                    <option value="Jennie Cathlyn">Jennie Cathlyn</option>
-                    <option value="Bhagaskara Hindia">Bhagaskara Hindia</option>
-                    <option value="Kenneth Yobs">Kenneth Yobs</option>
-                    <option value="Ashabira Maharani">Ashabira Maharani</option>
-                    <option value="Tycen Wright">Tycen Wright</option>
-                    <option value="Agung Lafurqon">Agung Lafurqon</option>
-                    <option value="Cheezy Abobo">Cheezy Abobo</option>
-                    <option value="Youw Boy">Youw Boy</option>
-                    <option value="Garry Wackson">Garry Wackson</option>
-                    <option value="Sanz Toretto">Sanz Toretto</option>
-                </select>
-                <h2>DATA DIRI PENERIMA</h2>
-                <label>Pasport (UCP):</label>
-                <input type="text" name="usercontrolpanel" required>
-                <label>Nama Lengkap Sesuai KTP:</label>
-                <input type="text" name="nama" required>
-                <label>Usia Sesuai KTP:</label>
-                <input type="number" name="usia" min="10" required>
-                <label>Jenis Kelamin:</label>
-                <div class="radio-group">
-                    <input type="radio" name="jk" value="Laki-laki" id="jk_laki" required>
-                    <label for="jk_laki" style="font-weight:normal;display:inline">Laki-laki</label>
-                    <input type="radio" name="jk" value="Perempuan" id="jk_perempuan">
-                    <label for="jk_perempuan" style="font-weight:normal;display:inline">Perempuan</label>
-                </div>
-                <label>Keperluan Pembuatan:</label>
-                <input type="text" name="kp" required>
-                <label>Nomor Handphone:</label>
-                <input type="text" name="nomorhp" placeholder="contoh: 0812xxxxxxx" required>
-                <label>Foto KTP (wajib):</label>
-                <div class="radio-group">
-                    <input type="radio" name="fktp" value="Ada" id="fktp_ada" required>
-                    <label for="fktp_ada" style="font-weight:normal;display:inline">Ada</label>
-                    <input type="radio" name="fktp" value="Tidak Ada" id="fktp_tidak">
-                    <label for="fktp_tidak" style="font-weight:normal;display:inline">Tidak Ada</label>
-                </div>
-                <label>Apakah Anda Yakin Ingin Membuat SKCK?:</label>
-                <div class="radio-group">
-                    <input type="radio" name="skck" value="SKCK" id="skck_yakin" required>
-                    <label for="skck_yakin" style="font-weight:normal;display:inline">Yakin</label>
-                    <input type="radio" name="skck" value="Tidak Ada" id="skck_tidak">
-                    <label for="skck_tidak" style="font-weight:normal;display:inline">Tidak</label>
-                </div>
-                <label>Username/ID Discord:</label>
-                <input type="text" name="discordid" placeholder="contoh: 1366617622111846510" required>
-                <label>Upload Foto KTP :</label>
-                <div class="upload-area" id="uploadArea">
-                    <input type="file" name="gambar" id="gambarInput" class="upload-input" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
-                </div>
-                <div id="fileList" style="margin-bottom:10px;"></div>
-                <button class="submit-btn" type="submit">Kirim</button>
-            </form>
-            <div id="status" style="margin-top:12px;font-weight:bold;"></div>
-        </div>
-        <div class="watermark">
-            Kotaku Roleplay
-        </div>
+    <!-- Tengah -->
+    <div class="title-area">
+        <a href="index.html" id="kepolisianTitle" style="color:inherit;text-decoration:none;cursor:pointer;">
+        <span><span style="font-size:1.2em;">&#128196;</span> Kepolisian Kotaku</span>
+        </a>
     </div>
-    <div class="contact-button" id="contactBtn">
-        <i class="fas fa-info-circle"></i>
-    </div>
-    <div class="modal" id="contactModal">
-        <div class="modal-content animate-pop">
-            <span class="close">&times;</span>
-            <h2><i class="fas fa-info-circle"></i> Tentang Pembuat</h2>
-            <div class="modal-body">
-                <div class="profile-section">
-                    <img src="big.png" alt="Foto Profil" class="profile-pic">
-                    <h3>Big Smoke</h3>
-                    <p><i class="fab fa-discord"></i> <strong>Discord:</strong> 19unknown</p>
-                    <p><i class="fas fa-calendar-alt"></i> <strong>Dibuat pada:</strong> 30 Mei 2025</p>
-                    <p><i class="fas fa-envelope"></i> <strong>Email:</strong> whoisfeb19@gmail.com</p>
-                    <div class="social-links">
-                        <a href="https://youtube.com/@ottibonynyo?feature=shared" target="_blank" class="social-icon">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                        <a href="https://discord.com/invite/kotakuroleplay" target="_blank" class="social-icon">
-                            <i class="fab fa-discord"></i>
-                        </a>
-                        <a href="https://github.com" target="_blank" class="social-icon">
-                            <i class="fab fa-github"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        
 <script>
     // Dropdown menu logic: click to open/close, not hover
     document.querySelectorAll('.dropdown-toggle').forEach(function(toggle) {
