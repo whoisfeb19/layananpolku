@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Pembuatan SKCK</title>
     <style>
+        /* ... SALIN SEMUA CSS KAMU DI SINI ... */
         :root {
             --primary-color: #1f2937;
             --secondary-color: #3b82f6;
@@ -16,448 +17,273 @@
             --light-color: #f9fafb;
             --dark-color: #111827;
         }
-        body {
-            background-image: url('home.png');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--dark-color);
-            min-height: 100vh;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px auto;
-            max-width: 1200px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-        }
-        .form-container {
-            background: rgba(255,255,255,0.95);
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 30px 40px;
-            border-radius: 16px;
-            box-shadow: 0 6px 30px rgba(0,0,0,0.13);
-        }
-        .form-container h2 {
-            margin-top: 0;
-        }
-        .form-container label {
-            font-weight: bold;
-            display: block;
-            margin-top: 14px;
-            margin-bottom: 4px;
-        }
-        .form-container input[type="text"], 
-        .form-container input[type="email"], 
-        .form-container input[type="number"],
-        .form-container select {
-            width: 100%;
-            padding: 8px;
-            margin: 3px 0 10px 0;
-            border-radius: 6px;
-            border: 1px solid #aaa;
-            font-size: 1em;
-            box-sizing: border-box;
-        }
-        .form-container input[type="file"] {
-            margin-bottom: 10px;
-        }
-        .form-container .radio-group {
-            margin-bottom: 10px;
-        }
-        .form-container .submit-btn {
-            margin-top: 18px;
-            padding: 10px 28px;
-            background: #2563eb;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: background .2s;
-        }
-        .form-container .submit-btn:hover {
-            background: #1e40af;
-        }
-        .remove-btn {
-            padding: 0.2rem 0.4rem;
-            font-size: 0.75rem;
-            background-color: #dc3545;
-            border-color: #dc3545;
-            color: white;
-            border-radius: 3px;
-            transition: all 0.2s;
-        }
-        .remove-btn:hover {
-            background-color: #c82333;
-            border-color: #bd2130;
-            transform: scale(1.05);
-        }
-        @media (max-width: 400px) {
-            .remove-btn {
-                padding: 0.15rem 0.3rem;
-                font-size: 0.7rem;
-            }
-        }
-
-        .navbar-custom {
-            background: #111827;
-            border-radius: 1.2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.16);
-            margin: 24px auto 0 auto;
-            max-width: 1300px;
-            padding: 0.45rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-            z-index: 20;
-        }
-        .navbar-custom .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .navbar-custom .brand img {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-        }
-        .navbar-custom .brand span {
-            color: #fff;
-            font-weight: bold;
-            font-size: 20px;
-            letter-spacing: 0.5px;
-        }
-        .navbar-custom .nav {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-        .navbar-custom .nav li {
-            position: relative;
-        }
-        .navbar-custom .nav-link {
-            color: #fff !important;
-            font-weight: 500;
-            padding: 0.7rem 1.2rem;
-            border-radius: 0.6rem;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .navbar-custom .nav-link:hover,
-        .navbar-custom .nav-link:focus {
-            background: #1f2937;
-            color: #fff !important;
-            text-decoration: none;
-        }
-        .navbar-custom .nav-link:visited,
-        .navbar-custom .nav-link:active {
-            color: #fff !important;
-            text-decoration: none;
-        }
-        .dropdown-menu-custom {
-            display: none;
-            position: absolute;
-            top: 110%;
-            left: 0;
-            background: #fff;
-            min-width: 170px;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.13);
-            z-index: 99;
-        }
-        .dropdown-menu-custom a {
-            color: #222;
-            text-decoration: none;
-            display: block;
-            padding: 10px 18px;
-            border-radius: 0.5rem;
-            font-size: 15px;
-            transition: background 0.18s;
-        }
-        .dropdown-menu-custom a:hover {
-            background: #e5e7eb;
-            color: #1e40af;
-        }
-        .navbar-custom .nav li.show > .dropdown-menu-custom {
-            display: block;
-        }
-        @media (max-width: 600px) {
-            .navbar-custom {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 1rem;
-            }
-            .navbar-custom .nav {
-                flex-direction: column;
-                gap: 0.7rem;
-                align-items: stretch;
-                margin-top: 0.6rem;
-            }
-            .navbar-custom .nav-link {
-                justify-content: flex-start;
-                width: 100%;
-            }
-            .dropdown-menu-custom {
-                position: static;
-                min-width: unset;
-                box-shadow: none;
-                border-radius: 0.5rem;
-            }
-        }
-        
-        /* MODAL KONTAK - Agar modal tampil di atas background & jelas */
-        .modal {
-            display: none; 
-            position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: auto;
-            background: rgba(0,0,0,0.7);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-            z-index: 10000;
-            box-shadow: 0 5px 32px rgba(0,0,0,0.35);
-        }
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .profile-section {
-            text-align: center;
-            padding: 10px;
-        }
-        .profile-pic {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 10px;
-            border: 3px solid #3085d6;
-        }
-        .social-links {
-            margin-top: 10px;
-        }
-        .social-icon {
-            font-size: 1.5rem;
-            margin: 0 8px;
-            color: #555;
-            transition: color 0.3s;
-        }
-        .social-icon:hover {
-            color: #3085d6;
-        }
+        /* ... CSS LAINNYA TIDAK DIUBAH ... */
+        /* Copy semua bagian CSS yang sudah ada pada script awal kamu */
+        /* GUNAKAN CSS YANG SUDAH KAMU TULIS SEBELUMNYA */
     </style>
 </head>
 <body>
     <nav class="navbar-custom">
-    <div class="brand">
-        <img src="logopolku.png" alt="Logo">
-        <span>Kotaku Roleplay</span>
-    </div>
-    <ul class="nav">
-        <li>
-            <a href="beranda.html" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
-        </li>
-        <li class="dropdown-parent">
-            <a class="nav-link dropdown-toggle"><i class="fas fa-file-alt"></i> Layanan <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
-            <div class="dropdown-menu-custom">
-                <a href="createsim.html">Pembuatan SIM</a>
-                <a href="perpanjangsim.html">Perpanjang SIM</a>
-                <a href="buatskck.html">Pembuatan SKCK</a>
-                <a href="#">Pengambilan Impound</a>
-            </div>
-        </li>
-        <li class="dropdown-parent">
-            <a class="nav-link dropdown-toggle"><i class="fas fa-sitemap"></i> Informasi <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
-            <div class="dropdown-menu-custom">
-                <a href="#">Coming Soon</a>
-                <a href="#">Coming Soon</a>
-                <a href="#">Coming Soon</a>
-            </div>
-        </li>
-        <li>
-            <a href="#" class="nav-link"><i class="fas fa-dollar"></i> Regulasi</a>
-        </li>
-        <li>
-            <a href="#" class="nav-link" id="contactBtn"><i class="fas fa-address-book"></i> Kontak</a>
-        </li>
-    </ul>
-</nav>
-<body>
-    <!-- Tengah -->
-    <div class="title-area">
-        <a href="index.html" id="kepolisianTitle" style="color:inherit;text-decoration:none;cursor:pointer;">
-        <span><span style="font-size:1.2em;">&#128196;</span> Kepolisian Kotaku</span>
-        </a>
-    </div>
-  <script>
-    // Fungsi untuk membuka/menutup dropdown
-    function toggleDropdown(id) {
-      // Tutup semua dropdown lain
-      document.querySelectorAll('.dropdown-content').forEach(el => {
-        if (el.id !== id) el.style.display = 'none';
-      });
-      // Toggle dropdown yang diklik
-      var dropdown = document.getElementById(id);
-      if (dropdown.style.display === 'block') {
-        dropdown.style.display = 'none';
-      } else {
-        dropdown.style.display = 'block';
-      }
-    }
-    // Tutup dropdown kalau klik di luar menu
-    document.addEventListener('click', function(event) {
-      if (!event.target.matches('.dropbtn')) {
-        document.querySelectorAll('.dropdown-content').forEach(el => {
-          el.style.display = 'none';
-        });
-      }
-    });
-  </script>
-</body>
-        
-<script>
-    // Dropdown menu logic: click to open/close, not hover
-    document.querySelectorAll('.dropdown-toggle').forEach(function(toggle) {
-        toggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            const parentLi = this.parentElement;
-            document.querySelectorAll('.dropdown-parent').forEach(function(li) {
-                if (li !== parentLi) li.classList.remove('show');
-            });
-            parentLi.classList.toggle('show');
-        });
-    });
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.dropdown-parent')) {
-            document.querySelectorAll('.dropdown-parent').forEach(function(li) {
-                li.classList.remove('show');
-            });
-        }
-    });
-    
-    // Modal kontak logic
-    document.getElementById('contactBtn').addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('contactModal').style.display = 'flex';
-    });
-    document.querySelector('.close').addEventListener('click', function() {
-        document.getElementById('contactModal').style.display = 'none';
-    });
-    window.addEventListener('click', function(e) {
-        if (e.target === document.getElementById('contactModal')) {
-            document.getElementById('contactModal').style.display = 'none';
-        }
-    });
-    // Modal functionality
-    const contactBtn = document.getElementById('contactBtn');
-    const contactModal = document.getElementById('contactModal');
-    const closeBtn = document.querySelector('.close');
-    contactBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        contactModal.style.display = 'flex';
-    });
-    closeBtn.addEventListener('click', function() {
-        contactModal.style.display = 'none';
-    });
-    window.addEventListener('click', function(e) {
-        if (e.target === contactModal) {
-            contactModal.style.display = 'none';
-        }
-    });
+        <div class="brand">
+            <img src="logopolku.png" alt="Logo">
+            <span>Layanan Kepolisian Kotaku</span>
+        </div>
+        <ul class="nav">
+            <li>
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
+            </li>
+            <li class="dropdown-parent">
+                <a class="nav-link dropdown-toggle"><i class="fas fa-file-alt"></i> Layanan <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
+                <div class="dropdown-menu-custom">
+                    <a href="createsim.html">Pembuatan SIM</a>
+                    <a href="perpanjangsim.html">Perpanjang SIM</a>
+                    <a href="buatskck.html">Pembuatan SKCK</a>
+                    <a href="#">Pengambilan Impound</a>
+                </div>
+            </li>
+            <li class="dropdown-parent">
+                <a class="nav-link dropdown-toggle"><i class="fas fa-sitemap"></i> Informasi <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
+                <div class="dropdown-menu-custom">
+                    <a href="#">Coming Soon</a>
+                    <a href="#">Coming Soon</a>
+                    <a href="#">Coming Soon</a>
+                </div>
+            </li>
+            <li>
+                <a href="#" class="nav-link"><i class="fas fa-dollar"></i> Regulasi</a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" id="contactBtn"><i class="fas fa-address-book"></i> Kontak</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container">
+        <div class="title-area">
+            <a href="index.html" id="kepolisianTitle" style="color:inherit;text-decoration:none;cursor:pointer;">
+                <span><span style="font-size:1.2em;">&#128196;</span> Kepolisian Kotaku</span>
+            </a>
+        </div>
+        <!-- FORM SKCK -->
+        <div class="form-container">
+            <h2>Layanan Pembuatan SKCK</h2>
+            <h2>DATA DIRI PETUGAS</h2>
+            <form id="staffForm" enctype="multipart/form-data" autocomplete="off">
+                <label>Nama Petugas:</label>
+                <input type="text" name="namapetugas" required>
+                <label>Pangkat:</label>
+                <input type="text" name="pangkat" required>
 
-    // File upload multi
-    document.addEventListener('DOMContentLoaded', function () {
-        const gambarInput = document.getElementById('gambarInput');
-        const fileListDiv = document.getElementById('fileList');
-        let selectedFiles = [];
-        gambarInput.addEventListener('change', function() {
-            for (let file of this.files) {
-                if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
-                    selectedFiles.push(file);
+                <h2>DATA DIRI PENERIMA</h2>
+                <label>Pasport (UCP):</label>
+                <input type="text" name="usercontrolpanel" required>
+                <label>Nama Lengkap Sesuai KTP:</label>
+                <input type="text" name="nama" required>
+                <label>Usia Sesuai KTP:</label>
+                <input type="number" name="usia" min="15" required>
+                <label>Jenis Kelamin:</label>
+                <div class="radio-group">
+                    <input type="radio" name="jk" value="Laki-laki" id="jk_laki" required>
+                    <label for="jk_laki" style="font-weight:normal;display:inline">Laki-laki</label>
+                    <input type="radio" name="jk" value="Perempuan" id="jk_perempuan">
+                    <label for="jk_perempuan" style="font-weight:normal;display:inline">Perempuan</label>
+                </div>
+                <label>Keperluan Pembuatan:</label>
+                <input type="text" name="kp" required>
+                <label>Nomor Handphone:</label>
+                <input type="text" name="nomorhp" placeholder="contoh: 0812xxxxxxx" required>
+                <label>Foto KTP (wajib):</label>
+                <div class="radio-group">
+                    <input type="radio" name="fktp" value="Ada" id="fktp_ada" required>
+                    <label for="fktp_ada" style="font-weight:normal;display:inline">Ada</label>
+                    <input type="radio" name="fktp" value="Tidak Ada" id="fktp_tidak">
+                    <label for="fktp_tidak" style="font-weight:normal;display:inline">Tidak Ada</label>
+                </div>
+                <label>Apakah Anda Yakin Ingin Membuat SKCK?:</label>
+                <div class="radio-group">
+                    <input type="radio" name="skck" value="Ada" id="skck_yakin" required>
+                    <label for="skck_yakin" style="font-weight:normal;display:inline">Yakin</label>
+                    <input type="radio" name="skck" value="Tidak Ada" id="skck_tidak">
+                    <label for="skck_tidak" style="font-weight:normal;display:inline">Tidak</label>
+                </div>
+                <label>Username/ID Discord:</label>
+                <input type="text" name="discordid" placeholder="contoh: 1366617622111846510" required>
+                <label>Upload Foto KTP :</label>
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" name="gambar" id="gambarInput" class="upload-input" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
+                </div>
+                <div id="fileList" style="margin-bottom:10px;"></div>
+                <button class="submit-btn" type="submit">Kirim</button>
+            </form>
+            <div id="status" style="margin-top:12px;font-weight:bold;"></div>
+        </div>
+        <!-- FORM END -->
+
+        <div class="watermark">
+            Kotaku Roleplay
+        </div>
+    </div>
+
+    <!-- Contact Button -->
+    <div class="contact-button" id="contactBtn">
+        <i class="fas fa-info-circle"></i>
+    </div>
+    <!-- Contact Modal -->
+    <div class="modal" id="contactModal">
+        <div class="modal-content animate-pop">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-info-circle"></i> Tentang Pembuat</h2>
+            <div class="modal-body">
+                <div class="profile-section">
+                    <img src="big.png" alt="Foto Profil" class="profile-pic">
+                    <h3>Big Smoke</h3>
+                    <p><i class="fab fa-discord"></i> <strong>Discord:</strong> 19unknown</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Dibuat pada:</strong> 30 Mei 2025</p>
+                    <p><i class="fas fa-envelope"></i> <strong>Email:</strong> whoisfeb19@gmail.com</p>
+                    <div class="social-links">
+                        <a href="https://youtube.com/@ottibonynyo?feature=shared" target="_blank" class="social-icon">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="https://discord.com/invite/kotakuroleplay" target="_blank" class="social-icon">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="https://github.com" target="_blank" class="social-icon">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dropdown menu logic
+        document.querySelectorAll('.dropdown-toggle').forEach(function(toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                const parentLi = this.parentElement;
+                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
+                    if (li !== parentLi) li.classList.remove('show');
+                });
+                parentLi.classList.toggle('show');
+            });
+        });
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown-parent')) {
+                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
+                    li.classList.remove('show');
+                });
+            }
+        });
+
+        // Modal functionality
+        const contactBtn = document.getElementById('contactBtn');
+        const contactModal = document.getElementById('contactModal');
+        const closeBtn = document.querySelector('.close');
+
+        contactBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            contactModal.style.display = 'flex';
+        });
+
+        closeBtn.addEventListener('click', function() {
+            contactModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(e) {
+            if (e.target === contactModal) {
+                contactModal.style.display = 'none';
+            }
+        });
+
+        // Untuk tampilan mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const serverLink = document.querySelector('.server-link');
+            if (serverLink && window.innerWidth <= 768) {
+                serverLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.classList.toggle('active');
+                });
+            }
+        });
+
+        // === LOGIKA FORM ===
+        document.addEventListener('DOMContentLoaded', function () {
+            // === DISCORD ID AUTOFILL DAN CEK LOGIN ===
+            const discordId = localStorage.getItem("discord_id");
+            if (!discordId) {
+                window.location.href = "index.html";
+                return;
+            } else {
+                const discordInput = document.querySelector('input[name="discordid"]');
+                if (discordInput) {
+                    discordInput.value = discordId;
+                    discordInput.readOnly = true;
                 }
             }
-            this.value = '';
-            showSelectedFiles();
-        });
-        function showSelectedFiles() {
-            fileListDiv.innerHTML = '';
-            if (selectedFiles.length > 0) {
-                const ul = document.createElement('ul');
-                selectedFiles.forEach((file, idx) => {
-                    const li = document.createElement('li');
-                    li.textContent = file.name;
-                    const removeBtn = document.createElement('button');
-                    removeBtn.type = 'button';
-                    removeBtn.textContent = 'Hapus';
-                    removeBtn.className = 'remove-btn';
-                    removeBtn.onclick = function() {
-                        selectedFiles.splice(idx, 1);
-                        showSelectedFiles();
-                    };
-                    li.appendChild(removeBtn);
-                    ul.appendChild(li);
-                });
-                fileListDiv.appendChild(ul);
-            }
-        }
 
-        // FORM SUBMIT & KIRIM KE DISCORD
-        const webhookURL = "https://discord.com/api/webhooks/1380114881214287954/n0n0LacJXknfksgfM9edxtJc3XrBWFmySKkH7D3GgZRZdOoKb6ZhMrrPEkWyE3QrMEpl";
-        const regulasiMap = { "SKCK": 8000 };
-
-        document.getElementById("staffForm").addEventListener("submit", async function(e){
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-            const statusDiv = document.getElementById("status");
-
-            // Tag Discord dari localStorage (auto tag pengirim asli, bukan dari input manual)
-            let discordId = localStorage.getItem("discord_id");
-            if (!discordId || !/^\d+$/.test(discordId)) {
-                statusDiv.textContent = "Gagal: Tidak bisa mendeteksi Discord ID. Silakan login ulang!";
-                return;
-            }
-            const mention = `<@${discordId}>`;
-            const roleId = "1366617622111846509";
-            const mentionRole = `<@&${roleId}>`;
-
-            // Data lain
-            let totalHarga = 0;
-            let skckRadio = form.querySelector('input[name="skck"]:checked');
-            if (skckRadio && regulasiMap[skckRadio.value]) {
-                totalHarga += regulasiMap[skckRadio.value];
+            // === MULTI PILIH FILE SATU PERSATU TANPA KERESET ===
+            const gambarInput = document.getElementById('gambarInput');
+            const fileListDiv = document.getElementById('fileList');
+            let selectedFiles = [];
+            gambarInput.addEventListener('change', function() {
+                for (let file of this.files) {
+                    if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                        selectedFiles.push(file);
+                    }
+                }
+                this.value = '';
+                showSelectedFiles();
+            });
+            function showSelectedFiles() {
+                fileListDiv.innerHTML = '';
+                if (selectedFiles.length > 0) {
+                    const ul = document.createElement('ul');
+                    selectedFiles.forEach((file, idx) => {
+                        const li = document.createElement('li');
+                        li.textContent = file.name;
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.textContent = 'Hapus';
+                        removeBtn.className = 'remove-btn';
+                        removeBtn.onclick = function() {
+                            selectedFiles.splice(idx, 1);
+                            showSelectedFiles();
+                        };
+                        li.appendChild(removeBtn);
+                        ul.appendChild(li);
+                    });
+                    fileListDiv.appendChild(ul);
+                }
             }
 
-            const content = [
+           // === FORM SUBMIT & AUTO TAG DISCORD ===
+            const webhookURL = "https://discord.com/api/webhooks/1380114881214287954/n0n0LacJXknfksgfM9edxtJc3XrBWFmySKkH7D3GgZRZdOoKb6ZhMrrPEkWyE3QrMEpl";
+            const regulasiMap = { "SKCK": 8000 };
+
+            document.getElementById("staffForm").addEventListener("submit", async function(e){
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+                const statusDiv = document.getElementById("status");
+
+                // Ambil tipe SKCK
+                const skckradio = form.querySelector('input[name="skck"]:checked');
+                const tipeSkckArr = [];
+                let totalHarga = 0;
+                if (skckradio) {
+                    tipeSkckArr.push(skckradio.value);
+                    if (regulasiMap[skckradio.value]) {
+                        totalHarga += regulasiMap[skckradio.value];
+                    }
+                }
+
+                // Mention Discord (ambil dari localStorage, bukan dari input)
+                const discordId = localStorage.getItem("discord_id");
+                const mention = discordId ? `<@${discordId}>` : "-";
+                const roleId = "1366617622111846509";
+                const mentionRole = `<@&${roleId}>`;
+
+                const content = [
                 mention,
                 "**Layanan Pembuatan SKCK**",
                 "",
@@ -478,43 +304,38 @@
                 mentionRole
             ].join("\n");
 
-            if (!selectedFiles.length) {
-                statusDiv.textContent = "Pilih minimal satu gambar!";
-                return;
-            }
-
-            statusDiv.textContent = "Mengirim...";
-            const discordData = new FormData();
-            discordData.append("content", content);
-            selectedFiles.forEach((file, i) => {
-                discordData.append(i === 0 ? "file" : `file${i}`, file);
-            });
-
-            try {
-                const resp = await fetch(webhookURL, {
-                    method: "POST",
-                    body: discordData
-                });
-                if (resp.ok) {
-                    statusDiv.textContent = "Berhasil dikirim ke Discord!";
-                    form.reset();
-                    selectedFiles = [];
-                    showSelectedFiles();
-                } else {
-                    statusDiv.textContent = "LAYANAN SEDANG DI PERBAIKI ATAU SEDANG DI TUTUP.";
+                // VALIDASI FILE: HARUS ADA
+                if (!selectedFiles.length) {
+                    statusDiv.textContent = "Pilih minimal satu gambar!";
+                    return;
                 }
-            } catch (err) {
-                statusDiv.textContent = "Terjadi error saat mengirim ke Discord.";
-            }
+
+                statusDiv.textContent = "Mengirim...";
+
+                const discordData = new FormData();
+                discordData.append("content", content);
+                selectedFiles.forEach((file, i) => {
+                    discordData.append(i === 0 ? "file" : `file${i}`, file);
+                });
+
+                try {
+                    const resp = await fetch(webhookURL, {
+                        method: "POST",
+                        body: discordData
+                    });
+                    if (resp.ok) {
+                        statusDiv.textContent = "Berhasil dikirim ke Discord!";
+                        form.reset();
+                        selectedFiles = [];
+                        showSelectedFiles();
+                    } else {
+                        statusDiv.textContent = "LAYANAN SEDANG DI PERBAIKI ATAU SEDANG DI TUTUP.";
+                    }
+                } catch (err) {
+                    statusDiv.textContent = "Terjadi error saat mengirim ke Discord.";
+                }
+            });
         });
-        // Otomatis isi dan kunci kolom Discord ID dari localStorage
-        const discordInput = document.querySelector('input[name="discordid"]');
-        let discordIdVal = localStorage.getItem("discord_id");
-        if (discordInput && discordIdVal) {
-            discordInput.value = discordIdVal;
-            discordInput.readOnly = true;
-        }
-    });
-</script>
+    </script>
 </body>
 </html>
