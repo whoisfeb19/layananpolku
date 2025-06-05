@@ -299,15 +299,10 @@
                 const content = [
                     mention, // --> AUTO TAG USER
                     "**Layanan Pembuatan SKCK**",
-                    "",
                     "**DATA DIRI PETUGAS**",
-                    "```",
                     `**Nama Petugas:** ${formData.get("namapetugas")}`,
                     `**Pangkat:** ${formData.get("pangkat")}`,
-                    "```",
-                    "", // <--- baris kosong (spasi satu baris)
                     "**__DATA DIRI PENERIMA__**",
-                    "```",
                     `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
                     `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
                     `**Usia Sesuai KTP:** ${formData.get("usia")}`,
@@ -319,7 +314,6 @@
                     `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
                     `**DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL**`,
                     mentionRole
-                    "```"
                 ].join("\n");
                 // VALIDASI FILE: HARUS ADA
                 if (!selectedFiles.length) {
