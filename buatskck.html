@@ -311,12 +311,38 @@
         </li>
     </ul>
 </nav>
+<body>
     <!-- Tengah -->
     <div class="title-area">
         <a href="index.html" id="kepolisianTitle" style="color:inherit;text-decoration:none;cursor:pointer;">
         <span><span style="font-size:1.2em;">&#128196;</span> Kepolisian Kotaku</span>
         </a>
     </div>
+  <script>
+    // Fungsi untuk membuka/menutup dropdown
+    function toggleDropdown(id) {
+      // Tutup semua dropdown lain
+      document.querySelectorAll('.dropdown-content').forEach(el => {
+        if (el.id !== id) el.style.display = 'none';
+      });
+      // Toggle dropdown yang diklik
+      var dropdown = document.getElementById(id);
+      if (dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+      } else {
+        dropdown.style.display = 'block';
+      }
+    }
+    // Tutup dropdown kalau klik di luar menu
+    document.addEventListener('click', function(event) {
+      if (!event.target.matches('.dropbtn')) {
+        document.querySelectorAll('.dropdown-content').forEach(el => {
+          el.style.display = 'none';
+        });
+      }
+    });
+  </script>
+</body>
         
 <script>
     // Dropdown menu logic: click to open/close, not hover
