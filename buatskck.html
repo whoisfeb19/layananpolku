@@ -167,7 +167,7 @@
                 </div>
                 <label>Apakah Anda Yakin Ingin Membuat SKCK?:</label>
                 <div class="radio-group">
-                    <input type="radio" name="skck" value="Ada" id="skck_yakin" required>
+                    <input type="radio" name="skck" value="SKCK" id="skck_yakin" required>
                     <label for="skck_yakin" style="font-weight:normal;display:inline">Yakin</label>
                     <input type="radio" name="skck" value="Tidak Ada" id="skck_tidak">
                     <label for="skck_tidak" style="font-weight:normal;display:inline">Tidak</label>
@@ -332,15 +332,14 @@
                 const roleId = "1366617622111846509";
                 const mentionRole = `<@&${roleId}>`;
                 const content = [
-                    mention,
                     "**Layanan Pembuatan SKCK**",
                     "",
-                    "**DATA DIRI PETUGAS**",
+                    "DATA DIRI PETUGAS",
                     "```",
                     `Nama Petugas: ${formData.get("nama-petugas")}`,
                     "```",
                     "",
-                    "**DATA DIRI PENERIMA**",
+                    "DATA DIRI PENERIMA",
                     "```",
                     `Paspor (UCP): ${formData.get("usercontrolpanel")}`,
                     `Nama Lengkap Sesuai KTP: ${formData.get("nama")}`,
@@ -353,6 +352,8 @@
                     `Total Harga: $ ${totalHarga.toLocaleString("id-ID")}`,
                     "DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL",
                     "```",
+                    "",        // Baris kosong
+                    mention    // Auto tag user di PALING BAWAH
                     mentionRole
                 ].join("\n");
 
