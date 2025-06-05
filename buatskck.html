@@ -298,12 +298,14 @@
                 const mentionRole = `<@&${roleId}>`;
                 const content = [
                     mention, // --> AUTO TAG USER
+                    const content = [
                     "**Layanan Pembuatan SKCK**",
                     "```",
                     "**__DATA DIRI PETUGAS__**",
                     `**Nama Petugas:** ${formData.get("namapetugas")}`,
                     `**Pangkat:** ${formData.get("pangkat")}`,
                     "```",
+                    "", // INI JEDA 1 BARIS
                     "**__DATA DIRI PENERIMA__**",
                     `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
                     `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
@@ -314,7 +316,7 @@
                     `**Foto Ktp:** ${formData.get("fktp")}`,
                     `**Username Discord:** ${mention}`,
                     `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
-                    `**DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL**`,
+                    `**DENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL**`
                     mentionRole
                 ].join("\n");
                 // VALIDASI FILE: HARUS ADA
