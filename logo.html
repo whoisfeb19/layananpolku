@@ -1,18 +1,26 @@
-<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background kotak dengan sudut rounded -->
-  <rect x="10" y="10" width="180" height="180" rx="36" fill="#800000"/>
-  <!-- Ornamen garis kota -->
-  <rect x="25" y="160" width="150" height="10" rx="5" fill="#FFD700" opacity="0.65"/>
-  <rect x="35" y="145" width="35" height="7" rx="3" fill="#FFD700" opacity="0.55"/>
-  <rect x="80" y="145" width="35" height="7" rx="3" fill="#FFD700" opacity="0.55"/>
-  <rect x="125" y="140" width="40" height="8" rx="4" fill="#FFD700" opacity="0.38"/>
-  <!-- Huruf K kiri -->
-  <path d="M60 135 V60 H75 V97 L97 60 H115 L86 105 L115 135 H97 L75 108 V135 H60 Z" fill="white" stroke="#FFD700" stroke-width="3"/>
-  <!-- Huruf K kanan (mirror dari kiri, agak dimodif) -->
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blue Circle BG -->
+  <circle cx="200" cy="200" r="200" fill="#27c9ee"/>
+  
+  <!-- 3D K Left -->
   <g>
-    <path d="M140 135 V60 H155 V97 L177 60 H195 L166 105 L195 135 H177 L155 108 V135 H140 Z" 
-      fill="white" stroke="#FFD700" stroke-width="3" transform="translate(-45,0) scale(-1,1) translate(-200,0)"/>
+    <!-- Main face -->
+    <polygon points="88,285 133,211 118,199 118,120 175,120 175,172 202,134 253,134 185,225 253,285 202,285 175,245 175,285" fill="#b4f6ff" stroke="#0f5c6d" stroke-width="4"/>
+    <!-- Shadow -->
+    <polygon points="175,285 175,245 202,285" fill="#0f5c6d" opacity="0.70"/>
+    <!-- Side shadow (vertical) -->
+    <polygon points="118,120 133,211 133,211 175,172 175,120" fill="#0f5c6d" opacity="0.50"/>
+    <!-- Mid shadow diagonal bar -->
+    <polygon points="175,172 133,211 185,225" fill="#0f5c6d" opacity="0.40"/>
   </g>
-  <!-- Tulisan bawah -->
-  <text x="100" y="182" font-family="Poppins, Arial" font-size="16" fill="#FFD700" text-anchor="middle" font-weight="bold" letter-spacing="1.5">Kotaku Roleplay</text>
+  
+  <!-- 3D K Right -->
+  <g>
+    <!-- Main face -->
+    <polygon points="275,285 235,225 305,134 355,134 295,211 340,285" fill="#b4f6ff" stroke="#0f5c6d" stroke-width="4"/>
+    <!-- Shadow -->
+    <polygon points="295,211 355,134 340,285" fill="#0f5c6d" opacity="0.55"/>
+    <!-- Side shadow (vertical) -->
+    <polygon points="305,134 295,211 275,285 340,285" fill="#0f5c6d" opacity="0.50"/>
+  </g>
 </svg>
