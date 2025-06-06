@@ -11,7 +11,6 @@
       min-height: 100vh;
       margin: 0;
       padding: 0;
-      /* Background gradasi gold to soft grey, cocok untuk maroon */
       background: linear-gradient(120deg, #ffefba 0%, #e1dfdf 100%);
       display: flex;
       align-items: center;
@@ -34,8 +33,6 @@
     .poster:hover {
       box-shadow: 0 16px 56px 0 rgba(128,0,0,0.14), 0 2px 12px 0 rgba(0,0,0,0.13);
     }
-
-    /* Logo tanpa background (transparent background assumed) */
     .logo {
       width: 52px;
       height: 52px;
@@ -63,7 +60,6 @@
     .logo.right {
       right: 13px;
     }
-
     .main-deco {
       position: relative;
       margin-top: 35px;
@@ -72,16 +68,15 @@
       justify-content: center;
       align-items: center;
     }
-    /* No change for .circle-bg */
-
-    /* Mosque SVG style */
-    .main-deco .mosque-svg {
+    .main-deco .moving-logo {
       width: 64px;
       height: 64px;
       z-index: 2;
       position: relative;
       animation: float 2.8s ease-in-out infinite alternate;
-      filter: drop-shadow(0 3px 6px rgba(128,0,0,0.13));
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: none !important;
     }
     @keyframes float {
@@ -155,11 +150,9 @@
       0% { opacity: 0.4;}
       100% { opacity: 1;}
     }
-    /* Responsive */
     @media (max-width: 480px) {
       .poster {padding: 26px 4vw 20px 4vw; width: 98vw;}
-      .main-deco .circle-bg {width: 72px; height: 72px;}
-      .main-deco .mosque-svg {width: 46px; height: 46px;}
+      .main-deco .moving-logo {width: 46px; height: 46px;}
       .logo {width: 34px; height: 34px;}
       .logo.center {width: 40px; height: 40px;}
       .logo.left {left: 4px;}
@@ -169,11 +162,8 @@
 </head>
 <body>
   <div class="poster">
-    <!-- Gambar pertama (logo kiri atas, tanpa latar belakang) -->
     <img src="logopolku.png" alt="Logo Kiri" class="logo left">
-    <!-- Gambar kedua (logo tengah atas, tanpa latar belakang). Ganti src sesuai nama/logo -->
     <img src="kkrp.png" alt="Logo Tengah" class="logo center">
-    <!-- Gambar ketiga (logo kanan atas, tanpa latar belakang). Ganti src sesuai nama/logo -->
     <img src="big.png" alt="Logo Kanan" class="logo right">
 
     <span class="star" style="left:12%; top:42px;">★</span>
@@ -183,27 +173,38 @@
     <span class="star star5">★</span>
 
     <div class="main-deco">
-      <!-- Tidak ada .circle-bg untuk benar-benar tanpa background -->
-      <!-- SVG masjid transparan tanpa lingkaran/background -->
-      <svg class="mosque-svg" width="64" height="64" viewBox="0 0 98 98" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <!-- Kubah -->
-        <ellipse cx="49" cy="63" rx="30" ry="20" fill="#FFF4F4"/>
-        <!-- Tubuh masjid -->
-        <rect x="29" y="43" width="40" height="35" rx="15" fill="#FFF4F4"/>
-        <!-- Pintu -->
-        <rect x="44" y="63" width="10" height="15" rx="5" fill="#FFDADA"/>
-        <!-- Pilar kiri -->
-        <rect x="32" y="58" width="6" height="15" rx="3" fill="#FFDADA"/>
-        <!-- Pilar kanan -->
-        <rect x="60" y="58" width="6" height="15" rx="3" fill="#FFDADA"/>
-        <!-- Mahkota -->
-        <circle cx="49" cy="37" r="10" fill="#FFF4F4"/>
-        <circle cx="49" cy="37" r="5" fill="#800000"/>
-        <circle cx="49" cy="37" r="2" fill="#FFD76B"/>
-      </svg>
+      <!-- Ganti SVG logo bergerak jadi masjid -->
+      <span class="moving-logo">
+        <svg width="64" height="64" viewBox="0 0 98 98" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Kubah -->
+          <ellipse cx="49" cy="63" rx="30" ry="20" fill="#FFF4F4"/>
+          <!-- Tubuh masjid -->
+          <rect x="29" y="43" width="40" height="35" rx="15" fill="#FFF4F4"/>
+          <!-- Pintu -->
+          <rect x="44" y="63" width="10" height="15" rx="5" fill="#FFDADA"/>
+          <!-- Pilar kiri -->
+          <rect x="32" y="58" width="6" height="15" rx="3" fill="#FFDADA"/>
+          <!-- Pilar kanan -->
+          <rect x="60" y="58" width="6" height="15" rx="3" fill="#FFDADA"/>
+          <!-- Mahkota -->
+          <circle cx="49" cy="37" r="10" fill="#FFF4F4"/>
+          <circle cx="49" cy="37" r="5" fill="#800000"/>
+          <circle cx="49" cy="37" r="2" fill="#FFD76B"/>
+        </svg>
+      </span>
+      <!-- Jika ingin bulan sabit, ganti isi <span class="moving-logo"> dengan SVG bulan sabit -->
+      <!--
+      <span class="moving-logo">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <path d="M50 32c0-12-7-22-18-22 8 4 14 13 14 22s-6 18-14 22c11 0 18-10 18-22z"
+                fill="#ffe082"/>
+          <circle cx="32" cy="32" r="24" fill="none" stroke="#ffe082" stroke-width="2"/>
+        </svg>
+      </span>
+      -->
     </div>
     <h1>Idul Adha<br>1446 H</h1>
-    <div class="date">10 Dzulhijjah 1446 H / 6 Juni 2025</div>
+    <div class="date">10 Dzulhijjah 1446 H / 8 Juni 2025</div>
     <p>
       Idul Adha bukan sekadar perayaan, tapi momentum untuk saling menguatkan dan berbagi kebahagiaan.
     </p>
