@@ -1,15 +1,29 @@
 <svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="goldK" x1="0" y1="0" x2="300" y2="300" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFD700"/>
-      <stop offset="0.5" stop-color="#FFF6C0"/>
-      <stop offset="1" stop-color="#B8860B"/>
-    </linearGradient>
-    <filter id="shadowK" x="0" y="0" width="300" height="300">
-      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#B8860B" flood-opacity="0.3"/>
-    </filter>
-  </defs>
-  <!-- Letter K: Bold, modern, with split and angle -->
-  <path d="M80 45 L120 45 L120 150 L200 45 L255 45 L155 175 L250 255 L195 255 L120 175 L120 255 L80 255 Z"
-        fill="url(#goldK)" filter="url(#shadowK)"/>
+  <!-- Background lingkaran biru navy elegan -->
+  <circle cx="150" cy="150" r="140" fill="#21304c"/>
+  <!-- Timbangan hukum -->
+  <g>
+    <!-- Batang tengah -->
+    <rect x="142" y="60" width="16" height="100" rx="8" fill="#FFD700"/>
+    <!-- Penyeimbang atas -->
+    <rect x="120" y="60" width="60" height="12" rx="6" fill="#FFD700"/>
+    <!-- Dasar -->
+    <ellipse cx="150" cy="190" rx="32" ry="12" fill="#FFD700" opacity="0.8"/>
+    <!-- Tali kiri -->
+    <line x1="130" y1="72" x2="98" y2="130" stroke="#FFD700" stroke-width="4"/>
+    <!-- Tali kanan -->
+    <line x1="170" y1="72" x2="202" y2="130" stroke="#FFD700" stroke-width="4"/>
+    <!-- Mangkuk kiri -->
+    <ellipse cx="98" cy="140" rx="18" ry="7" fill="#FFD700" opacity="0.85"/>
+    <!-- Mangkuk kanan -->
+    <ellipse cx="202" cy="140" rx="18" ry="7" fill="#FFD700" opacity="0.85"/>
+  </g>
+  <!-- Huruf S besar tebal di tengah -->
+  <path d="M185 220Q160 250 120 230Q90 210 120 190Q150 170 180 150Q210 130 180 110Q150 90 120 110" 
+        fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round"/>
+  <!-- Huruf X tipis di tengah S -->
+  <path d="M130 175 L170 215M170 175 L130 215"
+        stroke="#FFD700" stroke-width="7" stroke-linecap="round"/>
+  <!-- Nama di bawah, opsional -->
+  <!-- <text x="150" y="285" font-size="24" font-family="Poppins, Arial" fill="#FFD700" text-anchor="middle" font-weight="bold">SX Law</text> -->
 </svg>
