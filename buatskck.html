@@ -540,8 +540,7 @@
             }
         }
 
-        // === FORM SUBMIT KE SUPABASE DAN REDIRECT ===
-        // Ganti dengan kredensial Supabase mu
+        // === FORM SUBMIT KE SUPABASE TANPA REDIRECT ===
         const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -601,7 +600,14 @@
                 form.reset();
                 selectedFiles = [];
                 showSelectedFiles();
-                setTimeout(()=>window.location.href="dataskck.html", 1200);
+                // TIDAK redirect ke dataskck.html
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Sukses!',
+                  text: 'Data SKCK berhasil dikirim.',
+                  timer: 2500,
+                  showConfirmButton: false
+                });
             } else {
                 statusDiv.textContent = "Gagal menyimpan ke database: " + insertError.message;
             }
