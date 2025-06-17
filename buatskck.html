@@ -603,7 +603,7 @@
                 fileUrl = publicUrlData.publicUrl;
             }
 
-            // HARGA OTOMATIS -- misal 50000
+            // HARGA OTOMATIS -- misal 16000
             let harga = 0;
             if (formData.get("skck") === "SKCK") {
                 harga = 16000;
@@ -635,6 +635,12 @@
                 selectedFiles = [];
                 showSelectedFiles();
                 formSubmittedByYakin = false;
+                // >>>> Tambahan autofill Discord ID setelah reset form <<<<
+                const discordInput = form.querySelector('input[name="discordid"]');
+                if (discordInput) {
+                    discordInput.value = discordId;
+                    discordInput.readOnly = true;
+                }
                 Swal.fire({
                   icon: 'success',
                   title: 'Sukses!',
