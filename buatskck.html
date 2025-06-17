@@ -602,6 +602,9 @@
 
             if (!insertError) {
                 statusDiv.textContent = "Berhasil dikirim!";
+                setTimeout(() => {
+                    statusDiv.textContent = "";
+                }, 3000);
                 form.reset();
                 selectedFiles = [];
                 showSelectedFiles();
