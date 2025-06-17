@@ -17,22 +17,16 @@
     <table class="table table-bordered table-striped">
       <thead>
         <tr>
-          <th>No</th>
-          <th>Nama OOC</th>
-          <th>JK OOC</th>
-          <th>UCP</th>
-          <th>Domisili</th>
-          <th>Nama IC</th>
-          <th>JK IC</th>
-          <th>TTL</th>
-          <th>Alamat</th>
-          <th>No HP</th>
-          <th>KTP</th>
-          <th>Surat Psikologi</th>
-          <th>Surat Sehat</th>
-          <th>SKCK</th>
-          <th>Aksi</th>
-        </tr>
+            <th>No</th>
+            <th>Nama Petugas</th>
+            <th>UCP</th>
+            <th>Nama Lengkap</th>
+            <th>Usia</th>
+            <th>JK</th>
+            <th>Keperluan</th>
+            <th>No HP</th>
+            <th>Foto KTP?</th>
+          </tr>
       </thead>
       <tbody id="dataPendaftar">
         <tr><td colspan="16" class="text-center">Memuat data...</td></tr>
@@ -43,7 +37,7 @@
     // === SETUP SUPABASE ===
     const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
-    const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     // === LOAD DATA DARI SUPABASE ===
     async function loadData() {
@@ -106,7 +100,7 @@
       if (!confirm('Yakin ingin menghapus data ini?')) return;
 
       // Ambil data pendaftar dulu untuk dapatkan path file
-      const { data, error: getError } = await sb.from('pendaftar').select('*').eq('id', id).single();
+      const { data, error: getError } = await sb.from('skck').select('*').eq('id', id).single();
       if (getError) {
         alert('Gagal mengambil data: ' + getError.message);
         return;
@@ -117,7 +111,7 @@
       ['ktp', 'sp', 'sks', 'skck'].forEach(field => {
         if (data[field]) {
           let path = data[field];
-          const uploadsIdx = path.indexOf('/uploads/');
+          const uploadsIdx = path.indexOf('/skck/');
           if (uploadsIdx !== -1) {
             path = path.substring(uploadsIdx + 9);
           }
@@ -128,7 +122,7 @@
       });
 
       // Hapus data di tabel
-      const { error } = await sb.from('pendaftar').delete().eq('id', id);
+      const { error } = await sb.from('skck').delete().eq('id', id);
       if (error) {
         alert('Gagal menghapus data: ' + error.message);
         return;
