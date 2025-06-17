@@ -59,20 +59,30 @@
         return;
       }
 
-      let html = `<div style="overflow-x:auto;"><table>
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Nama Lengkap</th>
-            <th>Usia</th>
-            <th>JK</th>
-            <th>Keperluan</th>
-            <th>No HP</th>
-            <th>Foto KTP?</th>
-          </tr>
-        </thead>
-        <tbody>
-      `;
+      <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Nama OOC</th>
+          <th>JK OOC</th>
+          <th>UCP</th>
+          <th>Domisili</th>
+          <th>Nama IC</th>
+          <th>JK IC</th>
+          <th>TTL</th>
+          <th>Alamat</th>
+          <th>No HP</th>
+          <th>KTP</th>
+          <th>Surat Psikologi</th>
+          <th>Surat Sehat</th>
+          <th>SKCK</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="dataPendaftar">
+        <tr><td colspan="16" class="text-center">Memuat data...</td></tr>
+      </tbody>
+    </table>
       data.forEach((row, i) => {
         html += `<tr>
           <td>${i+1}</td>
