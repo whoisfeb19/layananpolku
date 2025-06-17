@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Data Pembuatan SIM</title>
+  <title>Data Formulir SIM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -17,12 +17,10 @@
     td a { color: #2563eb; text-decoration: underline;}
     .file-link {font-size: 1.2em;}
     .loader { text-align: center; margin-top: 48px; }
-    .btn-refresh, .btn-hapus, .btn-kirim { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; margin-bottom: 8px; }
-    .btn-refresh:hover, .btn-hapus:hover, .btn-kirim:hover { background: #1943a8; }
+    .btn-refresh, .btn-hapus { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; margin-bottom: 8px; }
+    .btn-refresh:hover, .btn-hapus:hover { background: #1943a8; }
     .btn-hapus { background: #dc2626; }
     .btn-hapus:hover { background: #a81e1e; }
-    .btn-kirim { background: #10b981; }
-    .btn-kirim:hover { background: #0d8b6c; }
     .no-data { text-align: center; padding: 44px 0; color: #888;}
     .img-ktp-preview { max-width: 60px; max-height: 60px; border-radius: 7px; box-shadow: 0 2px 6px #0002; transition: box-shadow 0.2s; cursor: pointer; border: 1px solid #ddd; }
     .img-ktp-preview:hover { box-shadow: 0 0 10px #2563eb55; border-color: #2563eb; }
@@ -34,7 +32,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>Data Pembuatan SIM</h2>
+    <h2>Data Pendaftaran SIM</h2>
     <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
     <div id="table-area">
       <div class="loader">Memuat data...</div>
@@ -45,11 +43,6 @@
     const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-    // Masukkan webhook Discord kamu di sini!
-    const discordWebhookUrl = "https://discord.com/api/webhooks/1384441650482380852/GP5ztsSRu-Nm36esHTvitue2QRQwvL9WE9alpRiGGZg1kyfNWzPg4xTmyHg5iH81keOj";
-    // Ganti dengan role Discord yang ingin di-tag otomatis (hanya ID-nya, tanpa <@& ... >)
-    const autoTagRoleId = "1366617622111846509"; // Ganti sesuai Role ID Discord yang kamu ingin tag
 
     async function hapusData(id, file_ktp_url) {
       if (!confirm('Yakin ingin menghapus data ini?')) return;
@@ -69,61 +62,6 @@
         } catch (err) { /* ignore error */ }
       }
       loadData();
-    }
-
-    async function kirimUlangData(id) {
-      // Ambil data berdasarkan ID
-      let { data, error } = await supabase.from('sim').select('*').eq('id', id).single();
-      if (error || !data) {
-        alert('Gagal mengambil data SIM.');
-        return;
-      }
-
-      // Formatting pesan mirip screenshot, sesuai urutan dan gaya
-      msg += `\nPaspor (UCP): ${data.ucp || "-"}\n`;
-      msg += `Nama Lengkap Sesuai KTP: ${data.nama || "-"}\n`;
-      msg += `Usia Sesuai KTP: ${data.usia || "-"}\n`;
-      msg += `Jenis Kelamin: ${data.jk || "-"}\n`;
-      msg += `Keperluan Pembuatan: ${data.keperluan || "-"}\n`;
-      msg += `Nomor Handphone: ${data.nomorhp || "-"}\n`;
-      msg += `Foto Ktp: ${data.foto_ktp || "-"}\n`;
-      msg += `Username Discord: ${data.discordid ? `<@${data.discordid}>` : "-"}\n`;
-      msg += `Total Harga: $ ${data.harga ? Number(data.harga).toLocaleString() : "-"}\n`;
-      msg += "```";
-
-      // Tag role di luar block code agar Discord benar-benar men-tag!
-      msg += `\n<@&${autoTagRoleId}>`;
-
-      // Payload untuk webhook
-      let payload = {
-        content: msg
-      };
-
-      // Jika ada file KTP, gunakan embed untuk gambar
-      if (data.file_ktp_url) {
-        payload.embeds = [
-          {
-            image: { url: data.file_ktp_url },
-            description: "Foto KTP"
-          }
-        ];
-      }
-
-      // Kirim ke Discord Webhook
-      try {
-        let res = await fetch(discordWebhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          alert('Data berhasil dikirim ke Discord!');
-        } else {
-          alert('Gagal mengirim ke Discord. Pastikan webhook aktif dan bot/webhook punya permission mention role.');
-        }
-      } catch (err) {
-        alert('Gagal mengirim ke Discord.\n' + err);
-      }
     }
 
     async function loadData() {
@@ -148,14 +86,16 @@
       let html = `<div style="overflow-x:auto;"><table>
         <thead>
           <tr>
-            <th>UCP</th>
+            <th>No</th>
+            <th>Paspor (UCP)</th>
             <th>Nama Lengkap</th>
             <th>Usia</th>
             <th>JK</th>
             <th>No HP</th>
             <th>Foto KTP?</th>
+            <th>Username Discord</th>
+            <th>Tipe SIM</th>
             <th>Total Harga</th>
-            <th>Discord ID</th>
             <th>Waktu Daftar</th>
             <th>File KTP</th>
             <th>Aksi</th>
@@ -172,8 +112,9 @@
           <td>${row.jk || ''}</td>
           <td>${row.nomorhp || ''}</td>
           <td>${row.foto_ktp || ''}</td>
-          <td>${row.harga || ''}</td>
           <td>${row.discordid || ''}</td>
+          <td>${row.tipe_sim || ''}</td>
+          <td>${row.harga ? "Rp " + Number(row.harga).toLocaleString("id-ID") : ''}</td>
           <td>${row.created_at ? new Date(row.created_at).toLocaleString() : ''}</td>
           <td>${
             row.file_ktp_url
@@ -182,7 +123,6 @@
           }</td>
           <td>
             <button class="btn-hapus" onclick="hapusData('${row.id}', '${row.file_ktp_url || ''}')"><i class="fas fa-trash"></i> Hapus</button>
-            <button class="btn-kirim" onclick="kirimUlangData('${row.id}')"><i class="fas fa-paper-plane"></i> Kirim</button>
           </td>
         </tr>`;
       });
@@ -192,7 +132,6 @@
 
     // Agar bisa dipanggil dari HTML
     window.hapusData = hapusData;
-    window.kirimUlangData = kirimUlangData;
 
     // Auto load saat laman dibuka
     loadData();
