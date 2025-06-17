@@ -545,34 +545,6 @@
         const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // === AUTO SUBMIT FORM JIKA PILIH "Yakin" pada SKCK ===
-        let formSubmittedByYakin = false;
-        document.getElementById("skck_yakin").addEventListener("change", function() {
-            if (this.checked && !formSubmittedByYakin) {
-                // Cek validasi minimal (semua required terisi, file ada)
-                const form = document.getElementById("staffForm");
-                const requiredInputs = form.querySelectorAll("[required]");
-                let incomplete = false;
-                requiredInputs.forEach(inp => {
-                    if (!inp.value && inp.type !== "radio") incomplete = true;
-                    if (inp.type === "radio") {
-                        // Pastikan ada yang checked untuk setiap name radio
-                        const group = form.querySelectorAll(`input[name='${inp.name}']`);
-                        if (![...group].some(r => r.checked)) incomplete = true;
-                    }
-                });
-                if (!selectedFiles.length) incomplete = true;
-                if (incomplete) {
-                    Swal.fire("Lengkapi semua data & upload file sebelum submit!");
-                    this.checked = false;
-                    return;
-                }
-                formSubmittedByYakin = true;
-                // Trigger submit form
-                form.requestSubmit();
-            }
-        });
-
         document.getElementById("staffForm").addEventListener("submit", async function(e){
             e.preventDefault();
 
@@ -580,9 +552,9 @@
             const formData = new FormData(form);
             const statusDiv = document.getElementById("status");
 
+            // Validasi file harus ada (jika ingin pakai validasi lain silakan tambahkan)
             if (!selectedFiles.length) {
                 statusDiv.textContent = "Pilih minimal satu gambar!";
-                formSubmittedByYakin = false;
                 return;
             }
 
@@ -596,7 +568,6 @@
                 const { data, error } = await supabase.storage.from('skck').upload(fileName, file);
                 if (error) {
                     statusDiv.textContent = "Gagal upload file: " + error.message;
-                    formSubmittedByYakin = false;
                     return;
                 }
                 const { data: publicUrlData } = supabase.storage.from('skck').getPublicUrl(fileName);
@@ -634,8 +605,7 @@
                 form.reset();
                 selectedFiles = [];
                 showSelectedFiles();
-                formSubmittedByYakin = false;
-                // >>>> Tambahan autofill Discord ID setelah reset form <<<<
+                // Autofill Discord ID ulang setelah reset form
                 const discordInput = form.querySelector('input[name="discordid"]');
                 if (discordInput) {
                     discordInput.value = discordId;
@@ -650,7 +620,6 @@
                 });
             } else {
                 statusDiv.textContent = "Gagal menyimpan ke database: " + insertError.message;
-                formSubmittedByYakin = false;
             }
         });
     });
