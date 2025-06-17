@@ -41,7 +41,7 @@
 
     // === LOAD DATA DARI SUPABASE ===
     async function loadData() {
-      const { data, error } = await sb.from('pendaftar').select('*');
+      const { data, error } = await sb.from('skck').select('*');
       let rows = '';
       if (error || !data || data.length === 0) {
         rows = '<tr><td colspan="16" class="text-center">Belum ada data pendaftar.</td></tr>';
