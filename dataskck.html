@@ -48,6 +48,8 @@
 
     // Masukkan webhook Discord kamu di sini:
     const discordWebhookUrl = "https://discord.com/api/webhooks/1384441650482380852/GP5ztsSRu-Nm36esHTvitue2QRQwvL9WE9alpRiGGZg1kyfNWzPg4xTmyHg5iH81keOj";
+    // Ganti dengan role Discord yang ingin di-tag otomatis (role id, contoh: <@&123456789012345678>)
+    const autoTagRole = "<@&1366617622111846509>"; // Ganti sesuai Role ID Discord yang kamu ingin tag
 
     async function hapusData(id, file_ktp_url) {
       if (!confirm('Yakin ingin menghapus data ini?')) return;
@@ -94,6 +96,7 @@
       msg += `Total Harga: $ ${data.harga ? Number(data.harga).toLocaleString() : "-"}\n`;
       msg += `\nDENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL\n`;
       msg += "```";
+      msg += `\n${autoTagRole}`; // Tambahkan tag role di bawah pesan
 
       // Payload untuk webhook
       let payload = {
