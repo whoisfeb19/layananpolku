@@ -11,6 +11,10 @@
     .container { max-width: 1100px; margin: 40px auto; background: #fff; border-radius: 14px; padding: 28px; box-shadow: 0 6px 32px #0001;}
     h2 { text-align: center; color: #2563eb; margin-bottom: 28px;}
     .btn-group { display: flex; gap: 10px; margin-bottom: 8px; }
+    .search-group { display: flex; gap: 10px; margin-bottom: 18px; align-items: center; }
+    .search-input { padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1em; }
+    .btn-search { background: #10b981; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; }
+    .btn-search:hover { background: #0d8b6c; }
     table { border-collapse: collapse; width: 100%; margin: 0; }
     th, td { border: 1px solid #e5e7eb; padding: 8px 12px; }
     th { background: #2563eb; color: #fff; font-weight: 600; }
@@ -32,7 +36,7 @@
     @media (max-width: 700px) {
       th, td { font-size: 0.95em; padding: 7px 4px;}
       .container { padding: 8px;}
-      .btn-group { flex-direction: column; gap: 0; }
+      .btn-group, .search-group { flex-direction: column; gap: 6px; }
     }
   </style>
 </head>
@@ -43,200 +47,246 @@
       <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
       <button class="btn-hapus-semua" onclick="hapusSemuaData()"><i class="fas fa-trash"></i> Hapus Semua</button>
     </div>
+    <div class="search-group">
+      <input class="search-input" type="text" id="searchBox" placeholder="Cari Nama, UCP, Discord, dll..." onkeyup="searchData(event)">
+      <button class="btn-search" onclick="searchData()"><i class="fas fa-search"></i> Cari</button>
+      <button class="btn-search" style="background:#2563eb;" onclick="resetSearch()"><i class="fas fa-times"></i> Reset</button>
+    </div>
     <div id="table-area">
       <div class="loader">Memuat data...</div>
     </div>
   </div>
   <script>
     // Supabase credentials
-            const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
-            const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
-            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-            // Discord Webhook URL
-            const discordWebhookUrl = "https://discord.com/api/webhooks/1384479330599567380/0ZFQ7hR9fQz_qNlyREDHe4ZbpkdNfbvIft3CcRR3we-nKAK-sUyeLK0E9o5ViqIBfuLF";
-            const autoTagRoleId = "1366617622111846510"; // Ganti sesuai role Discord
+    // Discord Webhook URL
+    const discordWebhookUrl = "https://discord.com/api/webhooks/1384479330599567380/0ZFQ7hR9fQz_qNlyREDHe4ZbpkdNfbvIft3CcRR3we-nKAK-sUyeLK0E9o5ViqIBfuLF";
+    const autoTagRoleId = "1366617622111846510"; // Ganti sesuai role Discord
 
-            async function hapusData(id, file_ktp_url) {
-            if (!confirm('Yakin ingin menghapus data ini?')) return;
-            // Hapus data di tabel
-            const { error } = await supabase.from('sim').delete().eq('id', id);
-            if (error) {
-                alert('Gagal menghapus data: ' + error.message);
-                return;
-            }
-            // Hapus file di Storage bila ada
-            if (file_ktp_url) {
-                try {
-                const urlParts = file_ktp_url.split('/');
-                const filename = decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
-                await supabase.storage.from('sim').remove([filename]);
-                } catch (err) { /* ignore error */ }
-            }
-            loadData();
-            }
+    let cacheData = [];
 
-            async function hapusSemuaData() {
-            if (!confirm('Yakin ingin menghapus SEMUA data SIM?')) return;
-            // Ambil semua data untuk hapus file storage juga
-            let { data, error } = await supabase.from('sim').select('id, file_ktp_url');
-            if (error) {
-                alert('Gagal mengambil data: ' + error.message);
-                return;
-            }
-            // Hapus semua file di storage
-            if (data && data.length) {
-                const fileNames = data
-                .filter(row => row.file_ktp_url)
-                .map(row => {
-                    const urlParts = row.file_ktp_url.split('/');
-                    return decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
-                });
-                if (fileNames.length) {
-                try {
-                    await supabase.storage.from('sim').remove(fileNames);
-                } catch (err) { /* ignore error */ }
-                }
-            }
-            // Hapus semua data di tabel (fix: gunakan .gt('id', 0) untuk numeric id)
-            const { error: delError } = await supabase.from('sim').delete().gt('id', 0);
-            if (delError) {
-                alert('Gagal menghapus semua data: ' + delError.message);
-            } else {
-                alert('Semua data berhasil dihapus.');
-                loadData();
-            }
-            }
+    async function hapusData(id, file_ktp_url) {
+      if (!confirm('Yakin ingin menghapus data ini?')) return;
+      // Hapus data di tabel
+      const { error } = await supabase.from('sim').delete().eq('id', id);
+      if (error) {
+        alert('Gagal menghapus data: ' + error.message);
+        return;
+      }
+      // Hapus file di Storage bila ada
+      if (file_ktp_url) {
+        try {
+          const urlParts = file_ktp_url.split('/');
+          const filename = decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
+          await supabase.storage.from('sim').remove([filename]);
+        } catch (err) { /* ignore error */ }
+      }
+      loadData();
+    }
 
-            async function kirimKeDiscord(id) {
-            // Ambil data berdasarkan ID
-            let { data, error } = await supabase.from('sim').select('*').eq('id', id).single();
-            if (error || !data) {
-                alert('Gagal mengambil data SIM.');
-                return;
-            }
+    async function hapusSemuaData() {
+      if (!confirm('Yakin ingin menghapus SEMUA data SIM?')) return;
+      // Ambil semua data untuk hapus file storage juga
+      let { data, error } = await supabase.from('sim').select('id, file_ktp_url');
+      if (error) {
+        alert('Gagal mengambil data: ' + error.message);
+        return;
+      }
+      // Hapus semua file di storage
+      if (data && data.length) {
+        const fileNames = data
+          .filter(row => row.file_ktp_url)
+          .map(row => {
+            const urlParts = row.file_ktp_url.split('/');
+            return decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
+          });
+        if (fileNames.length) {
+          try {
+            await supabase.storage.from('sim').remove(fileNames);
+          } catch (err) { /* ignore error */ }
+        }
+      }
+      // Hapus semua data di tabel (fix: gunakan .gt('id', 0) untuk numeric id)
+      const { error: delError } = await supabase.from('sim').delete().gt('id', 0);
+      if (delError) {
+        alert('Gagal menghapus semua data: ' + delError.message);
+      } else {
+        alert('Semua data berhasil dihapus.');
+        loadData();
+      }
+    }
 
-            // Format pesan untuk Discord
-            let msg = `**Layanan Pembuatan SIM**\n`;
-            msg += "```";
-            msg += `\nPaspor (UCP): ${data.ucp || "-"}\n`;
-            msg += `Nama Lengkap Sesuai KTP: ${data.nama || "-"}\n`;
-            msg += `Usia Sesuai KTP: ${data.usia || "-"}\n`;
-            msg += `Jenis Kelamin: ${data.jk || "-"}\n`;
-            msg += `Nomor Handphone: ${data.nomorhp || "-"}\n`;
-            msg += `Foto Ktp: ${data.foto_ktp || "-"}\n`;
-            msg += `Username Discord: ${data.discordid ? `<@${data.discordid}>` : "-"}\n`;
-            msg += `Tipe Sim: ${data.tipe_sim || "-"}\n`;
-            msg += `Total Harga: Rp${data.harga ? Number(data.harga).toLocaleString("id-ID") : "-"}\n`;
-            msg += "```";
-            msg += `\n<@&${autoTagRoleId}>`; // Tag role di luar block code
+    async function kirimKeDiscord(id) {
+      // Ambil data berdasarkan ID
+      let { data, error } = await supabase.from('sim').select('*').eq('id', id).single();
+      if (error || !data) {
+        alert('Gagal mengambil data SIM.');
+        return;
+      }
 
-            // Payload untuk webhook
-            let payload = {
-                content: msg
-            };
+      // Format pesan untuk Discord
+      let msg = `**Layanan Pembuatan SIM**\n`;
+      msg += "```";
+      msg += `\nPaspor (UCP): ${data.ucp || "-"}\n`;
+      msg += `Nama Lengkap Sesuai KTP: ${data.nama || "-"}\n`;
+      msg += `Usia Sesuai KTP: ${data.usia || "-"}\n`;
+      msg += `Jenis Kelamin: ${data.jk || "-"}\n`;
+      msg += `Nomor Handphone: ${data.nomorhp || "-"}\n`;
+      msg += `Foto Ktp: ${data.foto_ktp || "-"}\n`;
+      msg += `Username Discord: ${data.discordid ? `<@${data.discordid}>` : "-"}\n`;
+      msg += `Tipe Sim: ${data.tipe_sim || "-"}\n`;
+      msg += `Total Harga: Rp${data.harga ? Number(data.harga).toLocaleString("id-ID") : "-"}\n`;
+      msg += "```";
+      msg += `\n<@&${autoTagRoleId}>`; // Tag role di luar block code
 
-            // Jika ada file KTP, gunakan embed untuk gambar
-            if (data.file_ktp_url) {
-                payload.embeds = [
-                {
-                    image: { url: data.file_ktp_url },
-                    description: "Foto KTP"
-                }
-                ];
-            }
+      // Payload untuk webhook
+      let payload = {
+        content: msg
+      };
 
-            // Kirim ke Discord Webhook
-            try {
-                let res = await fetch(discordWebhookUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-                });
-                if (res.ok) {
-                alert('Data berhasil dikirim ke Discord!');
-                } else {
-                alert('Gagal mengirim ke Discord. Pastikan webhook aktif.');
-                }
-            } catch (err) {
-                alert('Gagal mengirim ke Discord.\n' + err);
-            }
-            }
+      // Jika ada file KTP, gunakan embed untuk gambar
+      if (data.file_ktp_url) {
+        payload.embeds = [
+          {
+            image: { url: data.file_ktp_url },
+            description: "Foto KTP"
+          }
+        ];
+      }
 
-            async function loadData() {
-            const area = document.getElementById('table-area');
-            area.innerHTML = '<div class="loader">Memuat data...</div>';
+      // Kirim ke Discord Webhook
+      try {
+        let res = await fetch(discordWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          alert('Data berhasil dikirim ke Discord!');
+        } else {
+          alert('Gagal mengirim ke Discord. Pastikan webhook aktif.');
+        }
+      } catch (err) {
+        alert('Gagal mengirim ke Discord.\n' + err);
+      }
+    }
 
-            let { data, error } = await supabase
-                .from('sim')
-                .select('*')
-                .order('created_at', { ascending: false });
+    function renderTable(data) {
+      let html = `<div style="overflow-x:auto;"><table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Paspor (UCP)</th>
+            <th>Nama Lengkap</th>
+            <th>Usia</th>
+            <th>JK</th>
+            <th>No HP</th>
+            <th>Foto KTP?</th>
+            <th>Username Discord</th>
+            <th>Tipe SIM</th>
+            <th>Total Harga</th>
+            <th>Waktu Daftar</th>
+            <th>File KTP</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+      data.forEach((row, i) => {
+        html += `<tr>
+          <td>${i+1}</td>
+          <td>${row.ucp || ''}</td>
+          <td>${row.nama || ''}</td>
+          <td>${row.usia || ''}</td>
+          <td>${row.jk || ''}</td>
+          <td>${row.nomorhp || ''}</td>
+          <td>${row.foto_ktp || ''}</td>
+          <td>${row.discordid || ''}</td>
+          <td>${row.tipe_sim || ''}</td>
+          <td>${row.harga ? "Rp " + Number(row.harga).toLocaleString("id-ID") : ''}</td>
+          <td>${row.created_at ? new Date(row.created_at).toLocaleString() : ''}</td>
+          <td>${
+            row.file_ktp_url
+              ? `<a href="${row.file_ktp_url}" target="_blank"><img src="${row.file_ktp_url}" class="img-ktp-preview" alt="KTP" /></a>`
+              : '-'
+          }</td>
+          <td>
+            <button class="btn-hapus" onclick="hapusData('${row.id}', '${row.file_ktp_url || ''}')"><i class="fas fa-trash"></i> Hapus</button>
+            <button class="btn-kirim" onclick="kirimKeDiscord('${row.id}')"><i class="fas fa-paper-plane"></i> Kirim</button>
+          </td>
+        </tr>`;
+      });
+      html += `</tbody></table></div>`;
+      document.getElementById('table-area').innerHTML = html;
+    }
 
-            if (error) {
-                area.innerHTML = '<div style="color:red">Gagal memuat data: ' + error.message + '</div>';
-                return;
-            }
+    async function loadData() {
+      const area = document.getElementById('table-area');
+      area.innerHTML = '<div class="loader">Memuat data...</div>';
 
-            if (!data || data.length === 0) {
-                area.innerHTML = '<div class="no-data">Belum ada data pendaftaran.</div>';
-                return;
-            }
+      let { data, error } = await supabase
+        .from('sim')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-            let html = `<div style="overflow-x:auto;"><table>
-                <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Paspor (UCP)</th>
-                    <th>Nama Lengkap</th>
-                    <th>Usia</th>
-                    <th>JK</th>
-                    <th>No HP</th>
-                    <th>Foto KTP?</th>
-                    <th>Username Discord</th>
-                    <th>Tipe SIM</th>
-                    <th>Total Harga</th>
-                    <th>Waktu Daftar</th>
-                    <th>File KTP</th>
-                    <th>Aksi</th>
-                </tr>
-                </thead>
-                <tbody>
-            `;
-            data.forEach((row, i) => {
-                html += `<tr>
-                <td>${i+1}</td>
-                <td>${row.ucp || ''}</td>
-                <td>${row.nama || ''}</td>
-                <td>${row.usia || ''}</td>
-                <td>${row.jk || ''}</td>
-                <td>${row.nomorhp || ''}</td>
-                <td>${row.foto_ktp || ''}</td>
-                <td>${row.discordid || ''}</td>
-                <td>${row.tipe_sim || ''}</td>
-                <td>${row.harga ? "Rp " + Number(row.harga).toLocaleString("id-ID") : ''}</td>
-                <td>${row.created_at ? new Date(row.created_at).toLocaleString() : ''}</td>
-                <td>${
-                    row.file_ktp_url
-                    ? `<a href="${row.file_ktp_url}" target="_blank"><img src="${row.file_ktp_url}" class="img-ktp-preview" alt="KTP" /></a>`
-                    : '-'
-                }</td>
-                <td>
-                    <button class="btn-hapus" onclick="hapusData('${row.id}', '${row.file_ktp_url || ''}')"><i class="fas fa-trash"></i> Hapus</button>
-                    <button class="btn-kirim" onclick="kirimKeDiscord('${row.id}')"><i class="fas fa-paper-plane"></i> Kirim</button>
-                </td>
-                </tr>`;
-            });
-            html += `</tbody></table></div>`;
-            area.innerHTML = html;
-            }
+      if (error) {
+        area.innerHTML = '<div style="color:red">Gagal memuat data: ' + error.message + '</div>';
+        return;
+      }
 
-            // Agar bisa dipanggil dari HTML
-            window.hapusData = hapusData;
-            window.kirimKeDiscord = kirimKeDiscord;
-            window.hapusSemuaData = hapusSemuaData;
+      if (!data || data.length === 0) {
+        area.innerHTML = '<div class="no-data">Belum ada data pendaftaran.</div>';
+        return;
+      }
 
-            // Auto load saat laman dibuka
-            loadData();
+      cacheData = data; // Simpan cache untuk pencarian
+      renderTable(data);
+    }
+
+    function searchData(e) {
+      // Jika trigger dari event keyup: hanya jalankan pada ENTER
+      if (e && e.type === "keyup" && e.key !== "Enter") return;
+
+      const keyword = document.getElementById('searchBox').value.trim().toLowerCase();
+      if (!keyword) {
+        renderTable(cacheData); // tampilkan data penuh jika pencarian kosong
+        return;
+      }
+      // Filter berdasarkan beberapa kolom
+      const filtered = cacheData.filter(row => {
+        return (
+          (row.ucp && row.ucp.toLowerCase().includes(keyword)) ||
+          (row.nama && row.nama.toLowerCase().includes(keyword)) ||
+          (row.usia && String(row.usia).toLowerCase().includes(keyword)) ||
+          (row.jk && row.jk.toLowerCase().includes(keyword)) ||
+          (row.nomorhp && String(row.nomorhp).toLowerCase().includes(keyword)) ||
+          (row.foto_ktp && row.foto_ktp.toLowerCase().includes(keyword)) ||
+          (row.discordid && String(row.discordid).toLowerCase().includes(keyword)) ||
+          (row.tipe_sim && row.tipe_sim.toLowerCase().includes(keyword)) ||
+          (row.harga && String(row.harga).toLowerCase().includes(keyword)) ||
+          (row.created_at && new Date(row.created_at).toLocaleString().toLowerCase().includes(keyword))
+        );
+      });
+      renderTable(filtered);
+    }
+
+    function resetSearch() {
+      document.getElementById('searchBox').value = '';
+      renderTable(cacheData);
+    }
+
+    // Agar bisa dipanggil dari HTML
+    window.hapusData = hapusData;
+    window.kirimKeDiscord = kirimKeDiscord;
+    window.hapusSemuaData = hapusSemuaData;
+    window.searchData = searchData;
+    window.resetSearch = resetSearch;
+
+    // Auto load saat laman dibuka
+    loadData();
   </script>
 </body>
 </html>
