@@ -35,7 +35,7 @@
     </div>
   </div>
   <script>
-    // Supabase credentials
+    // Ganti dengan data Supabase projekmu
     const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -43,12 +43,11 @@
     async function loadData() {
       const area = document.getElementById('table-area');
       area.innerHTML = '<div class="loader">Memuat data...</div>';
-
-      // Ambil data dari tabel skck, urut berdasarkan id terbaru
+      // Ambil data dari tabel skck_form, urut terbaru
       let { data, error } = await supabase
         .from('skck')
         .select('*')
-        .order('id', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) {
         area.innerHTML = '<div style="color:red">Gagal memuat data: ' + error.message + '</div>';
@@ -72,13 +71,17 @@
             <th>Keperluan</th>
             <th>No HP</th>
             <th>Foto KTP?</th>
+            <th>Yakin SKCK?</th>
+            <th>Discord ID</th>
+            <th>Waktu Daftar</th>
+            <th>File KTP</th>
           </tr>
         </thead>
         <tbody>
       `;
       data.forEach((row, i) => {
         html += `<tr>
-          <td>${i + 1}</td>
+          <td>${i+1}</td>
           <td>${row.petugas || ''}</td>
           <td>${row.ucp || ''}</td>
           <td>${row.nama || ''}</td>
@@ -87,6 +90,14 @@
           <td>${row.keperluan || ''}</td>
           <td>${row.nomorhp || ''}</td>
           <td>${row.foto_ktp || ''}</td>
+          <td>${row.skck || ''}</td>
+          <td>${row.discordid || ''}</td>
+          <td>${row.created_at ? new Date(row.created_at).toLocaleString() : ''}</td>
+          <td>${
+            row.file_ktp_url
+              ? `<a href="${row.file_ktp_url}" target="_blank" class="file-link"><i class="fas fa-file"></i> Lihat</a>`
+              : '-'
+          }</td>
         </tr>`;
       });
       html += `</tbody></table></div>`;
