@@ -615,11 +615,11 @@
                     discordInput.readOnly = true;
                 }
                 Swal.fire({
-                  icon: 'success',
-                  title: 'Sukses!',
-                  text: `Data SKCK berhasil dikirim. Total harga: Rp${harga.toLocaleString()}`,
-                  timer: 3000,
-                  showConfirmButton: false
+                icon: 'success',
+                title: 'Sukses!',
+                text: `Data SKCK berhasil dikirim. Total harga: Rp${harga.toLocaleString()}`,
+                timer: 3000,
+                showConfirmButton: false
                 });
             } else {
                 statusDiv.textContent = "Gagal menyimpan ke database: " + insertError.message;
