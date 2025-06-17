@@ -35,15 +35,40 @@
     </div>
   </div>
   <script>
-    // Ganti dengan data Supabase projekmu
+    // Supabase credentials
     const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+    async function hapusData(id, file_ktp_url) {
+      if (!confirm('Yakin ingin menghapus data ini?')) return;
+      // Hapus data di tabel
+      const { error } = await supabase.from('skck').delete().eq('id', id);
+      if (error) {
+        alert('Gagal menghapus data: ' + error.message);
+        return;
+      }
+      // Hapus file di Storage bila ada
+      if (file_ktp_url) {
+        try {
+          // Extract the filename from the URL
+          const urlParts = file_ktp_url.split('/');
+          const filename = decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
+          await supabase.storage.from('skck').remove([filename]);
+        } catch (err) { /* ignore error */ }
+      }
+      loadData();
+    }
+
+    async function kirimUlangData(id) {
+      alert('Fitur "Kirim" dapat diisi sesuai kebutuhan implementasi Anda, misal mengirim ulang data ke endpoint lain atau memproses status.');
+      // Implementasi logika pengiriman sesuai requirement Anda.
+    }
+
     async function loadData() {
       const area = document.getElementById('table-area');
       area.innerHTML = '<div class="loader">Memuat data...</div>';
-      // Ambil data dari tabel skck_form, urut terbaru
+
       let { data, error } = await supabase
         .from('skck')
         .select('*')
@@ -75,6 +100,7 @@
             <th>Discord ID</th>
             <th>Waktu Daftar</th>
             <th>File KTP</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -95,14 +121,23 @@
           <td>${row.created_at ? new Date(row.created_at).toLocaleString() : ''}</td>
           <td>${
             row.file_ktp_url
-              ? `<a href="${row.file_ktp_url}" target="_blank" class="file-link"><i class="fas fa-file"></i> Lihat</a>`
+              ? `<img src="${row.file_ktp_url}" class="img-ktp-preview" alt="KTP" />`
               : '-'
           }</td>
+          <td>
+            <button class="btn-hapus" onclick="hapusData('${row.id}', '${row.file_ktp_url || ''}')"><i class="fas fa-trash"></i> Hapus</button>
+            <button class="btn-kirim" onclick="kirimUlangData('${row.id}')"><i class="fas fa-paper-plane"></i> Kirim</button>
+          </td>
         </tr>`;
       });
       html += `</tbody></table></div>`;
       area.innerHTML = html;
     }
+
+    // Agar bisa dipanggil dari HTML
+    window.hapusData = hapusData;
+    window.kirimUlangData = kirimUlangData;
+
     // Auto load saat laman dibuka
     loadData();
   </script>
