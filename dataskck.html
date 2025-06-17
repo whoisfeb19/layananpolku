@@ -46,10 +46,10 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Masukkan webhook Discord kamu di sini:
+    // Masukkan webhook Discord kamu di sini!
     const discordWebhookUrl = "https://discord.com/api/webhooks/1384441650482380852/GP5ztsSRu-Nm36esHTvitue2QRQwvL9WE9alpRiGGZg1kyfNWzPg4xTmyHg5iH81keOj";
-    // Ganti dengan role Discord yang ingin di-tag otomatis (role id, contoh: <@&123456789012345678>)
-    const autoTagRole = "<@&1366617622111846509>"; // Ganti sesuai Role ID Discord yang kamu ingin tag
+    // Ganti dengan role Discord yang ingin di-tag otomatis (hanya ID-nya, tanpa <@& ... >)
+    const autoTagRoleId = "1366617622111846509"; // Ganti sesuai Role ID Discord yang kamu ingin tag
 
     async function hapusData(id, file_ktp_url) {
       if (!confirm('Yakin ingin menghapus data ini?')) return;
@@ -96,7 +96,9 @@
       msg += `Total Harga: $ ${data.harga ? Number(data.harga).toLocaleString() : "-"}\n`;
       msg += `\nDENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL\n`;
       msg += "```";
-      msg += `\n${autoTagRole}`; // Tambahkan tag role di bawah pesan
+
+      // Tag role di luar block code agar Discord benar-benar men-tag!
+      msg += `\n<@&${autoTagRoleId}>`;
 
       // Payload untuk webhook
       let payload = {
@@ -123,7 +125,7 @@
         if (res.ok) {
           alert('Data berhasil dikirim ke Discord!');
         } else {
-          alert('Gagal mengirim ke Discord. Pastikan webhook aktif.');
+          alert('Gagal mengirim ke Discord. Pastikan webhook aktif dan bot/webhook punya permission mention role.');
         }
       } catch (err) {
         alert('Gagal mengirim ke Discord.\n' + err);
