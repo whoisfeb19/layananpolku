@@ -46,6 +46,9 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+    // Masukkan webhook Discord kamu di sini:
+    const discordWebhookUrl = "https://discord.com/api/webhooks/1384441650482380852/GP5ztsSRu-Nm36esHTvitue2QRQwvL9WE9alpRiGGZg1kyfNWzPg4xTmyHg5iH81keOj";
+
     async function hapusData(id, file_ktp_url) {
       if (!confirm('Yakin ingin menghapus data ini?')) return;
       // Hapus data di tabel
@@ -67,8 +70,57 @@
     }
 
     async function kirimUlangData(id) {
-      alert('Fitur "Kirim" dapat diisi sesuai kebutuhan implementasi Anda, misal mengirim ulang data ke endpoint lain atau memproses status.');
-      // Implementasi logika pengiriman sesuai requirement Anda.
+      // Ambil data berdasarkan ID
+      let { data, error } = await supabase.from('skck').select('*').eq('id', id).single();
+      if (error || !data) {
+        alert('Gagal mengambil data SKCK.');
+        return;
+      }
+
+      // Format pesan untuk Discord
+      let content = `**DATA SKCK**\n` +
+        `Nama Petugas: ${data.petugas}\n` +
+        `UCP: ${data.ucp}\n` +
+        `Nama Lengkap: ${data.nama}\n` +
+        `Usia: ${data.usia}\n` +
+        `JK: ${data.jk}\n` +
+        `Keperluan: ${data.keperluan}\n` +
+        `No HP: ${data.nomorhp}\n` +
+        `Foto KTP?: ${data.foto_ktp}\n` +
+        `Total Harga: Rp${data.harga ? Number(data.harga).toLocaleString() : ''}\n` +
+        `Discord ID: ${data.discordid}\n` +
+        `Waktu Daftar: ${data.created_at ? new Date(data.created_at).toLocaleString() : ''}\n` +
+        (data.file_ktp_url ? `File KTP: ${data.file_ktp_url}` : '');
+
+      let payload = {
+        content: content
+      };
+
+      // Jika ada file KTP, gunakan embed untuk gambar
+      if (data.file_ktp_url) {
+        payload.embeds = [
+          {
+            image: { url: data.file_ktp_url },
+            description: "Foto KTP"
+          }
+        ];
+      }
+
+      // Kirim ke Discord Webhook
+      try {
+        let res = await fetch(discordWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          alert('Data berhasil dikirim ke Discord!');
+        } else {
+          alert('Gagal mengirim ke Discord. Pastikan webhook aktif.');
+        }
+      } catch (err) {
+        alert('Gagal mengirim ke Discord.\n' + err);
+      }
     }
 
     async function loadData() {
