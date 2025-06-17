@@ -77,23 +77,27 @@
         return;
       }
 
-      // Format pesan untuk Discord
-      let content = `**DATA SKCK**\n` +
-        `Nama Petugas: ${data.petugas}\n` +
-        `UCP: ${data.ucp}\n` +
-        `Nama Lengkap: ${data.nama}\n` +
-        `Usia: ${data.usia}\n` +
-        `JK: ${data.jk}\n` +
-        `Keperluan: ${data.keperluan}\n` +
-        `No HP: ${data.nomorhp}\n` +
-        `Foto KTP?: ${data.foto_ktp}\n` +
-        `Total Harga: Rp${data.harga ? Number(data.harga).toLocaleString() : ''}\n` +
-        `Discord ID: ${data.discordid}\n` +
-        `Waktu Daftar: ${data.created_at ? new Date(data.created_at).toLocaleString() : ''}\n` +
-        (data.file_ktp_url ? `File KTP: ${data.file_ktp_url}` : '');
+      // Formatting pesan mirip screenshot, sesuai urutan dan gaya
+      let msg = `**Layanan Pembuatan SKCK**\n\n`;
+      msg += `__**DATA DIRI PETUGAS**__\n`;
+      msg += `\`\`\`\nNama Petugas: ${data.petugas || "-"}\n\`\`\`\n`;
+      msg += `__**DATA DIRI PENERIMA**__\n`;
+      msg += "```";
+      msg += `\nPaspor (UCP): ${data.ucp || "-"}\n`;
+      msg += `Nama Lengkap Sesuai KTP: ${data.nama || "-"}\n`;
+      msg += `Usia Sesuai KTP: ${data.usia || "-"}\n`;
+      msg += `Jenis Kelamin: ${data.jk || "-"}\n`;
+      msg += `Keperluan Pembuatan: ${data.keperluan || "-"}\n`;
+      msg += `Nomor Handphone: ${data.nomorhp || "-"}\n`;
+      msg += `Foto Ktp: ${data.foto_ktp || "-"}\n`;
+      msg += `Username Discord: ${data.discordid ? `<@${data.discordid}>` : "-"}\n`;
+      msg += `Total Harga: $ ${data.harga ? Number(data.harga).toLocaleString() : "-"}\n`;
+      msg += `\nDENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL\n`;
+      msg += "```";
 
+      // Payload untuk webhook
       let payload = {
-        content: content
+        content: msg
       };
 
       // Jika ada file KTP, gunakan embed untuk gambar
