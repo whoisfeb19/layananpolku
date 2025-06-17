@@ -685,11 +685,9 @@
             // === DISCORD ID AUTOFILL DAN CEK LOGIN ===
             const discordId = localStorage.getItem("discord_id");
             if (!discordId) {
-                // Jika belum login, redirect ke login
                 window.location.href = "index.html";
                 return;
             } else {
-                // Otomatis isi kolom Discord ID
                 const discordInput = document.querySelector('input[name="discordid"]');
                 if (discordInput) {
                     discordInput.value = discordId;
@@ -805,8 +803,26 @@
                     .insert([insertData]);
 
                 if (!insertError) {
-                    // Redirect ke halaman lain (misal sukses.html) setelah submit sukses
-                    window.location.href = "datasim.html";
+                    statusDiv.textContent = "Data SIM berhasil dikirim!";
+                    setTimeout(() => {
+                        statusDiv.textContent = "";
+                    }, 3000);
+                    form.reset();
+                    selectedFiles = [];
+                    showSelectedFiles();
+                    // Autofill Discord ID ulang setelah reset form
+                    const discordInput = form.querySelector('input[name="discordid"]');
+                    if (discordInput) {
+                        discordInput.value = discordId;
+                        discordInput.readOnly = true;
+                    }
+                    Swal.fire({
+                    icon: 'success',
+                    title: 'Sukses!',
+                    text: `Data SIM berhasil dikirim. Total harga: Rp${totalHarga.toLocaleString("id-ID")}`,
+                    timer: 3000,
+                    showConfirmButton: false
+                    });
                 } else {
                     statusDiv.textContent = "Gagal menyimpan ke database: " + insertError.message;
                 }
