@@ -35,7 +35,7 @@
     </div>
   </div>
   <script>
-    // Ganti dengan data Supabase projekmu
+    // Supabase credentials
     const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -43,7 +43,8 @@
     async function loadData() {
       const area = document.getElementById('table-area');
       area.innerHTML = '<div class="loader">Memuat data...</div>';
-      // Ambil data dari tabel skck, urut berdasarkan id (karena created_at mungkin tidak ada)
+
+      // Ambil data dari tabel skck, urut berdasarkan id terbaru
       let { data, error } = await supabase
         .from('skck')
         .select('*')
@@ -63,6 +64,8 @@
         <thead>
           <tr>
             <th>No</th>
+            <th>Nama Petugas</th>
+            <th>UCP</th>
             <th>Nama Lengkap</th>
             <th>Usia</th>
             <th>JK</th>
@@ -75,7 +78,7 @@
       `;
       data.forEach((row, i) => {
         html += `<tr>
-          <td>${i+1}</td>
+          <td>${i + 1}</td>
           <td>${row.petugas || ''}</td>
           <td>${row.ucp || ''}</td>
           <td>${row.nama || ''}</td>
