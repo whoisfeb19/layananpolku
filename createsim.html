@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <title>Pembuatan Sim</title>
     <style>
         :root {
@@ -680,187 +681,136 @@
 </style>
   
 <script>
-            // Dropdown menu logic: click to open/close, not hover
-        document.querySelectorAll('.dropdown-toggle').forEach(function(toggle) {
-            toggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                const parentLi = this.parentElement;
-                // Tutup dropdown lain
-                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
-                    if (li !== parentLi) li.classList.remove('show');
-                });
-                // Toggle dropdown ini
-                parentLi.classList.toggle('show');
-            });
-        });
-        // Tutup dropdown jika klik di luar menu
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown-parent')) {
-                document.querySelectorAll('.dropdown-parent').forEach(function(li) {
-                    li.classList.remove('show');
-                });
-            }
-        });
-        // Modal functionality
-        const contactBtn = document.getElementById('contactBtn');
-        const contactModal = document.getElementById('contactModal');
-        const closeBtn = document.querySelector('.close');
-        
-        contactBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            contactModal.style.display = 'flex';
-        });
-        
-        closeBtn.addEventListener('click', function() {
-            contactModal.style.display = 'none';
-        });
-        
-        window.addEventListener('click', function(e) {
-            if (e.target === contactModal) {
-                contactModal.style.display = 'none';
-            }
-        });
-
-        // Untuk tampilan mobile
-        document.addEventListener('DOMContentLoaded', function() {
-            const serverLink = document.querySelector('.server-link');
-            
-            if (window.innerWidth <= 768) {
-                serverLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    this.classList.toggle('active');
-                });
-            }
-        });
         document.addEventListener('DOMContentLoaded', function () {
-    // === DISCORD ID AUTOFILL DAN CEK LOGIN ===
-    const discordId = localStorage.getItem("discord_id");
-    if (!discordId) {
-        // Jika belum login, redirect ke login
-        window.location.href = "login.html";
-        return;
-    } else {
-        // Otomatis isi kolom Discord ID
-        const discordInput = document.querySelector('input[name="discordid"]');
-        if (discordInput) {
-            discordInput.value = discordId;
-            discordInput.readOnly = true;
-        }
-    }
-
-    // === MULTI PILIH FILE SATU PERSATU TANPA KERESET ===
-    const gambarInput = document.getElementById('gambarInput');
-    const fileListDiv = document.getElementById('fileList');
-    let selectedFiles = [];
-    gambarInput.addEventListener('change', function() {
-        for (let file of this.files) {
-            if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
-                selectedFiles.push(file);
-            }
-        }
-        this.value = '';
-        showSelectedFiles();
-    });
-    function showSelectedFiles() {
-        fileListDiv.innerHTML = '';
-        if (selectedFiles.length > 0) {
-            const ul = document.createElement('ul');
-            selectedFiles.forEach((file, idx) => {
-                const li = document.createElement('li');
-                li.textContent = file.name;
-                const removeBtn = document.createElement('button');
-                removeBtn.type = 'button';
-                removeBtn.textContent = 'Hapus';
-                removeBtn.className = 'remove-btn';
-                removeBtn.onclick = function() {
-                    selectedFiles.splice(idx, 1);
-                    showSelectedFiles();
-                };
-                li.appendChild(removeBtn);
-                ul.appendChild(li);
-            });
-            fileListDiv.appendChild(ul);
-        }
-    }
-
-    // === FORM SUBMIT & AUTO TAG DISCORD ===
-    const webhookURL = "https://discord.com/api/webhooks/1379081496685445131/mKxJ46X346L3kWq9cnQY9Af9TnbnjijxWX6lu_ieQ20njfXp-iecjVS1CnFpuj-NkwKY";
-    const regulasiMap = {
-        "Sim A": 13000,
-        "Sim B": 15000,
-        "Sim C": 12000
-    };
-
-    document.getElementById("staffForm").addEventListener("submit", async function(e){
-        e.preventDefault();
-
-        const form = e.target;
-        const formData = new FormData(form);
-        const statusDiv = document.getElementById("status");
-
-        // Ambil tipe SIM
-        const simCheckboxes = form.querySelectorAll('input[name="sim"]:checked');
-        const tipeSimArr = [];
-        let totalHarga = 0;
-        simCheckboxes.forEach(cb => {
-            tipeSimArr.push(cb.value);
-            if (regulasiMap[cb.value]) {
-                totalHarga += regulasiMap[cb.value];
-            }
-        });
-
-        // Mention Discord (ambil dari localStorage, bukan dari input)
-        const discordId = localStorage.getItem("discord_id");
-        const mention = discordId ? `<@${discordId}>` : "-";
-        const roleId = "1366617622111846510";
-        const mentionRole = `<@&${roleId}>`;
-
-        const content = [
-            "**Layanan Pembuatan SIM**",
-            `**Paspor (UCP):** ${formData.get("usercontrolpanel")}`,
-            `**Nama Lengkap Sesuai KTP:** ${formData.get("nama")}`,
-            `**Usia Sesuai KTP:** ${formData.get("usia")}`,
-            `**Jenis Kelamin:** ${formData.get("jk")}`,
-            `**Nomor Handphone:** ${formData.get("nomorhp")}`,
-            `**Foto Ktp:** ${formData.get("fktp")}`,
-            `**Username Discord:** ${mention}`,
-            `**Tipe Sim:** ${tipeSimArr.join(', ') || '-'}`,
-            `**Total Harga:** $ ${totalHarga.toLocaleString("id-ID")}`,
-            mention,   // Tag user di PALING BAWAH
-            mentionRole
-        ].join("\n");
-
-        // VALIDASI FILE: HARUS ADA
-        if (!selectedFiles.length) {
-            statusDiv.textContent = "Pilih minimal satu gambar!";
-            return;
-        }
-
-        statusDiv.textContent = "Mengirim...";
-
-        const discordData = new FormData();
-        discordData.append("content", content);
-        selectedFiles.forEach((file, i) => {
-            discordData.append(i === 0 ? "file" : `file${i}`, file);
-        });
-
-        try {
-            const resp = await fetch(webhookURL, {
-                method: "POST",
-                body: discordData
-            });
-            if (resp.ok) {
-                statusDiv.textContent = "Berhasil dikirim ke Discord!";
-                form.reset();
-                selectedFiles = [];
-                showSelectedFiles();
+            // === DISCORD ID AUTOFILL DAN CEK LOGIN ===
+            const discordId = localStorage.getItem("discord_id");
+            if (!discordId) {
+                // Jika belum login, redirect ke login
+                window.location.href = "index.html";
+                return;
             } else {
-                statusDiv.textContent = "LAYANAN SEDANG DI PERBAIKI ATAU SEDANG DI TUTUP.";
+                // Otomatis isi kolom Discord ID
+                const discordInput = document.querySelector('input[name="discordid"]');
+                if (discordInput) {
+                    discordInput.value = discordId;
+                    discordInput.readOnly = true;
+                }
             }
-        } catch (err) {
-            statusDiv.textContent = "Terjadi error saat mengirim ke Discord.";
-        }
-    });
-});
+
+            // === MULTI PILIH FILE SATU PERSATU TANPA KERESET ===
+            const gambarInput = document.getElementById('gambarInput');
+            const fileListDiv = document.getElementById('fileList');
+            let selectedFiles = [];
+            gambarInput.addEventListener('change', function() {
+                for (let file of this.files) {
+                    if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                        selectedFiles.push(file);
+                    }
+                }
+                this.value = '';
+                showSelectedFiles();
+            });
+            function showSelectedFiles() {
+                fileListDiv.innerHTML = '';
+                if (selectedFiles.length > 0) {
+                    const ul = document.createElement('ul');
+                    selectedFiles.forEach((file, idx) => {
+                        const li = document.createElement('li');
+                        li.textContent = file.name;
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.textContent = 'Hapus';
+                        removeBtn.className = 'remove-btn';
+                        removeBtn.onclick = function() {
+                            selectedFiles.splice(idx, 1);
+                            showSelectedFiles();
+                        };
+                        li.appendChild(removeBtn);
+                        ul.appendChild(li);
+                    });
+                    fileListDiv.appendChild(ul);
+                }
+            }
+
+            // === SUPABASE SETUP ===
+            const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
+            const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+            // HARGA SIM
+            const regulasiMap = {
+                "Sim A": 13000,
+                "Sim B": 15000,
+                "Sim C": 12000
+            };
+
+            document.getElementById("staffForm").addEventListener("submit", async function(e){
+                e.preventDefault();
+
+                const form = e.target;
+                const formData = new FormData(form);
+                const statusDiv = document.getElementById("status");
+
+                // Ambil tipe SIM
+                const simCheckboxes = form.querySelectorAll('input[name="sim"]:checked');
+                const tipeSimArr = [];
+                let totalHarga = 0;
+                simCheckboxes.forEach(cb => {
+                    tipeSimArr.push(cb.value);
+                    if (regulasiMap[cb.value]) {
+                        totalHarga += regulasiMap[cb.value];
+                    }
+                });
+
+                // VALIDASI FILE: HARUS ADA
+                if (!selectedFiles.length) {
+                    statusDiv.textContent = "Pilih minimal satu gambar!";
+                    return;
+                }
+
+                statusDiv.textContent = "Mengirim...";
+
+                // Upload file ke Supabase Storage (ambil file pertama saja)
+                let fileUrl = "";
+                if (selectedFiles.length) {
+                    const file = selectedFiles[0];
+                    const fileName = Date.now() + "_" + encodeURIComponent(file.name);
+                    const { data, error } = await supabase.storage.from('sim').upload(fileName, file);
+                    if (error) {
+                        statusDiv.textContent = "Gagal upload file: " + error.message;
+                        return;
+                    }
+                    const { data: publicUrlData } = supabase.storage.from('sim').getPublicUrl(fileName);
+                    fileUrl = publicUrlData.publicUrl;
+                }
+
+                // Data siap insert
+                const insertData = {
+                    ucp: formData.get("usercontrolpanel"),
+                    nama: formData.get("nama"),
+                    usia: formData.get("usia"),
+                    jk: formData.get("jk"),
+                    nomorhp: formData.get("nomorhp"),
+                    foto_ktp: formData.get("fktp"),
+                    discordid: discordId,
+                    tipe_sim: tipeSimArr.join(', '),
+                    harga: totalHarga,
+                    file_ktp_url: fileUrl,
+                    created_at: new Date().toISOString()
+                };
+
+                // Insert ke tabel Supabase (tabel: sim)
+                const { error: insertError } = await supabase
+                    .from('sim')
+                    .insert([insertData]);
+
+                if (!insertError) {
+                    // Redirect ke halaman lain (misal sukses.html) setelah submit sukses
+                    window.location.href = "sukses.html";
+                } else {
+                    statusDiv.textContent = "Gagal menyimpan ke database: " + insertError.message;
+                }
+            });
+        });
 </script>
 </body>
