@@ -43,11 +43,11 @@
     async function loadData() {
       const area = document.getElementById('table-area');
       area.innerHTML = '<div class="loader">Memuat data...</div>';
-      // Ambil data dari tabel skck_form, urut terbaru
+      // Ambil data dari tabel skck, urut berdasarkan id (karena created_at mungkin tidak ada)
       let { data, error } = await supabase
         .from('skck')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('id', { ascending: false });
 
       if (error) {
         area.innerHTML = '<div style="color:red">Gagal memuat data: ' + error.message + '</div>';
@@ -63,18 +63,12 @@
         <thead>
           <tr>
             <th>No</th>
-            <th>Nama Petugas</th>
-            <th>UCP</th>
             <th>Nama Lengkap</th>
             <th>Usia</th>
             <th>JK</th>
             <th>Keperluan</th>
             <th>No HP</th>
             <th>Foto KTP?</th>
-            <th>Yakin SKCK?</th>
-            <th>Discord ID</th>
-            <th>Waktu Daftar</th>
-            <th>File KTP</th>
           </tr>
         </thead>
         <tbody>
@@ -90,14 +84,6 @@
           <td>${row.keperluan || ''}</td>
           <td>${row.nomorhp || ''}</td>
           <td>${row.foto_ktp || ''}</td>
-          <td>${row.skck || ''}</td>
-          <td>${row.discordid || ''}</td>
-          <td>${row.created_at ? new Date(row.created_at).toLocaleString() : ''}</td>
-          <td>${
-            row.file_ktp_url
-              ? `<a href="${row.file_ktp_url}" target="_blank" class="file-link"><i class="fas fa-file"></i> Lihat</a>`
-              : '-'
-          }</td>
         </tr>`;
       });
       html += `</tbody></table></div>`;
