@@ -322,7 +322,7 @@
                 <a href="beranda.html" class="nav-link"><i class="fas fa-home"></i> Beranda</a>
             </li>
             <li class="dropdown-parent">
-                <a class="nav-link dropdown-toggle"><i class="fas fa-file-alt"></i> Layanan <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
+                <a class="nav-link dropdown-toggle" href="#" id="layananBtn"><i class="fas fa-file-alt"></i> Layanan <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
                 <div class="dropdown-menu-custom">
                     <a href="createsim.html">Pembuatan SIM</a>
                     <a href="perpanjangsim.html">Perpanjang SIM</a>
@@ -331,7 +331,7 @@
                 </div>
             </li>
             <li class="dropdown-parent">
-                <a class="nav-link dropdown-toggle"><i class="fas fa-sitemap"></i> Informasi <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
+                <a class="nav-link dropdown-toggle" href="#" id="infoBtn"><i class="fas fa-sitemap"></i> Informasi <i class="fas fa-chevron-down" style="font-size:12px;"></i></a>
                 <div class="dropdown-menu-custom">
                     <a href="#">Coming Soon</a>
                     <a href="#">Coming Soon</a>
@@ -339,10 +339,10 @@
                 </div>
             </li>
             <li>
-                <a href="#" class="nav-link"><i class="fas fa-dollar"></i> Regulasi</a>
+                <a href="regulasi.html" class="nav-link"><i class="fas fa-dollar"></i> Regulasi</a>
             </li>
             <li>
-                <a href="#" class="nav-link" id="contactBtn"><i class="fas fa-address-book"></i> Kontak</a>
+                <a href="#" class="nav-link" id="contactNavBtn"><i class="fas fa-address-book"></i> Kontak</a>
             </li>
         </ul>
     </nav>
@@ -474,28 +474,44 @@
         </a>
     </div>
   <script>
-    // Fungsi untuk membuka/menutup dropdown
-    function toggleDropdown(id) {
-      // Tutup semua dropdown lain
-      document.querySelectorAll('.dropdown-content').forEach(el => {
-        if (el.id !== id) el.style.display = 'none';
-      });
-      // Toggle dropdown yang diklik
-      var dropdown = document.getElementById(id);
-      if (dropdown.style.display === 'block') {
-        dropdown.style.display = 'none';
-      } else {
-        dropdown.style.display = 'block';
-      }
-    }
-    // Tutup dropdown kalau klik di luar menu
-    document.addEventListener('click', function(event) {
-      if (!event.target.matches('.dropbtn')) {
-        document.querySelectorAll('.dropdown-content').forEach(el => {
-          el.style.display = 'none';
+    document.addEventListener('DOMContentLoaded', function () {
+    // === DROPDOWN NAVBAR ===
+    document.querySelectorAll('.dropdown-parent').forEach(function(parent) {
+        parent.querySelector('.dropdown-toggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Tutup dropdown lain
+            document.querySelectorAll('.dropdown-parent').forEach(function(other) {
+                if (other !== parent) other.classList.remove('show');
+            });
+            parent.classList.toggle('show');
         });
-      }
     });
+    // Klik di luar navbar menutup semua dropdown
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.navbar-custom')) {
+            document.querySelectorAll('.dropdown-parent').forEach(function(parent) {
+                parent.classList.remove('show');
+            });
+        }
+    });
+
+    // === MODAL KONTAK ===
+    const contactBtn = document.getElementById('contactNavBtn');
+    const contactModal = document.getElementById('contactModal');
+    const closeBtn = contactModal.querySelector('.close');
+    contactBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        contactModal.style.display = 'flex';
+    });
+    closeBtn.addEventListener('click', function() {
+        contactModal.style.display = 'none';
+    });
+    window.addEventListener('click', function(event) {
+        if (event.target === contactModal) {
+            contactModal.style.display = 'none';
+        }
+    });
+});
   </script>
 </body>
         
@@ -559,33 +575,33 @@
         <i class="fas fa-info-circle"></i>
     </div>
     
-<!-- Contact Modal -->
-<div class="modal" id="contactModal">
-    <div class="modal-content animate-pop">
-        <span class="close">&times;</span>
-        <h2><i class="fas fa-info-circle"></i> Tentang Pembuat</h2>
-        <div class="modal-body">
-            <div class="profile-section">
-                <img src="big.png" alt="Foto Profil" class="profile-pic">
-                <h3>Big Smoke</h3>
-                <p><i class="fab fa-discord"></i> <strong>Discord:</strong> 19unknown</p>
-                <p><i class="fas fa-calendar-alt"></i> <strong>Dibuat pada:</strong> 30 Mei 2025</p>
-                <p><i class="fas fa-envelope"></i> <strong>Email:</strong> whoisfeb19@gmail.com</p>
-                <div class="social-links">
-                    <a href="https://youtube.com/@ottibonynyo?feature=shared" target="_blank" class="social-icon">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                    <a href="https://discord.com/invite/kotakuroleplay" target="_blank" class="social-icon">
-                        <i class="fab fa-discord"></i>
-                    </a>
-                    <a href="https://github.com" target="_blank" class="social-icon">
-                        <i class="fab fa-github"></i>
-                    </a>
+<!-- Contact Modal tetap -->
+    <div class="modal" id="contactModal">
+        <div class="modal-content animate-pop">
+            <span class="close">&times;</span>
+            <h2><i class="fas fa-info-circle"></i> Tentang Pembuat</h2>
+            <div class="modal-body">
+                <div class="profile-section">
+                    <img src="big.png" alt="Foto Profil" class="profile-pic">
+                    <h3>Big Smoke</h3>
+                    <p><i class="fab fa-discord"></i> <strong>Discord:</strong> 19unknown</p>
+                    <p><i class="fas fa-calendar-alt"></i> <strong>Dibuat pada:</strong> 30 Mei 2025</p>
+                    <p><i class="fas fa-envelope"></i> <strong>Email:</strong> whoisfeb19@gmail.com</p>
+                    <div class="social-links">
+                        <a href="https://youtube.com/@ottibonynyo?feature=shared" target="_blank" class="social-icon">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="https://discord.com/invite/kotakuroleplay" target="_blank" class="social-icon">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="https://github.com" target="_blank" class="social-icon">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 
 <style>
