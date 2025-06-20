@@ -101,6 +101,29 @@
       loadData();
     }
 
+    async function hapusDataBatch(rows) {
+      // Hapus data dan file KTP untuk banyak baris
+      if (!rows || !rows.length) return;
+      // Hapus file KTP jika ada
+      const fileNames = rows
+        .filter(row => row.file_ktp_url)
+        .map(row => {
+          const urlParts = row.file_ktp_url.split('/');
+          return decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
+        });
+
+      if (fileNames.length) {
+        try {
+          await supabase.storage.from('sim').remove(fileNames);
+        } catch (err) { }
+      }
+      // Hapus data rows
+      const ids = rows.map(row => row.id);
+      if (ids.length) {
+        await supabase.from('sim').delete().in('id', ids);
+      }
+    }
+
     async function hapusSemuaData() {
       if (!confirm('Yakin ingin menghapus SEMUA data SIM?')) return;
       let { data, error } = await supabase.from('sim').select('id, file_ktp_url');
@@ -109,25 +132,9 @@
         return;
       }
       if (data && data.length) {
-        const fileNames = data
-          .filter(row => row.file_ktp_url)
-          .map(row => {
-            const urlParts = row.file_ktp_url.split('/');
-            return decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
-          });
-        if (fileNames.length) {
-          try {
-            await supabase.storage.from('sim').remove(fileNames);
-          } catch (err) { }
-        }
+        await hapusDataBatch(data);
       }
-      const { error: delError } = await supabase.from('sim').delete().gt('id', 0);
-      if (delError) {
-        alert('Gagal menghapus semua data: ' + delError.message);
-      } else {
-        alert('Semua data berhasil dihapus.');
-        loadData();
-      }
+      loadData();
     }
 
     // Membuat format pesan per satu entri, tanpa nomor dan TANPA tag role user (hanya ID Discord)
@@ -144,6 +151,11 @@
       msg += `Total Harga: Rp${row.harga ? Number(row.harga).toLocaleString("id-ID") : "-"}\n`;
       msg += `Data Valid & Sesuai: ${(dataValidStatus[row.id]) ? "✅" : "❌"}\n`;
       return msg;
+    }
+
+    // Fungsi delay (ms)
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     // Kirim HANYA data yang valid ke Discord, setiap data dalam blok kode terpisah, tetap satu pesan
@@ -182,13 +194,21 @@
       };
 
       try {
+        // Delay 2 detik sebelum kirim
+        await delay(2000);
         let res = await fetch(discordWebhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
         if (res.ok) {
-          alert('Semua data valid berhasil dikirim ke Discord!');
+          alert('Semua data valid berhasil dikirim ke Discord! Data akan dihapus otomatis.');
+          // Setelah berhasil kirim, hapus data dan file KTP dari supabase
+          await hapusDataBatch(validData);
+          // Hapus status valid di localStorage untuk data yang sudah dikirim
+          validData.forEach(row => delete dataValidStatus[row.id]);
+          saveValidStatus();
+          loadData();
         } else {
           alert('Gagal mengirim ke Discord. Pastikan webhook aktif.');
         }
