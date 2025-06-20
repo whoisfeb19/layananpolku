@@ -63,7 +63,6 @@
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     const discordWebhookUrl = "https://discord.com/api/webhooks/1385188983620898897/A7-ToKi1I9-f6Jkp2jnrGyD0iI7CPgMP4D3VnWKLprfRj-FJIKvv3ExJUHbd3ipb8ffn";
-    const autoTagRoleId = "1366617622111846510";
 
     let cacheData = [];
 
@@ -113,32 +112,45 @@
       }
     }
 
-    async function kirimKeDiscord(row) {
-      let data = row;
-      let msg = `**Layanan Pembuatan SIM**\n`;
-      msg += "```";
-      msg += `\nPaspor (UCP): ${data.ucp || "-"}\n`;
-      msg += `Nama Lengkap Sesuai KTP: ${data.nama || "-"}\n`;
-      msg += `Usia Sesuai KTP: ${data.usia || "-"}\n`;
-      msg += `Jenis Kelamin: ${data.jk || "-"}\n`;
-      msg += `Nomor Handphone: ${data.nomorhp || "-"}\n`;
-      msg += `Foto Ktp: ${data.foto_ktp || "-"}\n`;
-      msg += `Username Discord: ${data.discordid ? `<@${data.discordid}>` : "-"}\n`;
-      msg += `Tipe Sim: ${data.tipe_sim || "-"}\n`;
-      msg += `Total Harga: Rp${data.harga ? Number(data.harga).toLocaleString("id-ID") : "-"}\n`;
-      msg += "```";
-      msg += `\n<@&${autoTagRoleId}>`;
-      let payload = {
-        content: msg
-      };
-      if (data.file_ktp_url) {
-        payload.embeds = [
-          {
-            image: { url: data.file_ktp_url },
-            description: "Foto KTP"
-          }
-        ];
+    // Membuat format pesan per satu entri
+    function formatEntry(row, i) {
+      let msg = `No: ${i+1}\n`;
+      msg += `Paspor (UCP): ${row.ucp || "-"}\n`;
+      msg += `Nama Lengkap Sesuai KTP: ${row.nama || "-"}\n`;
+      msg += `Usia Sesuai KTP: ${row.usia || "-"}\n`;
+      msg += `Jenis Kelamin: ${row.jk || "-"}\n`;
+      msg += `Nomor Handphone: ${row.nomorhp || "-"}\n`;
+      msg += `Foto Ktp: ${row.foto_ktp || "-"}\n`;
+      msg += `Username Discord: ${row.discordid ? `<@${row.discordid}>` : "-"}\n`;
+      msg += `Tipe Sim: ${row.tipe_sim || "-"}\n`;
+      msg += `Total Harga: Rp${row.harga ? Number(row.harga).toLocaleString("id-ID") : "-"}\n`;
+      msg += `--------------------------\n`;
+      return msg;
+    }
+
+    // Kirim semua data ke Discord sebagai satu pesan
+    async function kirimSemuaKeDiscord() {
+      if (!cacheData.length) {
+        alert('Tidak ada data untuk dikirim.');
+        return;
       }
+      if (!confirm('Kirim semua data ke Discord dalam satu pesan?')) return;
+      const btn = document.getElementById("btnKirimSemua");
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
+
+      // Gabungkan semua entry ke satu teks
+      let allMsg = `**Layanan Pembuatan SIM**\n`;
+      allMsg += "```";
+      cacheData.forEach((row, i) => {
+        allMsg += "\n" + formatEntry(row, i);
+      });
+      allMsg += "```";
+
+      let payload = {
+        content: allMsg
+      };
+
       try {
         let res = await fetch(discordWebhookUrl, {
           method: 'POST',
@@ -146,36 +158,16 @@
           body: JSON.stringify(payload)
         });
         if (res.ok) {
-          return true;
+          alert('Semua data berhasil dikirim ke Discord!');
         } else {
-          return false;
+          alert('Gagal mengirim ke Discord. Pastikan webhook aktif.');
         }
       } catch (err) {
-        return false;
+        alert('Gagal mengirim ke Discord.\n' + err);
       }
-    }
 
-    // Kirim semua data ke Discord (sekaligus)
-    async function kirimSemuaKeDiscord() {
-      if (!cacheData.length) {
-        alert('Tidak ada data untuk dikirim.');
-        return;
-      }
-      if (!confirm('Kirim semua data ke Discord?')) return;
-      const btn = document.getElementById("btnKirimSemua");
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
-      let total = cacheData.length;
-      let sukses = 0, gagal = 0;
-      for (const row of cacheData) {
-        const hasil = await kirimKeDiscord(row);
-        if (hasil) sukses++;
-        else gagal++;
-        await new Promise(r => setTimeout(r, 500)); // jeda biar tidak rate limit
-      }
       btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Semua`;
       btn.disabled = false;
-      alert(`Selesai!\nBerhasil: ${sukses}\nGagal: ${gagal}`);
     }
 
     function renderTable(data) {
