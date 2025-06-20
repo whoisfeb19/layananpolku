@@ -33,6 +33,8 @@
     .no-data { text-align: center; padding: 44px 0; color: #888;}
     .img-ktp-preview { max-width: 60px; max-height: 60px; border-radius: 7px; box-shadow: 0 2px 6px #0002; transition: box-shadow 0.2s; cursor: pointer; border: 1px solid #ddd; }
     .img-ktp-preview:hover { box-shadow: 0 0 10px #2563eb55; border-color: #2563eb; }
+    .checkbox-valid { width: 18px; height: 18px; cursor: pointer; }
+    .valid-label { display: flex; align-items: center; gap: 2px; justify-content: center; }
     @media (max-width: 700px) {
       th, td { font-size: 0.95em; padding: 7px 4px;}
       .container { padding: 8px;}
@@ -66,6 +68,21 @@
     const discordWebhookUrl = "https://discord.com/api/webhooks/1385188983620898897/A7-ToKi1I9-f6Jkp2jnrGyD0iI7CPgMP4D3VnWKLprfRj-FJIKvv3ExJUHbd3ipb8ffn";
 
     let cacheData = [];
+    // Status valid dari data, format: { id: true/false }
+    let dataValidStatus = {};
+
+    // Simpan status valid ke localStorage
+    function saveValidStatus() {
+      localStorage.setItem("sim_valid_status", JSON.stringify(dataValidStatus));
+    }
+    // Load status valid dari localStorage
+    function loadValidStatus() {
+      try {
+        dataValidStatus = JSON.parse(localStorage.getItem("sim_valid_status")) || {};
+      } catch {
+        dataValidStatus = {};
+      }
+    }
 
     async function hapusData(id, file_ktp_url) {
       if (!confirm('Yakin ingin menghapus data ini?')) return;
@@ -125,30 +142,33 @@
       msg += `ID Discord: ${row.discordid || "-"}\n`; // Hanya ID, tanpa tag <@id>
       msg += `Tipe Sim: ${row.tipe_sim || "-"}\n`;
       msg += `Total Harga: Rp${row.harga ? Number(row.harga).toLocaleString("id-ID") : "-"}\n`;
+      msg += `Data Valid & Sesuai: ${(dataValidStatus[row.id]) ? "✅" : "❌"}\n`;
       return msg;
     }
 
-    // Kirim semua data ke Discord, setiap data dalam blok kode terpisah, tetap satu pesan
+    // Kirim HANYA data yang valid ke Discord, setiap data dalam blok kode terpisah, tetap satu pesan
     async function kirimSemuaKeDiscord() {
-      if (!cacheData.length) {
-        alert('Tidak ada data untuk dikirim.');
+      // Filter hanya data valid
+      let validData = cacheData.filter(row => dataValidStatus[row.id]);
+      if (!validData.length) {
+        alert('Tidak ada data valid untuk dikirim.');
         return;
       }
-      if (!confirm('Kirim semua data ke Discord dalam satu pesan dan tampilkan semua foto?')) return;
+      if (!confirm('Kirim HANYA data valid ke Discord dalam satu pesan dan tampilkan semua foto?')) return;
       const btn = document.getElementById("btnKirimSemua");
       btn.disabled = true;
       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
 
       // Setiap entry blok kode terpisah
       let allMsg = `**Layanan Pembuatan SIM**\n`;
-      cacheData.forEach(row => {
+      validData.forEach(row => {
         allMsg += "```";
         allMsg += "\n" + formatEntry(row);
         allMsg += "```\n";
       });
 
       // Embed gambar (max 10)
-      let embeds = cacheData
+      let embeds = validData
         .filter(row => !!row.file_ktp_url)
         .slice(0, 10)
         .map(row => ({
@@ -168,7 +188,7 @@
           body: JSON.stringify(payload)
         });
         if (res.ok) {
-          alert('Semua data berhasil dikirim ke Discord!');
+          alert('Semua data valid berhasil dikirim ke Discord!');
         } else {
           alert('Gagal mengirim ke Discord. Pastikan webhook aktif.');
         }
@@ -178,6 +198,13 @@
 
       btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Semua`;
       btn.disabled = false;
+    }
+
+    // Toggle valid dan simpan
+    function toggleValid(id) {
+      dataValidStatus[id] = !dataValidStatus[id];
+      saveValidStatus();
+      renderTable(cacheData);
     }
 
     function renderTable(data) {
@@ -196,13 +223,14 @@
           <th>Total Harga</th>
           <th>Waktu Daftar</th>
           <th>File KTP</th>
+          <th>Valid & Sesuai</th>
           <th>Aksi</th>
         </tr>
         </thead>
         <tbody>
       `;
       if (!data || data.length === 0) {
-        html += `<tr><td colspan="13" style="text-align:center;color:#888;">Belum ada data pendaftaran.</td></tr>`;
+        html += `<tr><td colspan="14" style="text-align:center;color:#888;">Belum ada data pendaftaran.</td></tr>`;
       } else {
         data.forEach((row, i) => {
           html += `<tr>
@@ -223,6 +251,12 @@
                 : '-'
             }</td>
             <td>
+              <label class="valid-label">
+                <input type="checkbox" class="checkbox-valid" ${dataValidStatus[row.id] ? "checked" : ""} onclick="toggleValid('${row.id}')">
+                ${dataValidStatus[row.id] ? "✅" : "❌"}
+              </label>
+            </td>
+            <td>
               <button class="btn-hapus" onclick="hapusData('${row.id}', '${row.file_ktp_url || ''}')"><i class="fas fa-trash"></i> Hapus</button>
             </td>
           </tr>`;
@@ -233,6 +267,7 @@
     }
 
     async function loadData() {
+      loadValidStatus();
       const area = document.getElementById('table-area');
       area.innerHTML = '<div class="loader">Memuat data...</div>';
 
@@ -284,6 +319,7 @@
     window.searchData = searchData;
     window.resetSearch = resetSearch;
     window.kirimSemuaKeDiscord = kirimSemuaKeDiscord;
+    window.toggleValid = toggleValid;
 
     loadData();
   </script>
