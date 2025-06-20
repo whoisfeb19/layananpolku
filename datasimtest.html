@@ -43,7 +43,7 @@
 <body>
   <div class="container">
     <h2>Data Pendaftaran SIM</h2>
-    <h2 class="text-align:center"> silahkan klik kirim ketika semua data warga telah sesuai dan ketika belum sesuai silahkan hapus data yang tidak sesuai hapus data yang tidak sesuai dikarenakan ketika klik krim semua data yang ada akan terkirim semu</h2>
+    <h3 style="text-align:center"> Silahkan klik kirim ketika semua data warga telah sesuai dan ketika belum sesuai silahkan hapus data yang tidak sesuai hapus data yang tidak sesuai dikarenakan ketika klik krim semua data yang ada akan terkirim semua</h3>
     <div class="btn-group">
       <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
       <button class="btn-hapus-semua" onclick="hapusSemuaData()"><i class="fas fa-trash"></i> Hapus Semua</button>
@@ -113,7 +113,7 @@
       }
     }
 
-    // Membuat format pesan per satu entri, tanpa nomor
+    // Membuat format pesan per satu entri, tanpa nomor dan TANPA tag role user (hanya ID Discord)
     function formatEntry(row) {
       let msg = "";
       msg += `Paspor (UCP): ${row.ucp || "-"}\n`;
@@ -122,7 +122,7 @@
       msg += `Jenis Kelamin: ${row.jk || "-"}\n`;
       msg += `Nomor Handphone: ${row.nomorhp || "-"}\n`;
       msg += `Foto Ktp: ${row.foto_ktp || "-"}\n`;
-      msg += `Username Discord: ${row.discordid ? `<@${row.discordid}>` : "-"}\n`;
+      msg += `ID Discord: ${row.discordid || "-"}\n`; // Hanya ID, tanpa tag <@id>
       msg += `Tipe Sim: ${row.tipe_sim || "-"}\n`;
       msg += `Total Harga: Rp${row.harga ? Number(row.harga).toLocaleString("id-ID") : "-"}\n`;
       return msg;
