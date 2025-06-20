@@ -43,12 +43,11 @@
 <body>
   <div class="container">
     <h2>Data Pendaftaran SIM</h2>
-    <h2>silahkan klik kirim ketika semua data warga telah sesuai dan ketika belum sesuai silahkan hapus data yang tidak sesuai hapus data yang tidak sesuai dikarenakan ketika klik krim semua data yang ada akan terkirim semu</h2>
+    <h3 class="text-align:center"> silahkan klik kirim ketika semua data warga telah sesuai dan ketika belum sesuai silahkan hapus data yang tidak sesuai hapus data yang tidak sesuai dikarenakan ketika klik krim semua data yang ada akan terkirim semu</h3>
     <div class="btn-group">
       <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
       <button class="btn-hapus-semua" onclick="hapusSemuaData()"><i class="fas fa-trash"></i> Hapus Semua</button>
       <button class="btn-kirim" onclick="kirimSemuaKeDiscord()" id="btnKirimSemua"><i class="fas fa-paper-plane"></i> Kirim Semua</button>
-
     </div>
     <div class="search-group">
       <input class="search-input" type="text" id="searchBox" placeholder="Cari Nama, UCP, Discord, dll..." onkeyup="searchData(event)">
@@ -114,9 +113,9 @@
       }
     }
 
-    // Membuat format pesan per satu entri
-    function formatEntry(row, i) {
-      let msg = `No: ${i+1}\n`;
+    // Membuat format pesan per satu entri, tanpa nomor
+    function formatEntry(row) {
+      let msg = "";
       msg += `Paspor (UCP): ${row.ucp || "-"}\n`;
       msg += `Nama Lengkap Sesuai KTP: ${row.nama || "-"}\n`;
       msg += `Usia Sesuai KTP: ${row.usia || "-"}\n`;
@@ -130,13 +129,13 @@
       return msg;
     }
 
-    // Kirim semua data ke Discord sebagai satu pesan, tanpa link foto/file_ktp_url
+    // Kirim semua data ke Discord sebagai satu pesan, tampilkan foto KTP sebagai embed (maksimal 10 gambar)
     async function kirimSemuaKeDiscord() {
       if (!cacheData.length) {
         alert('Tidak ada data untuk dikirim.');
         return;
       }
-      if (!confirm('Kirim semua data ke Discord dalam satu pesan?')) return;
+      if (!confirm('Kirim semua data ke Discord dalam satu pesan dan tampilkan semua foto?')) return;
       const btn = document.getElementById("btnKirimSemua");
       btn.disabled = true;
       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
@@ -144,13 +143,23 @@
       // Gabungkan semua entry ke satu teks
       let allMsg = `**Layanan Pembuatan SIM**\n`;
       allMsg += "```";
-      cacheData.forEach((row, i) => {
-        allMsg += "\n" + formatEntry(row, i);
+      cacheData.forEach(row => {
+        allMsg += "\n" + formatEntry(row);
       });
       allMsg += "```";
 
+      // Discord hanya support 10 embed per message, jadi hanya 10 gambar pertama
+      let embeds = cacheData
+        .filter(row => !!row.file_ktp_url)
+        .slice(0, 10)
+        .map(row => ({
+          image: { url: row.file_ktp_url },
+          description: "Foto KTP"
+        }));
+
       let payload = {
-        content: allMsg
+        content: allMsg,
+        embeds: embeds
       };
 
       try {
