@@ -46,10 +46,13 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Masukkan webhook Discord kamu di sini!
-    const discordWebhookUrl = "https://discord.com/api/webhooks/1384441650482380852/GP5ztsSRu-Nm36esHTvitue2QRQwvL9WE9alpRiGGZg1kyfNWzPg4xTmyHg5iH81keOj";
-    // Ganti dengan role Discord yang ingin di-tag otomatis (hanya ID-nya, tanpa <@& ... >)
-    const autoTagRoleId = "1366617622111846509"; // Ganti sesuai Role ID Discord yang kamu ingin tag
+    // Webhook Discord
+    const discordWebhookUrl = "https://discord.com/api/webhooks/1385188067366797333/A7uBmLukJDBqanJ3feB9BtXAFVqA18NZse88Dt959KSvcxZY0UopvY7oP9YszPBKKEZB";
+
+    // Fungsi delay (ms)
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
     async function hapusData(id, file_ktp_url) {
       if (!confirm('Yakin ingin menghapus data ini?')) return;
@@ -92,13 +95,12 @@
       msg += `Keperluan Pembuatan: ${data.keperluan || "-"}\n`;
       msg += `Nomor Handphone: ${data.nomorhp || "-"}\n`;
       msg += `Foto Ktp: ${data.foto_ktp || "-"}\n`;
-      msg += `Username Discord: ${data.discordid ? `<@${data.discordid}>` : "-"}\n`;
+      msg += `ID Discord: ${data.discordid || "-"}\n`; // Hanya tampilkan ID Discord tanpa tag user
       msg += `Total Harga: $ ${data.harga ? Number(data.harga).toLocaleString() : "-"}\n`;
       msg += `\nDENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL\n`;
       msg += "```";
 
-      // Tag role di luar block code agar Discord benar-benar men-tag!
-      msg += `\n<@&${autoTagRoleId}>`;
+      // Tidak ada auto tag role apapun dan tidak ada auto tag user pengirim
 
       // Payload untuk webhook
       let payload = {
@@ -115,8 +117,9 @@
         ];
       }
 
-      // Kirim ke Discord Webhook
+      // Kirim ke Discord Webhook dengan delay 5 detik sebelum eksekusi
       try {
+        await delay(5000); // Delay 5 detik
         let res = await fetch(discordWebhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -125,7 +128,7 @@
         if (res.ok) {
           alert('Data berhasil dikirim ke Discord!');
         } else {
-          alert('Gagal mengirim ke Discord. Pastikan webhook aktif dan bot/webhook punya permission mention role.');
+          alert('Gagal mengirim ke Discord. Pastikan webhook aktif.');
         }
       } catch (err) {
         alert('Gagal mengirim ke Discord.\n' + err);
