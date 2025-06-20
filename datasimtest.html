@@ -43,10 +43,12 @@
 <body>
   <div class="container">
     <h2>Data Pendaftaran SIM</h2>
+    <label> silahkan klik kirim ketika semua data warga telah sesuai dan ketika belum sesuai silahkan hapus data yang tidak sesuai hapus data yang tidak sesuai dikarenakan ketika klik krim semua data yang ada akan terkirim semu</label>
     <div class="btn-group">
       <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
       <button class="btn-hapus-semua" onclick="hapusSemuaData()"><i class="fas fa-trash"></i> Hapus Semua</button>
       <button class="btn-kirim" onclick="kirimSemuaKeDiscord()" id="btnKirimSemua"><i class="fas fa-paper-plane"></i> Kirim Semua</button>
+
     </div>
     <div class="search-group">
       <input class="search-input" type="text" id="searchBox" placeholder="Cari Nama, UCP, Discord, dll..." onkeyup="searchData(event)">
@@ -128,13 +130,13 @@
       return msg;
     }
 
-    // Kirim semua data ke Discord sebagai satu pesan
+    // Kirim semua data ke Discord sebagai satu pesan + daftar foto/link file_ktp_url
     async function kirimSemuaKeDiscord() {
       if (!cacheData.length) {
         alert('Tidak ada data untuk dikirim.');
         return;
       }
-      if (!confirm('Kirim semua data ke Discord dalam satu pesan?')) return;
+      if (!confirm('Kirim semua data ke Discord dalam satu pesan beserta link foto?')) return;
       const btn = document.getElementById("btnKirimSemua");
       btn.disabled = true;
       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
@@ -146,6 +148,15 @@
         allMsg += "\n" + formatEntry(row, i);
       });
       allMsg += "```";
+
+      // Kumpulan link foto KTP (jika ada)
+      let daftarFoto = cacheData.filter(r => r.file_ktp_url).map(
+        (r, i) => `Foto KTP #${i+1}: ${r.file_ktp_url}`
+      ).join('\n');
+
+      if(daftarFoto) {
+        allMsg += `\n\nLink Foto KTP:\n${daftarFoto}`;
+      }
 
       let payload = {
         content: allMsg
