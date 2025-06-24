@@ -47,79 +47,65 @@
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
     // Webhook Discord
-    const discordWebhookUrl = "https://discord.com/api/webhooks/1385188067366797333/A7uBmLukJDBqanJ3feB9BtXAFVqA18NZse88Dt959KSvcxZY0UopvY7oP9YszPBKKEZB";
+    const discordWebhookUrl = "https://discord.com/api/webhooks/1386996202964254791/P1WFCxsx_Z5DkMiORX8p1wvuQ3W7QbV6zMFsot0DIX0NN3n0Qm9Je-gEuN5Dw6G_n86E";
 
-    // Fungsi delay (ms)
     function delay(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     async function hapusData(id, file_ktp_url) {
       if (!confirm('Yakin ingin menghapus data ini?')) return;
-      // Hapus data di tabel
       const { error } = await supabase.from('skck').delete().eq('id', id);
       if (error) {
         alert('Gagal menghapus data: ' + error.message);
         return;
       }
-      // Hapus file di Storage bila ada
       if (file_ktp_url) {
         try {
-          // Extract the filename from the URL
           const urlParts = file_ktp_url.split('/');
           const filename = decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
           await supabase.storage.from('skck').remove([filename]);
-        } catch (err) { /* ignore error */ }
+        } catch (err) { }
       }
       loadData();
     }
 
+    // Kirim satu data (AMAN)
     async function kirimUlangData(id) {
-      // Ambil data berdasarkan ID
       let { data, error } = await supabase.from('skck').select('*').eq('id', id).single();
       if (error || !data) {
         alert('Gagal mengambil data SKCK.');
         return;
       }
 
-      // Formatting pesan mirip screenshot, sesuai urutan dan gaya
+      let now = new Date().toLocaleString();
       let msg = `**Layanan Pembuatan SKCK**\n\n`;
-      msg += `__**DATA DIRI PETUGAS**__\n`;
-      msg += `\`\`\`\nNama Petugas: ${data.petugas || "-"}\n\`\`\`\n`;
-      msg += `__**DATA DIRI PENERIMA**__\n`;
-      msg += "```";
-      msg += `\nPaspor (UCP): ${data.ucp || "-"}\n`;
-      msg += `Nama Lengkap Sesuai KTP: ${data.nama || "-"}\n`;
-      msg += `Usia Sesuai KTP: ${data.usia || "-"}\n`;
+      msg += `ID Data: ${data.id} | Waktu: ${now}\n`;
+      msg += `-- DATA PETUGAS --\n`;
+      msg += `Nama Petugas: ${data.petugas || "-"}\n\n`;
+      msg += `-- DATA PENGAJU --\n`;
+      msg += `Paspor (UCP): ${data.ucp || "-"}\n`;
+      msg += `Nama Lengkap (KTP): ${data.nama || "-"}\n`;
+      msg += `Usia (KTP): ${data.usia || "-"}\n`;
       msg += `Jenis Kelamin: ${data.jk || "-"}\n`;
       msg += `Keperluan Pembuatan: ${data.keperluan || "-"}\n`;
-      msg += `Nomor Handphone: ${data.nomorhp || "-"}\n`;
-      msg += `Foto Ktp: ${data.foto_ktp || "-"}\n`;
-      msg += `ID Discord: ${data.discordid || "-"}\n`; // Hanya tampilkan ID Discord tanpa tag user
-      msg += `Total Harga: $ ${data.harga ? Number(data.harga).toLocaleString() : "-"}\n`;
-      msg += `\nDENGAN INI BAHWA PIHAK YANG BERSANGKUTAN TIDAK PERNAH MELAKUKAN TINDAK KRIMINAL\n`;
-      msg += "```";
+      msg += `Nomor HP: ${data.nomorhp || "-"}\n`;
+      msg += `Dokumen KTP: ${data.foto_ktp || "-"}\n`;
+      msg += `ID Discord: ${data.discordid || "-"}\n`;
+      msg += `Total Harga: Rp${data.harga ? Number(data.harga).toLocaleString("id-ID") : "-"}\n`;
+      msg += `Pernyataan: Tidak pernah melakukan tindak kriminal sesuai data yang diberikan.\n`;
 
-      // Tidak ada auto tag role apapun dan tidak ada auto tag user pengirim
+      let payload = { content: msg };
 
-      // Payload untuk webhook
-      let payload = {
-        content: msg
-      };
-
-      // Jika ada file KTP, gunakan embed untuk gambar
-      if (data.file_ktp_url) {
-        payload.embeds = [
-          {
-            image: { url: data.file_ktp_url },
-            description: "Foto KTP"
-          }
-        ];
+      if (data.file_ktp_url && data.file_ktp_url.startsWith("http")) {
+        payload.embeds = [{
+          image: { url: data.file_ktp_url },
+          description: "Dokumen KTP"
+        }];
       }
 
-      // Kirim ke Discord Webhook dengan delay 5 detik sebelum eksekusi
       try {
-        await delay(5000); // Delay 5 detik
+        await delay(2000); // delay aman
         let res = await fetch(discordWebhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -128,11 +114,72 @@
         if (res.ok) {
           alert('Data berhasil dikirim ke Discord!');
         } else {
-          alert('Gagal mengirim ke Discord. Pastikan webhook aktif.');
+          alert('Gagal mengirim ke Discord. Pastikan webhook aktif.\n' + (await res.text()));
         }
       } catch (err) {
         alert('Gagal mengirim ke Discord.\n' + err);
       }
+    }
+
+    // Kirim SEMUA data satu per satu dengan delay dan pesan unik
+    async function kirimSemuaKeDiscord() {
+      if (!confirm('Kirim semua data ke Discord?')) return;
+      const { data, error } = await supabase.from('skck').select('*').order('created_at', { ascending: false });
+      if (error || !data || data.length === 0) {
+        alert('Gagal atau tidak ada data untuk dikirim.');
+        return;
+      }
+      let errCount = 0;
+      for (let i = 0; i < data.length; i++) {
+        let row = data[i];
+        let now = new Date().toLocaleString();
+        let msg = `**Layanan Pembuatan SKCK**\n\n`;
+        msg += `No: ${i+1} | ID: ${row.id} | Waktu: ${now}\n`;
+        msg += `-- DATA PETUGAS --\n`;
+        msg += `Nama Petugas: ${row.petugas || "-"}\n\n`;
+        msg += `-- DATA PENGAJU --\n`;
+        msg += `Paspor (UCP): ${row.ucp || "-"}\n`;
+        msg += `Nama Lengkap (KTP): ${row.nama || "-"}\n`;
+        msg += `Usia (KTP): ${row.usia || "-"}\n`;
+        msg += `Jenis Kelamin: ${row.jk || "-"}\n`;
+        msg += `Keperluan Pembuatan: ${row.keperluan || "-"}\n`;
+        msg += `Nomor HP: ${row.nomorhp || "-"}\n`;
+        msg += `Dokumen KTP: ${row.foto_ktp || "-"}\n`;
+        msg += `ID Discord: ${row.discordid || "-"}\n`;
+        msg += `Total Harga: Rp${row.harga ? Number(row.harga).toLocaleString("id-ID") : "-"}\n`;
+        msg += `Pernyataan: Tidak pernah melakukan tindak kriminal sesuai data yang diberikan.\n`;
+
+        let payload = { content: msg };
+        if (row.file_ktp_url && row.file_ktp_url.startsWith("http")) {
+          payload.embeds = [{
+            image: { url: row.file_ktp_url },
+            description: "Dokumen KTP"
+          }];
+        }
+
+        await delay(2000); // DELAY 2 DETIK AMAN!
+        try {
+          let res = await fetch(discordWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) {
+            errCount++;
+            if (errCount >= 3) {
+              alert('Gagal mengirim ke Discord sebanyak 3x. Proses dihentikan.');
+              break;
+            }
+          }
+        } catch (err) {
+          errCount++;
+          if (errCount >= 3) {
+            alert('Gagal mengirim ke Discord sebanyak 3x. Proses dihentikan.');
+            break;
+          }
+        }
+      }
+      alert('Pengiriman selesai.');
     }
 
     async function loadData() {
@@ -202,14 +249,22 @@
       });
       html += `</tbody></table></div>`;
       area.innerHTML = html;
+      // Tombol kirim semua data batch
+      if (!document.getElementById('btnKirimSemua')) {
+        const btn = document.createElement('button');
+        btn.className = 'btn-kirim';
+        btn.id = 'btnKirimSemua';
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Semua ke Discord';
+        btn.onclick = kirimSemuaKeDiscord;
+        area.parentElement.insertBefore(btn, area);
+      }
     }
 
-    // Agar bisa dipanggil dari HTML
     window.hapusData = hapusData;
     window.kirimUlangData = kirimUlangData;
+    window.kirimSemuaKeDiscord = kirimSemuaKeDiscord;
 
-    // Auto load saat laman dibuka
     loadData();
-  </script>
+</script>
 </body>
 </html>

@@ -70,7 +70,6 @@
     let cacheData = [];
     let dataValidStatus = {};
 
-    // === Local Storage Status Valid ===
     function saveValidStatus() {
       localStorage.setItem("sim_valid_status", JSON.stringify(dataValidStatus));
     }
@@ -80,7 +79,6 @@
       } catch { dataValidStatus = {}; }
     }
 
-    // === CRUD Supabase ===
     async function hapusData(id, file_ktp_url) {
       if (!confirm('Yakin ingin menghapus data ini?')) return;
       const { error } = await supabase.from('sim').delete().eq('id', id);
@@ -91,7 +89,6 @@
       if (file_ktp_url) {
         try {
           const urlParts = file_ktp_url.split('/');
-          // Perbaiki nama file (bisa ada folder dalam bucket)
           const filename = decodeURIComponent(urlParts.slice(4).join('/').split('?')[0]);
           await supabase.storage.from('sim').remove([filename]);
         } catch (err) {}
@@ -129,17 +126,18 @@
       loadData();
     }
 
-    // === Format Pesan Discord ===
-    function formatEntry(row) {
+    function formatEntry(row, nomor, waktu) {
       let msg = "";
+      msg += `Data Ke: ${nomor}\n`;
+      msg += `Waktu: ${waktu}\n`;
       msg += `Paspor (UCP): ${row.ucp || "-"}\n`;
-      msg += `Nama Lengkap Sesuai KTP: ${row.nama || "-"}\n`;
-      msg += `Usia Sesuai KTP: ${row.usia || "-"}\n`;
+      msg += `Nama Lengkap (KTP): ${row.nama || "-"}\n`;
+      msg += `Usia (KTP): ${row.usia || "-"}\n`;
       msg += `Jenis Kelamin: ${row.jk || "-"}\n`;
       msg += `Nomor Handphone: ${row.nomorhp || "-"}\n`;
-      msg += `Foto Ktp: ${row.foto_ktp || "-"}\n`;
+      msg += `Dokumen KTP: ${row.foto_ktp || "-"}\n`;
       msg += `ID Discord: ${row.discordid || "-"}\n`;
-      msg += `Tipe Sim: ${row.tipe_sim || "-"}\n`;
+      msg += `Tipe SIM: ${row.tipe_sim || "-"}\n`;
       msg += `Total Harga: Rp${row.harga ? Number(row.harga).toLocaleString("id-ID") : "-"}\n`;
       msg += `Data Valid & Sesuai: ${(dataValidStatus[row.id]) ? "✅" : "❌"}\n`;
       return msg;
@@ -149,54 +147,42 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // === Kirim ke Discord, SUDAH FIX SUPPORT EMBED GAMBAR ===
+    // Kirim data valid satu per satu (AMAN DARI WARNING)
     async function kirimSemuaKeDiscord() {
       let validData = cacheData.filter(row => dataValidStatus[row.id]);
       if (!validData.length) {
         alert('Tidak ada data valid untuk dikirim.');
         return;
       }
-      if (!confirm('Kirim HANYA data valid ke Discord dalam satu pesan dan tampilkan semua foto?')) return;
+      if (!confirm('Kirim data valid ke Discord satu per satu dan tampilkan gambar kalau ada?')) return;
       const btn = document.getElementById("btnKirimSemua");
       btn.disabled = true;
       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
 
-      // Batasi panjang content 2000 karakter
-      let blocks = [];
-      let currentMsg = `**Layanan Pembuatan SIM**\n`;
-      for (const row of validData) {
-        let block = "```\n" + formatEntry(row) + "```\n";
-        if ((currentMsg + block).length > 1900) { // buffer biar gak mepet 2000
-          blocks.push(currentMsg);
-          currentMsg = "";
-        }
-        currentMsg += block;
-      }
-      if (currentMsg.length > 0) blocks.push(currentMsg);
-
-      // Kirim semua blocks satu-per-satu agar tidak overlimit
       try {
-        for (let i = 0; i < blocks.length; i++) {
-          let embeds = [];
-          // Embed gambar hanya di pesan pertama, maksimal 10 gambar
-          if (i === 0) {
-            embeds = validData
-              .filter(row => !!row.file_ktp_url)
-              .slice(0, 10)
-              .map(row => ({
-                title: `${row.nama || "Tanpa Nama"} (${row.ucp || "-"})`,
-                description: `Nomor HP: ${row.nomorhp || "-"}\nDiscord: ${row.discordid || "-"}\nTipe SIM: ${row.tipe_sim || "-"}`,
-                image: { url: row.file_ktp_url }
-              }));
+        for (let i = 0; i < validData.length; i++) {
+          const row = validData[i];
+          const waktu = new Date().toLocaleString();
+          let msg = "**Layanan Pembuatan SIM**\n" + formatEntry(row, i+1, waktu);
+
+          let payload = { content: msg };
+          if (row.file_ktp_url && row.file_ktp_url.startsWith('http')) {
+            payload.embeds = [{
+              image: { url: row.file_ktp_url },
+              description: "Dokumen KTP"
+            }];
           }
-          let payload = { content: blocks[i], embeds: embeds };
-          await delay(1200); // supaya tidak rate limit (1.2 detik per pesan)
+          // Delay 2 detik antar data
+          await delay(2000);
           let res = await fetch(discordWebhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
-          if (!res.ok) throw new Error(await res.text());
+          if (!res.ok) {
+            alert(`Gagal mengirim data ke Discord pada data ke-${i+1}.\n${await res.text()}`);
+            break;
+          }
         }
         alert('Semua data valid berhasil dikirim ke Discord! Data akan dihapus otomatis.');
         await hapusDataBatch(validData);
