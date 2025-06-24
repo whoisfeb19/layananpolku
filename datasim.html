@@ -45,7 +45,7 @@
 <body>
   <div class="container">
     <h2>Data Pendaftaran SIM</h2>
-    <h3 style="text-align:center"> Silahkan klik kirim ketika semua data warga telah sesuai dan ketika belum sesuai silahkan hapus data yang tidak sesuai hapus data yang tidak sesuai dikarenakan ketika klik krim semua data yang ada akan terkirim semua</h3>
+    <h3 style="text-align:center"> Silahkan klik kirim ketika semua data warga telah sesuai dan ketika belum sesuai silahkan hapus data yang tidak sesuai dikarenakan ketika klik kirim semua data yang ada akan terkirim semua</h3>
     <div class="btn-group">
       <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
       <button class="btn-hapus-semua" onclick="hapusSemuaData()"><i class="fas fa-trash"></i> Hapus Semua</button>
@@ -61,29 +61,26 @@
     </div>
   </div>
   <script>
+    // === Konfigurasi & Setup ===
     const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    const discordWebhookUrl = "https://discord.com/api/webhooks/1385188983620898897/A7-ToKi1I9-f6Jkp2jnrGyD0iI7CPgMP4D3VnWKLprfRj-FJIKvv3ExJUHbd3ipb8ffn";
-
+    const discordWebhookUrl = "https://discord.com/api/webhooks/1386996202964254791/P1WFCxsx_Z5DkMiORX8p1wvuQ3W7QbV6zMFsot0DIX0NN3n0Qm9Je-gEuN5Dw6G_n86E";
     let cacheData = [];
-    // Status valid dari data, format: { id: true/false }
     let dataValidStatus = {};
 
-    // Simpan status valid ke localStorage
+    // === Local Storage Status Valid ===
     function saveValidStatus() {
       localStorage.setItem("sim_valid_status", JSON.stringify(dataValidStatus));
     }
-    // Load status valid dari localStorage
     function loadValidStatus() {
       try {
         dataValidStatus = JSON.parse(localStorage.getItem("sim_valid_status")) || {};
-      } catch {
-        dataValidStatus = {};
-      }
+      } catch { dataValidStatus = {}; }
     }
 
+    // === CRUD Supabase ===
     async function hapusData(id, file_ktp_url) {
       if (!confirm('Yakin ingin menghapus data ini?')) return;
       const { error } = await supabase.from('sim').delete().eq('id', id);
@@ -94,30 +91,25 @@
       if (file_ktp_url) {
         try {
           const urlParts = file_ktp_url.split('/');
-          const filename = decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
+          // Perbaiki nama file (bisa ada folder dalam bucket)
+          const filename = decodeURIComponent(urlParts.slice(4).join('/').split('?')[0]);
           await supabase.storage.from('sim').remove([filename]);
-        } catch (err) { }
+        } catch (err) {}
       }
       loadData();
     }
 
     async function hapusDataBatch(rows) {
-      // Hapus data dan file KTP untuk banyak baris
       if (!rows || !rows.length) return;
-      // Hapus file KTP jika ada
       const fileNames = rows
         .filter(row => row.file_ktp_url)
         .map(row => {
           const urlParts = row.file_ktp_url.split('/');
-          return decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
+          return decodeURIComponent(urlParts.slice(4).join('/').split('?')[0]);
         });
-
       if (fileNames.length) {
-        try {
-          await supabase.storage.from('sim').remove(fileNames);
-        } catch (err) { }
+        try { await supabase.storage.from('sim').remove(fileNames); } catch { }
       }
-      // Hapus data rows
       const ids = rows.map(row => row.id);
       if (ids.length) {
         await supabase.from('sim').delete().in('id', ids);
@@ -137,7 +129,7 @@
       loadData();
     }
 
-    // Membuat format pesan per satu entri, tanpa nomor dan TANPA tag role user (hanya ID Discord)
+    // === Format Pesan Discord ===
     function formatEntry(row) {
       let msg = "";
       msg += `Paspor (UCP): ${row.ucp || "-"}\n`;
@@ -146,21 +138,19 @@
       msg += `Jenis Kelamin: ${row.jk || "-"}\n`;
       msg += `Nomor Handphone: ${row.nomorhp || "-"}\n`;
       msg += `Foto Ktp: ${row.foto_ktp || "-"}\n`;
-      msg += `ID Discord: ${row.discordid || "-"}\n`; // Hanya ID, tanpa tag <@id>
+      msg += `ID Discord: ${row.discordid || "-"}\n`;
       msg += `Tipe Sim: ${row.tipe_sim || "-"}\n`;
       msg += `Total Harga: Rp${row.harga ? Number(row.harga).toLocaleString("id-ID") : "-"}\n`;
       msg += `Data Valid & Sesuai: ${(dataValidStatus[row.id]) ? "✅" : "❌"}\n`;
       return msg;
     }
 
-    // Fungsi delay (ms)
     function delay(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // Kirim HANYA data yang valid ke Discord, setiap data dalam blok kode terpisah, tetap satu pesan
+    // === Kirim ke Discord ===
     async function kirimSemuaKeDiscord() {
-      // Filter hanya data valid
       let validData = cacheData.filter(row => dataValidStatus[row.id]);
       if (!validData.length) {
         alert('Tidak ada data valid untuk dikirim.');
@@ -171,56 +161,53 @@
       btn.disabled = true;
       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
 
-      // Setiap entry blok kode terpisah
-      let allMsg = `**Layanan Pembuatan SIM**\n`;
-      validData.forEach(row => {
-        allMsg += "```";
-        allMsg += "\n" + formatEntry(row);
-        allMsg += "```\n";
-      });
-
-      // Embed gambar (max 10)
-      let embeds = validData
-        .filter(row => !!row.file_ktp_url)
-        .slice(0, 10)
-        .map(row => ({
-          image: { url: row.file_ktp_url },
-          description: "Foto KTP"
-        }));
-
-      let payload = {
-        content: allMsg,
-        embeds: embeds
-      };
-
-      try {
-        // Delay 2 detik sebelum kirim
-        await delay(2000);
-        let res = await fetch(discordWebhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (res.ok) {
-          alert('Semua data valid berhasil dikirim ke Discord! Data akan dihapus otomatis.');
-          // Setelah berhasil kirim, hapus data dan file KTP dari supabase
-          await hapusDataBatch(validData);
-          // Hapus status valid di localStorage untuk data yang sudah dikirim
-          validData.forEach(row => delete dataValidStatus[row.id]);
-          saveValidStatus();
-          loadData();
-        } else {
-          alert('Gagal mengirim ke Discord. Pastikan webhook aktif.');
+      // Batasi panjang content 2000 karakter
+      let blocks = [];
+      let currentMsg = `**Layanan Pembuatan SIM**\n`;
+      for (const row of validData) {
+        let block = "```\n" + formatEntry(row) + "```\n";
+        if ((currentMsg + block).length > 1900) { // buffer biar gak mepet 2000
+          blocks.push(currentMsg);
+          currentMsg = "";
         }
-      } catch (err) {
-        alert('Gagal mengirim ke Discord.\n' + err);
+        currentMsg += block;
       }
+      if (currentMsg.length > 0) blocks.push(currentMsg);
 
+      // Kirim semua blocks satu-per-satu agar tidak overlimit
+      try {
+        for (let i = 0; i < blocks.length; i++) {
+          let embeds = [];
+          // Embed gambar hanya di pesan pertama, maksimal 10 gambar
+          if (i === 0) {
+            embeds = validData
+              .filter(row => !!row.file_ktp_url)
+              .slice(0, 10)
+              .map(row => ({
+                image: { url: row.file_ktp_url }
+              }));
+          }
+          let payload = { content: blocks[i], embeds: embeds };
+          await delay(1200); // supaya tidak rate limit (1.2 detik per pesan)
+          let res = await fetch(discordWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error(await res.text());
+        }
+        alert('Semua data valid berhasil dikirim ke Discord! Data akan dihapus otomatis.');
+        await hapusDataBatch(validData);
+        validData.forEach(row => delete dataValidStatus[row.id]);
+        saveValidStatus();
+        loadData();
+      } catch (err) {
+        alert('Gagal mengirim ke Discord.\n' + err.message);
+      }
       btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Semua`;
       btn.disabled = false;
     }
 
-    // Toggle valid dan simpan
     function toggleValid(id) {
       dataValidStatus[id] = !dataValidStatus[id];
       saveValidStatus();
