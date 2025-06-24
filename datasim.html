@@ -149,7 +149,7 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // === Kirim ke Discord ===
+    // === Kirim ke Discord, SUDAH FIX SUPPORT EMBED GAMBAR ===
     async function kirimSemuaKeDiscord() {
       let validData = cacheData.filter(row => dataValidStatus[row.id]);
       if (!validData.length) {
@@ -184,6 +184,8 @@
               .filter(row => !!row.file_ktp_url)
               .slice(0, 10)
               .map(row => ({
+                title: `${row.nama || "Tanpa Nama"} (${row.ucp || "-"})`,
+                description: `Nomor HP: ${row.nomorhp || "-"}\nDiscord: ${row.discordid || "-"}\nTipe SIM: ${row.tipe_sim || "-"}`,
                 image: { url: row.file_ktp_url }
               }));
           }
@@ -329,6 +331,6 @@
     window.toggleValid = toggleValid;
 
     loadData();
-  </script>
+</script>
 </body>
 </html>
