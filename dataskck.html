@@ -55,7 +55,6 @@
     // Webhook Discord
     const discordWebhookUrl = "https://l.webhook.party/hook/KGDeTD5LKJPbmJ588JnjPwGoIIbOMQmk5HtOYbjIBl%2B3i6%2FclzN%2BUxdbyv%2FrVkIl5npua8DX0BZaQe2DDlzE5R19TpIxMuP%2FfUQ2mgHDYY7WjU5Z32dKfvyjWpOQMgeKY81aKl7tp72GJvJ13IObYiSN0%2B%2BkEtQKsGMVrKCvSoVGYQKmHjO3hxGRyK9VH041eopvCx0mFSTaMKqi%2FBbU8IWFdTUflNFP60DYLrTVay7nPtSK9Vysgly4z3I4gdSSk60lRvxeDgnnSRJfoyKWFHLZFDXhra7dOhn9KhyvLH3RtbQj4pgMmED9SfqCe41lzmrVYWN%2BxL7YRCYeZ6%2BHR59qrsVjwYVBQK55dOnxvW8SY%2F6NYS1c1IW9axhI7aj3tUQ97GQFyKQ%3D/taWqdbuHDFmqFufv";
 
-    // === FITUR VALID ala SIM (localStorage, emoji, centang) ===
     let dataValidStatus = {};
     let skckData = []; // cache data hasil fetch
 
@@ -94,8 +93,13 @@
       loadData();
     }
 
-    // Kirim satu data (AMAN)
+    // Kirim satu data (validasi status valid)
     async function kirimUlangData(id) {
+      if (!dataValidStatus[id]) {
+        alert("Data belum valid! Silakan centang valid terlebih dahulu.");
+        return;
+      }
+
       let { data, error } = await supabase.from('skck').select('*').eq('id', id).single();
       if (error || !data) {
         alert('Gagal mengambil data SKCK.');
@@ -145,16 +149,19 @@
       }
     }
 
+    // Kirim SEMUA data satu per satu, hanya yang valid
     async function kirimSemuaKeDiscord() {
-      if (!confirm('Kirim semua data ke Discord?')) return;
-      const { data, error } = await supabase.from('skck').select('*').order('created_at', { ascending: false });
-      if (error || !data || data.length === 0) {
-        alert('Gagal atau tidak ada data untuk dikirim.');
+      // Ambil hanya data yang valid
+      let validRows = skckData.filter(row => dataValidStatus[row.id]);
+      if (!validRows.length) {
+        alert('Tidak ada data valid untuk dikirim!');
         return;
       }
+
+      if (!confirm('Kirim semua data VALID ke Discord?')) return;
       let errCount = 0;
-      for (let i = 0; i < data.length; i++) {
-        let row = data[i];
+      for (let i = 0; i < validRows.length; i++) {
+        let row = validRows[i];
         let now = new Date().toLocaleString();
         let msg = `**Layanan Pembuatan SKCK**\n\n`;
         msg += `No: ${i+1} | ID: ${row.id} | Waktu: ${now}\n`;
@@ -302,7 +309,7 @@
             </td>
             <td>
               <button class="btn-hapus" onclick="hapusData('${row.id}', '${row.file_ktp_url || ''}')"><i class="fas fa-trash"></i> Hapus</button>
-              <button class="btn-kirim" onclick="kirimUlangData('${row.id}')"><i class="fas fa-paper-plane"></i> Kirim</button>
+              <button class="btn-kirim" onclick="kirimUlangData('${row.id}')" ${!dataValidStatus[row.id] ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fas fa-paper-plane"></i> Kirim</button>
             </td>
           </tr>`;
         });
