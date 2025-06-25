@@ -57,17 +57,15 @@
 
     let skckData = [];
 
-    // Update status valid langsung ke database Supabase agar semua user bisa lihat
+    // --- REALTIME LISTENER UNTUK is_valid ---
+    let validSubscription = null;
+
     async function toggleValid(id, checked) {
       const { error } = await supabase.from('skck').update({ is_valid: checked }).eq('id', id);
       if (error) {
         alert('Gagal update status valid: ' + error.message);
-        return;
       }
-      // update cache (optional, agar langsung update UI)
-      let row = skckData.find(r => r.id === id);
-      if (row) row.is_valid = checked;
-      renderTable();
+      // Tidak perlu panggil renderTable di sini, karena akan otomatis via realtime listener
     }
 
     function delay(ms) {
@@ -316,12 +314,40 @@
       area.innerHTML = html;
     }
 
+    // --- REALTIME SUBSCRIPTION ---
+    async function setupRealtime() {
+      // Unsubscribe sebelumnya jika ada
+      if (window.validSubscription) {
+        await window.validSubscription.unsubscribe();
+      }
+
+      // Realtime untuk update status valid
+      window.validSubscription = supabase
+        .channel('skck_valid_channel')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'skck' },
+          payload => {
+            // Update skckData dan re-render tabel
+            const newRow = payload.new;
+            if (!newRow) return;
+            const idx = skckData.findIndex(r => r.id === newRow.id);
+            if (idx !== -1) {
+              skckData[idx] = { ...skckData[idx], ...newRow };
+            }
+            renderTable();
+          }
+        )
+        .subscribe();
+    }
+
     window.hapusData = hapusData;
     window.kirimUlangData = kirimUlangData;
     window.kirimSemuaKeDiscord = kirimSemuaKeDiscord;
     window.toggleValid = toggleValid;
 
-    loadData();
+    // Initial load and realtime setup
+    loadData().then(setupRealtime);
   </script>
 </body>
 </html>
