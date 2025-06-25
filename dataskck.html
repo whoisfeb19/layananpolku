@@ -55,20 +55,18 @@
     // Webhook Discord
     const discordWebhookUrl = "https://l.webhook.party/hook/KGDeTD5LKJPbmJ588JnjPwGoIIbOMQmk5HtOYbjIBl%2B3i6%2FclzN%2BUxdbyv%2FrVkIl5npua8DX0BZaQe2DDlzE5R19TpIxMuP%2FfUQ2mgHDYY7WjU5Z32dKfvyjWpOQMgeKY81aKl7tp72GJvJ13IObYiSN0%2B%2BkEtQKsGMVrKCvSoVGYQKmHjO3hxGRyK9VH041eopvCx0mFSTaMKqi%2FBbU8IWFdTUflNFP60DYLrTVay7nPtSK9Vysgly4z3I4gdSSk60lRvxeDgnnSRJfoyKWFHLZFDXhra7dOhn9KhyvLH3RtbQj4pgMmED9SfqCe41lzmrVYWN%2BxL7YRCYeZ6%2BHR59qrsVjwYVBQK55dOnxvW8SY%2F6NYS1c1IW9axhI7aj3tUQ97GQFyKQ%3D/taWqdbuHDFmqFufv";
 
-    let dataValidStatus = {};
-    let skckData = []; // cache data hasil fetch
+    let skckData = [];
 
-    function saveValidStatus() {
-      localStorage.setItem("skck_valid_status", JSON.stringify(dataValidStatus));
-    }
-    function loadValidStatus() {
-      try {
-        dataValidStatus = JSON.parse(localStorage.getItem("skck_valid_status")) || {};
-      } catch { dataValidStatus = {}; }
-    }
-    function toggleValid(id) {
-      dataValidStatus[id] = !dataValidStatus[id];
-      saveValidStatus();
+    // Update status valid langsung ke database Supabase agar semua user bisa lihat
+    async function toggleValid(id, checked) {
+      const { error } = await supabase.from('skck').update({ is_valid: checked }).eq('id', id);
+      if (error) {
+        alert('Gagal update status valid: ' + error.message);
+        return;
+      }
+      // update cache (optional, agar langsung update UI)
+      let row = skckData.find(r => r.id === id);
+      if (row) row.is_valid = checked;
       renderTable();
     }
 
@@ -95,7 +93,8 @@
 
     // Kirim satu data (validasi status valid)
     async function kirimUlangData(id) {
-      if (!dataValidStatus[id]) {
+      let row = skckData.find(r => r.id === id);
+      if (!row || !row.is_valid) {
         alert("Data belum valid! Silakan centang valid terlebih dahulu.");
         return;
       }
@@ -152,7 +151,7 @@
     // Kirim SEMUA data satu per satu, hanya yang valid
     async function kirimSemuaKeDiscord() {
       // Ambil hanya data yang valid
-      let validRows = skckData.filter(row => dataValidStatus[row.id]);
+      let validRows = skckData.filter(row => row.is_valid);
       if (!validRows.length) {
         alert('Tidak ada data valid untuk dikirim!');
         return;
@@ -213,7 +212,6 @@
     }
 
     async function loadData() {
-      loadValidStatus();
       const area = document.getElementById('table-area');
       area.innerHTML = '<div class="loader">Memuat data...</div>';
 
@@ -303,13 +301,13 @@
             }</td>
             <td>
               <label class="valid-label">
-                <input type="checkbox" class="checkbox-valid" ${dataValidStatus[row.id] ? "checked" : ""} onclick="toggleValid('${row.id}')">
-                ${dataValidStatus[row.id] ? "✅" : "❌"}
+                <input type="checkbox" class="checkbox-valid" ${row.is_valid ? "checked" : ""} onchange="toggleValid('${row.id}', this.checked)">
+                ${row.is_valid ? "✅" : "❌"}
               </label>
             </td>
             <td>
               <button class="btn-hapus" onclick="hapusData('${row.id}', '${row.file_ktp_url || ''}')"><i class="fas fa-trash"></i> Hapus</button>
-              <button class="btn-kirim" onclick="kirimUlangData('${row.id}')" ${!dataValidStatus[row.id] ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fas fa-paper-plane"></i> Kirim</button>
+              <button class="btn-kirim" onclick="kirimUlangData('${row.id}')" ${!row.is_valid ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fas fa-paper-plane"></i> Kirim</button>
             </td>
           </tr>`;
         });
