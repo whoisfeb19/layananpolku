@@ -69,17 +69,15 @@
     const discordWebhookUrl = "https://l.webhook.party/hook/jLlaeTAM1s39Odwyp%2FyuOzXkWCEuVbiHOXrrMYVeqoarEkz0wDcvBN%2FQyuy9zurl%2Bx%2FKoXuX%2FvxYCHhtma7o7rRGV7YGZ5ebqrqz%2FU9Ooa2bIGXWC3eThYwUVqZE7TV4ZbNRlmGSAvy5BinmARhucGM4JdvrGaxAeg89S80OpaL3tVgFcNm4zVgsSPituklsb229Gqg1HLo0ZjSm5awY5hPZXwu9Gntcgbf75kKdMvIWPCHbcNhnAMD6LJ5SDJJyLy6Szr7CZHNX5AFuZpMbBrV%2FzrG2EKYkU1AgcokQzIH5vhcn0f5witO4s4NWKv3DTdgWkMEvEV5SdR0GyB9RpUBo5pPrvl8Hy2IiMKrm3D0rych2KrxoVq%2F6MBbNEyhtjtgN%2FYzzlnI%3D/KryzdSmlmr0DTa%2Bz";
     let cacheData = [];
 
-    // Update status valid langsung ke database Supabase agar semua user bisa lihat
+    // --- REALTIME LISTENER UNTUK is_valid ---
+    let validSubscription = null;
+
     async function toggleValid(id, checked) {
       const { error } = await supabase.from('sim').update({ is_valid: checked }).eq('id', id);
       if (error) {
         alert('Gagal update status valid: ' + error.message);
-        return;
       }
-      // update cache (optional, agar langsung update UI)
-      let row = cacheData.find(r => r.id === id);
-      if (row) row.is_valid = checked;
-      renderTable(cacheData);
+      // Tidak perlu panggil renderTable di sini, karena akan otomatis via realtime listener
     }
 
     async function hapusData(id, file_ktp_url) {
@@ -303,6 +301,33 @@
       renderTable(cacheData);
     }
 
+    // --- REALTIME SUBSCRIPTION ---
+    async function setupRealtime() {
+      // Unsubscribe sebelumnya jika ada
+      if (window.validSubscription) {
+        await window.validSubscription.unsubscribe();
+      }
+
+      // Realtime untuk update status valid
+      window.validSubscription = supabase
+        .channel('sim_valid_channel')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'sim' },
+          payload => {
+            // Update cacheData dan re-render tabel
+            const newRow = payload.new;
+            if (!newRow) return;
+            const idx = cacheData.findIndex(r => r.id === newRow.id);
+            if (idx !== -1) {
+              cacheData[idx] = { ...cacheData[idx], ...newRow };
+            }
+            renderTable(cacheData);
+          }
+        )
+        .subscribe();
+    }
+
     window.hapusData = hapusData;
     window.hapusSemuaData = hapusSemuaData;
     window.searchData = searchData;
@@ -310,7 +335,8 @@
     window.kirimSemuaKeDiscord = kirimSemuaKeDiscord;
     window.toggleValid = toggleValid;
 
-    loadData();
+    // Initial load and realtime setup
+    loadData().then(setupRealtime);
   </script>
 </body>
 </html>
