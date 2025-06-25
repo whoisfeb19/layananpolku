@@ -68,15 +68,18 @@
 
     const discordWebhookUrl = "https://l.webhook.party/hook/jLlaeTAM1s39Odwyp%2FyuOzXkWCEuVbiHOXrrMYVeqoarEkz0wDcvBN%2FQyuy9zurl%2Bx%2FKoXuX%2FvxYCHhtma7o7rRGV7YGZ5ebqrqz%2FU9Ooa2bIGXWC3eThYwUVqZE7TV4ZbNRlmGSAvy5BinmARhucGM4JdvrGaxAeg89S80OpaL3tVgFcNm4zVgsSPituklsb229Gqg1HLo0ZjSm5awY5hPZXwu9Gntcgbf75kKdMvIWPCHbcNhnAMD6LJ5SDJJyLy6Szr7CZHNX5AFuZpMbBrV%2FzrG2EKYkU1AgcokQzIH5vhcn0f5witO4s4NWKv3DTdgWkMEvEV5SdR0GyB9RpUBo5pPrvl8Hy2IiMKrm3D0rych2KrxoVq%2F6MBbNEyhtjtgN%2FYzzlnI%3D/KryzdSmlmr0DTa%2Bz";
     let cacheData = [];
-    let dataValidStatus = {};
 
-    function saveValidStatus() {
-      localStorage.setItem("sim_valid_status", JSON.stringify(dataValidStatus));
-    }
-    function loadValidStatus() {
-      try {
-        dataValidStatus = JSON.parse(localStorage.getItem("sim_valid_status")) || {};
-      } catch { dataValidStatus = {}; }
+    // Update status valid langsung ke database Supabase agar semua user bisa lihat
+    async function toggleValid(id, checked) {
+      const { error } = await supabase.from('sim').update({ is_valid: checked }).eq('id', id);
+      if (error) {
+        alert('Gagal update status valid: ' + error.message);
+        return;
+      }
+      // update cache (optional, agar langsung update UI)
+      let row = cacheData.find(r => r.id === id);
+      if (row) row.is_valid = checked;
+      renderTable(cacheData);
     }
 
     async function hapusData(id, file_ktp_url) {
@@ -139,7 +142,7 @@
       msg += `ID Discord: ${row.discordid || "-"}\n`;
       msg += `Tipe SIM: ${row.tipe_sim || "-"}\n`;
       msg += `Total Harga: Rp${row.harga ? Number(row.harga).toLocaleString("id-ID") : "-"}\n`;
-      msg += `Data Valid & Sesuai: ${(dataValidStatus[row.id]) ? "✅" : "❌"}\n`;
+      msg += `Data Valid & Sesuai: ${(row.is_valid) ? "✅" : "❌"}\n`;
       return msg;
     }
 
@@ -149,7 +152,7 @@
 
     // Kirim data valid satu per satu (AMAN DARI WARNING)
     async function kirimSemuaKeDiscord() {
-      let validData = cacheData.filter(row => dataValidStatus[row.id]);
+      let validData = cacheData.filter(row => row.is_valid);
       if (!validData.length) {
         alert('Tidak ada data valid untuk dikirim.');
         return;
@@ -186,20 +189,12 @@
         }
         alert('Semua data valid berhasil dikirim ke Discord! Data akan dihapus otomatis.');
         await hapusDataBatch(validData);
-        validData.forEach(row => delete dataValidStatus[row.id]);
-        saveValidStatus();
         loadData();
       } catch (err) {
         alert('Gagal mengirim ke Discord.\n' + err.message);
       }
       btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Semua`;
       btn.disabled = false;
-    }
-
-    function toggleValid(id) {
-      dataValidStatus[id] = !dataValidStatus[id];
-      saveValidStatus();
-      renderTable(cacheData);
     }
 
     function renderTable(data) {
@@ -247,8 +242,8 @@
             }</td>
             <td>
               <label class="valid-label">
-                <input type="checkbox" class="checkbox-valid" ${dataValidStatus[row.id] ? "checked" : ""} onclick="toggleValid('${row.id}')">
-                ${dataValidStatus[row.id] ? "✅" : "❌"}
+                <input type="checkbox" class="checkbox-valid" ${row.is_valid ? "checked" : ""} onchange="toggleValid('${row.id}', this.checked)">
+                ${row.is_valid ? "✅" : "❌"}
               </label>
             </td>
             <td>
@@ -262,7 +257,6 @@
     }
 
     async function loadData() {
-      loadValidStatus();
       const area = document.getElementById('table-area');
       area.innerHTML = '<div class="loader">Memuat data...</div>';
 
@@ -317,6 +311,6 @@
     window.toggleValid = toggleValid;
 
     loadData();
-</script>
+  </script>
 </body>
 </html>
