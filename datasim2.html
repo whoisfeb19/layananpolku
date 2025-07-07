@@ -54,11 +54,47 @@
       transition: opacity 0.4s, visibility 0.4s;
       box-shadow: 0 2px 12px #0004;
     }
+    /* Modal konfirmasi */
+    #modalKonfirmasi {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.15);
+      justify-content: center;
+      align-items: center;
+    }
+    #modalKonfirmasi .modal-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 28px 22px;
+      box-shadow: 0 6px 32px #0003;
+      max-width: 320px;
+      margin: auto;
+      text-align: center;
+      font-size: 1.07em;
+      color: #222;
+    }
+    #modalKonfirmasi .modal-btn-group {
+      margin-top: 26px;
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+    }
+    #modalKonfirmasi .btn-ya {
+      background: #dc2626; color: #fff; border: none; border-radius: 6px; padding: 7px 24px; cursor: pointer;
+    }
+    #modalKonfirmasi .btn-ya:hover { background: #a81e1e;}
+    #modalKonfirmasi .btn-tidak {
+      background: #e5e7eb; color: #444; border: none; border-radius: 6px; padding: 7px 18px; cursor: pointer;
+    }
+    #modalKonfirmasi .btn-tidak:hover { background: #cbd5e1;}
     @media (max-width: 700px) {
       th, td { font-size: 0.95em; padding: 7px 4px;}
       .container { padding: 8px;}
       .btn-group, .search-group { flex-direction: column; gap: 6px; }
       #toastNotif { min-width: 140px; margin-left: -70px; font-size: 0.96em; padding: 10px 10px;}
+      #modalKonfirmasi .modal-box { padding: 16px 8px; font-size: 1em;}
     }
   </style>
 </head>
@@ -82,6 +118,16 @@
   </div>
   <!-- Toast Notification -->
   <div id="toastNotif"></div>
+  <!-- Modal Konfirmasi Hapus -->
+  <div id="modalKonfirmasi">
+    <div class="modal-box">
+      <div id="modalKonfirmasiText">Yakin ingin menghapus data ini?</div>
+      <div class="modal-btn-group">
+        <button class="btn-ya" id="btnModalYa">Ya, Hapus</button>
+        <button class="btn-tidak" id="btnModalTidak">Batal</button>
+      </div>
+    </div>
+  </div>
   <script>
     // === Konfigurasi & Setup ===
     const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
@@ -104,6 +150,22 @@
       }, duration);
     }
 
+    // === Modal Konfirmasi Hapus ===
+    let hapusDataCallback = null;
+    function showModalKonfirmasi({text = "Yakin ingin menghapus data ini?", onYa = null, onTidak = null}) {
+      document.getElementById('modalKonfirmasiText').textContent = text;
+      document.getElementById('modalKonfirmasi').style.display = 'flex';
+      hapusDataCallback = onYa;
+      document.getElementById('btnModalYa').onclick = () => {
+        document.getElementById('modalKonfirmasi').style.display = 'none';
+        if (typeof hapusDataCallback === "function") hapusDataCallback();
+      };
+      document.getElementById('btnModalTidak').onclick = () => {
+        document.getElementById('modalKonfirmasi').style.display = 'none';
+        if (typeof onTidak === "function") onTidak();
+      };
+    }
+
     // --- REALTIME LISTENER UNTUK is_valid ---
     let validSubscription = null;
 
@@ -117,22 +179,27 @@
       // Tidak perlu panggil renderTable di sini, karena akan otomatis via realtime listener
     }
 
+    // Ganti hapusData dengan konfirmasi modal
     async function hapusData(id, file_ktp_url) {
-      if (!confirm('Yakin ingin menghapus data ini?')) return;
-      const { error } = await supabase.from('sim').delete().eq('id', id);
-      if (error) {
-        showToastNotif('Gagal menghapus data: ' + error.message, 3500);
-        return;
-      }
-      if (file_ktp_url) {
-        try {
-          const urlParts = file_ktp_url.split('/');
-          const filename = decodeURIComponent(urlParts.slice(4).join('/').split('?')[0]);
-          await supabase.storage.from('sim').remove([filename]);
-        } catch (err) {}
-      }
-      showToastNotif("Data berhasil dihapus.", 2000);
-      loadData();
+      showModalKonfirmasi({
+        text: "Yakin ingin menghapus data ini?",
+        onYa: async () => {
+          const { error } = await supabase.from('sim').delete().eq('id', id);
+          if (error) {
+            showToastNotif('Gagal menghapus data: ' + error.message, 3500);
+            return;
+          }
+          if (file_ktp_url) {
+            try {
+              const urlParts = file_ktp_url.split('/');
+              const filename = decodeURIComponent(urlParts.slice(4).join('/').split('?')[0]);
+              await supabase.storage.from('sim').remove([filename]);
+            } catch (err) {}
+          }
+          showToastNotif("Data berhasil dihapus.", 2000);
+          loadData();
+        }
+      });
     }
 
     async function hapusDataBatch(rows) {
@@ -153,17 +220,21 @@
     }
 
     async function hapusSemuaData() {
-      if (!confirm('Yakin ingin menghapus SEMUA data SIM?')) return;
-      let { data, error } = await supabase.from('sim').select('id, file_ktp_url');
-      if (error) {
-        showToastNotif('Gagal mengambil data: ' + error.message, 3500);
-        return;
-      }
-      if (data && data.length) {
-        await hapusDataBatch(data);
-      }
-      showToastNotif("Semua data berhasil dihapus.", 2000);
-      loadData();
+      showModalKonfirmasi({
+        text: "Yakin ingin menghapus SEMUA data SIM?",
+        onYa: async () => {
+          let { data, error } = await supabase.from('sim').select('id, file_ktp_url');
+          if (error) {
+            showToastNotif('Gagal mengambil data: ' + error.message, 3500);
+            return;
+          }
+          if (data && data.length) {
+            await hapusDataBatch(data);
+          }
+          showToastNotif("Semua data berhasil dihapus.", 2000);
+          loadData();
+        }
+      });
     }
 
     function formatEntry(row, nomor, waktu) {
@@ -194,46 +265,49 @@
         showToastNotif('Tidak ada data valid untuk dikirim.', 3000);
         return;
       }
-      if (!confirm('Kirim data valid ke Discord satu per satu dan tampilkan gambar kalau ada?')) return;
-      const btn = document.getElementById("btnKirimSemua");
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
+      showModalKonfirmasi({
+        text: "Kirim data valid ke Discord satu per satu dan tampilkan gambar kalau ada?",
+        onYa: async () => {
+          const btn = document.getElementById("btnKirimSemua");
+          btn.disabled = true;
+          btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
+          try {
+            for (let i = 0; i < validData.length; i++) {
+              const row = validData[i];
+              const waktu = new Date().toLocaleString();
+              let msg = "**Layanan Pembuatan SIM**\n" + formatEntry(row, i+1, waktu);
 
-      try {
-        for (let i = 0; i < validData.length; i++) {
-          const row = validData[i];
-          const waktu = new Date().toLocaleString();
-          let msg = "**Layanan Pembuatan SIM**\n" + formatEntry(row, i+1, waktu);
-
-          let payload = { content: msg };
-          if (row.file_ktp_url && row.file_ktp_url.startsWith('http')) {
-            payload.embeds = [{
-              image: { url: row.file_ktp_url },
-              description: "Dokumen KTP"
-            }];
+              let payload = { content: msg };
+              if (row.file_ktp_url && row.file_ktp_url.startsWith('http')) {
+                payload.embeds = [{
+                  image: { url: row.file_ktp_url },
+                  description: "Dokumen KTP"
+                }];
+              }
+              // Delay 2 detik antar data
+              await delay(2000);
+              let res = await fetch(discordWebhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (!res.ok) {
+                showToastNotif(`Gagal mengirim data ke Discord pada data ke-${i+1}: ${await res.text()}`, 4500);
+                break;
+              } else {
+                showToastNotif(`Data ke-${i+1} berhasil dikirim ke Discord!`, 1500);
+              }
+            }
+            showToastNotif('Semua data valid berhasil dikirim ke Discord! Data akan dihapus otomatis.', 4000);
+            await hapusDataBatch(validData);
+            loadData();
+          } catch (err) {
+            showToastNotif('Gagal mengirim ke Discord.\n' + err.message, 4000);
           }
-          // Delay 2 detik antar data
-          await delay(2000);
-          let res = await fetch(discordWebhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          if (!res.ok) {
-            showToastNotif(`Gagal mengirim data ke Discord pada data ke-${i+1}: ${await res.text()}`, 4500);
-            break;
-          } else {
-            showToastNotif(`Data ke-${i+1} berhasil dikirim ke Discord!`, 1500);
-          }
+          btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Semua`;
+          btn.disabled = false;
         }
-        showToastNotif('Semua data valid berhasil dikirim ke Discord! Data akan dihapus otomatis.', 4000);
-        await hapusDataBatch(validData);
-        loadData();
-      } catch (err) {
-        showToastNotif('Gagal mengirim ke Discord.\n' + err.message, 4000);
-      }
-      btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Semua`;
-      btn.disabled = false;
+      });
     }
 
     function renderTable(data) {
@@ -344,19 +418,15 @@
 
     // --- REALTIME SUBSCRIPTION ---
     async function setupRealtime() {
-      // Unsubscribe sebelumnya jika ada
       if (window.validSubscription) {
         await window.validSubscription.unsubscribe();
       }
-
-      // Realtime untuk update status valid
       window.validSubscription = supabase
         .channel('sim_valid_channel')
         .on(
           'postgres_changes',
           { event: '*', schema: 'public', table: 'sim' },
           payload => {
-            // Update cacheData dan re-render tabel
             const newRow = payload.new;
             if (!newRow) return;
             const idx = cacheData.findIndex(r => r.id === newRow.id);
