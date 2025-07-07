@@ -45,7 +45,7 @@
 <body>
   <div class="container">
     <h2>Data Pendaftaran SIM</h2>
-    <h3 style="text-align:center"> Silahkan klik kirim ketika semua data warga telah sesuai dan ketika belum sesuai silahkan hapus data yang tidak sesuai dikarenakan ketika klik kirim semua data yang ada akan terkirim semua</h3>
+    <h3 style="text-align:center"> silahkan klik centang jika data sudah valid dan sudah melakukan pembayaran</h3>
     <div class="btn-group">
       <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
       <button class="btn-hapus-semua" onclick="hapusSemuaData()"><i class="fas fa-trash"></i> Hapus Semua</button>
@@ -66,21 +66,20 @@
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    const discordWebhookUrl = "https://discord.com/api/webhooks/1386996202964254791/P1WFCxsx_Z5DkMiORX8p1wvuQ3W7QbV6zMFsot0DIX0NN3n0Qm9Je-gEuN5Dw6G_n86E";
+    const discordWebhookUrl = "https://l.webhook.party/hook/jLlaeTAM1s39Odwyp%2FyuOzXkWCEuVbiHOXrrMYVeqoarEkz0wDcvBN%2FQyuy9zurl%2Bx%2FKoXuX%2FvxYCHhtma7o7rRGV7YGZ5ebqrqz%2FU9Ooa2bIGXWC3eThYwUVqZE7TV4ZbNRlmGSAvy5BinmARhucGM4JdvrGaxAeg89S80OpaL3tVgFcNm4zVgsSPituklsb229Gqg1HLo0ZjSm5awY5hPZXwu9Gntcgbf75kKdMvIWPCHbcNhnAMD6LJ5SDJJyLy6Szr7CZHNX5AFuZpMbBrV%2FzrG2EKYkU1AgcokQzIH5vhcn0f5witO4s4NWKv3DTdgWkMEvEV5SdR0GyB9RpUBo5pPrvl8Hy2IiMKrm3D0rych2KrxoVq%2F6MBbNEyhtjtgN%2FYzzlnI%3D/KryzdSmlmr0DTa%2Bz";
     let cacheData = [];
-    let dataValidStatus = {};
 
-    // === Local Storage Status Valid ===
-    function saveValidStatus() {
-      localStorage.setItem("sim_valid_status", JSON.stringify(dataValidStatus));
-    }
-    function loadValidStatus() {
-      try {
-        dataValidStatus = JSON.parse(localStorage.getItem("sim_valid_status")) || {};
-      } catch { dataValidStatus = {}; }
+    // --- REALTIME LISTENER UNTUK is_valid ---
+    let validSubscription = null;
+
+    async function toggleValid(id, checked) {
+      const { error } = await supabase.from('sim').update({ is_valid: checked }).eq('id', id);
+      if (error) {
+        alert('Gagal update status valid: ' + error.message);
+      }
+      // Tidak perlu panggil renderTable di sini, karena akan otomatis via realtime listener
     }
 
-    // === CRUD Supabase ===
     async function hapusData(id, file_ktp_url) {
       if (!confirm('Yakin ingin menghapus data ini?')) return;
       const { error } = await supabase.from('sim').delete().eq('id', id);
@@ -91,7 +90,6 @@
       if (file_ktp_url) {
         try {
           const urlParts = file_ktp_url.split('/');
-          // Perbaiki nama file (bisa ada folder dalam bucket)
           const filename = decodeURIComponent(urlParts.slice(4).join('/').split('?')[0]);
           await supabase.storage.from('sim').remove([filename]);
         } catch (err) {}
@@ -129,19 +127,20 @@
       loadData();
     }
 
-    // === Format Pesan Discord ===
-    function formatEntry(row) {
+    function formatEntry(row, nomor, waktu) {
       let msg = "";
+      msg += `Data Ke: ${nomor}\n`;
+      msg += `Waktu: ${waktu}\n`;
       msg += `Paspor (UCP): ${row.ucp || "-"}\n`;
-      msg += `Nama Lengkap Sesuai KTP: ${row.nama || "-"}\n`;
-      msg += `Usia Sesuai KTP: ${row.usia || "-"}\n`;
+      msg += `Nama Lengkap (KTP): ${row.nama || "-"}\n`;
+      msg += `Usia (KTP): ${row.usia || "-"}\n`;
       msg += `Jenis Kelamin: ${row.jk || "-"}\n`;
       msg += `Nomor Handphone: ${row.nomorhp || "-"}\n`;
-      msg += `Foto Ktp: ${row.foto_ktp || "-"}\n`;
+      msg += `Dokumen KTP: ${row.foto_ktp || "-"}\n`;
       msg += `ID Discord: ${row.discordid || "-"}\n`;
-      msg += `Tipe Sim: ${row.tipe_sim || "-"}\n`;
+      msg += `Tipe SIM: ${row.tipe_sim || "-"}\n`;
       msg += `Total Harga: Rp${row.harga ? Number(row.harga).toLocaleString("id-ID") : "-"}\n`;
-      msg += `Data Valid & Sesuai: ${(dataValidStatus[row.id]) ? "✅" : "❌"}\n`;
+      msg += `Data Valid & Sesuai: ${(row.is_valid) ? "✅" : "❌"}\n`;
       return msg;
     }
 
@@ -149,69 +148,51 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // === Kirim ke Discord ===
+    // Kirim data valid satu per satu (AMAN DARI WARNING)
     async function kirimSemuaKeDiscord() {
-      let validData = cacheData.filter(row => dataValidStatus[row.id]);
+      let validData = cacheData.filter(row => row.is_valid);
       if (!validData.length) {
         alert('Tidak ada data valid untuk dikirim.');
         return;
       }
-      if (!confirm('Kirim HANYA data valid ke Discord dalam satu pesan dan tampilkan semua foto?')) return;
+      if (!confirm('Kirim data valid ke Discord satu per satu dan tampilkan gambar kalau ada?')) return;
       const btn = document.getElementById("btnKirimSemua");
       btn.disabled = true;
       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
 
-      // Batasi panjang content 2000 karakter
-      let blocks = [];
-      let currentMsg = `**Layanan Pembuatan SIM**\n`;
-      for (const row of validData) {
-        let block = "```\n" + formatEntry(row) + "```\n";
-        if ((currentMsg + block).length > 1900) { // buffer biar gak mepet 2000
-          blocks.push(currentMsg);
-          currentMsg = "";
-        }
-        currentMsg += block;
-      }
-      if (currentMsg.length > 0) blocks.push(currentMsg);
-
-      // Kirim semua blocks satu-per-satu agar tidak overlimit
       try {
-        for (let i = 0; i < blocks.length; i++) {
-          let embeds = [];
-          // Embed gambar hanya di pesan pertama, maksimal 10 gambar
-          if (i === 0) {
-            embeds = validData
-              .filter(row => !!row.file_ktp_url)
-              .slice(0, 10)
-              .map(row => ({
-                image: { url: row.file_ktp_url }
-              }));
+        for (let i = 0; i < validData.length; i++) {
+          const row = validData[i];
+          const waktu = new Date().toLocaleString();
+          let msg = "**Layanan Pembuatan SIM**\n" + formatEntry(row, i+1, waktu);
+
+          let payload = { content: msg };
+          if (row.file_ktp_url && row.file_ktp_url.startsWith('http')) {
+            payload.embeds = [{
+              image: { url: row.file_ktp_url },
+              description: "Dokumen KTP"
+            }];
           }
-          let payload = { content: blocks[i], embeds: embeds };
-          await delay(1200); // supaya tidak rate limit (1.2 detik per pesan)
+          // Delay 2 detik antar data
+          await delay(2000);
           let res = await fetch(discordWebhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
-          if (!res.ok) throw new Error(await res.text());
+          if (!res.ok) {
+            alert(`Gagal mengirim data ke Discord pada data ke-${i+1}.\n${await res.text()}`);
+            break;
+          }
         }
         alert('Semua data valid berhasil dikirim ke Discord! Data akan dihapus otomatis.');
         await hapusDataBatch(validData);
-        validData.forEach(row => delete dataValidStatus[row.id]);
-        saveValidStatus();
         loadData();
       } catch (err) {
         alert('Gagal mengirim ke Discord.\n' + err.message);
       }
       btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Semua`;
       btn.disabled = false;
-    }
-
-    function toggleValid(id) {
-      dataValidStatus[id] = !dataValidStatus[id];
-      saveValidStatus();
-      renderTable(cacheData);
     }
 
     function renderTable(data) {
@@ -259,8 +240,8 @@
             }</td>
             <td>
               <label class="valid-label">
-                <input type="checkbox" class="checkbox-valid" ${dataValidStatus[row.id] ? "checked" : ""} onclick="toggleValid('${row.id}')">
-                ${dataValidStatus[row.id] ? "✅" : "❌"}
+                <input type="checkbox" class="checkbox-valid" ${row.is_valid ? "checked" : ""} onchange="toggleValid('${row.id}', this.checked)">
+                ${row.is_valid ? "✅" : "❌"}
               </label>
             </td>
             <td>
@@ -274,7 +255,6 @@
     }
 
     async function loadData() {
-      loadValidStatus();
       const area = document.getElementById('table-area');
       area.innerHTML = '<div class="loader">Memuat data...</div>';
 
@@ -321,6 +301,33 @@
       renderTable(cacheData);
     }
 
+    // --- REALTIME SUBSCRIPTION ---
+    async function setupRealtime() {
+      // Unsubscribe sebelumnya jika ada
+      if (window.validSubscription) {
+        await window.validSubscription.unsubscribe();
+      }
+
+      // Realtime untuk update status valid
+      window.validSubscription = supabase
+        .channel('sim_valid_channel')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'sim' },
+          payload => {
+            // Update cacheData dan re-render tabel
+            const newRow = payload.new;
+            if (!newRow) return;
+            const idx = cacheData.findIndex(r => r.id === newRow.id);
+            if (idx !== -1) {
+              cacheData[idx] = { ...cacheData[idx], ...newRow };
+            }
+            renderTable(cacheData);
+          }
+        )
+        .subscribe();
+    }
+
     window.hapusData = hapusData;
     window.hapusSemuaData = hapusSemuaData;
     window.searchData = searchData;
@@ -328,7 +335,8 @@
     window.kirimSemuaKeDiscord = kirimSemuaKeDiscord;
     window.toggleValid = toggleValid;
 
-    loadData();
+    // Initial load and realtime setup
+    loadData().then(setupRealtime);
   </script>
 </body>
 </html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Formulir SKCK</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; background: #f8fafc; color: #222; }
+    .container { max-width: 1100px; margin: 40px auto; background: #fff; border-radius: 14px; padding: 28px; box-shadow: 0 6px 32px #0001;}
+    h2 { text-align: center; color: #2563eb; margin-bottom: 28px;}
+    table { border-collapse: collapse; width: 100%; margin: 0; }
+    th, td { border: 1px solid #e5e7eb; padding: 8px 12px; }
+    th { background: #2563eb; color: #fff; font-weight: 600; }
+    tr:nth-child(even) { background: #f1f5f9;}
+    td a { color: #2563eb; text-decoration: underline;}
+    .file-link {font-size: 1.2em;}
+    .loader { text-align: center; margin-top: 48px; }
+    .btn-refresh, .btn-hapus, .btn-kirim { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; margin-bottom: 8px; }
+    .btn-refresh:hover, .btn-hapus:hover, .btn-kirim:hover { background: #1943a8; }
+    .btn-hapus { background: #dc2626; }
+    .btn-hapus:hover { background: #a81e1e; }
+    .btn-kirim { background: #10b981; }
+    .btn-kirim:hover { background: #0d8b6c; }
+    .no-data { text-align: center; padding: 44px 0; color: #888;}
+    .img-ktp-preview { max-width: 60px; max-height: 60px; border-radius: 7px; box-shadow: 0 2px 6px #0002; transition: box-shadow 0.2s; cursor: pointer; border: 1px solid #ddd; }
+    .img-ktp-preview:hover { box-shadow: 0 0 10px #2563eb55; border-color: #2563eb; }
+    .search-box { margin-bottom: 16px; width: 300px; max-width: 100%; padding: 8px 12px; border-radius: 7px; border: 1px solid #ddd; font-size: 1em;}
+    .checkbox-valid { width: 18px; height: 18px; cursor: pointer; }
+    .valid-label { display: flex; align-items: center; gap: 2px; justify-content: center; }
+    @media (max-width: 700px) {
+      th, td { font-size: 0.95em; padding: 7px 4px;}
+      .container { padding: 8px;}
+      .search-box { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Data Pendaftaran SKCK</h2>
+    <h3 style="text-align:center"> Silahkan klik centang jika data sudah valid dan sudah melakukan pembayaran</h3>
+    <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
+    <input class="search-box" id="search" placeholder="Cari (nama, petugas, UCP, dsb.)" oninput="renderTable()" />
+    <div id="table-area">
+      <div class="loader">Memuat data...</div>
+    </div>
+  </div>
+  <script>
+    // Supabase credentials
+    const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Webhook Discord
+    const discordWebhookUrl = "https://l.webhook.party/hook/KGDeTD5LKJPbmJ588JnjPwGoIIbOMQmk5HtOYbjIBl%2B3i6%2FclzN%2BUxdbyv%2FrVkIl5npua8DX0BZaQe2DDlzE5R19TpIxMuP%2FfUQ2mgHDYY7WjU5Z32dKfvyjWpOQMgeKY81aKl7tp72GJvJ13IObYiSN0%2B%2BkEtQKsGMVrKCvSoVGYQKmHjO3hxGRyK9VH041eopvCx0mFSTaMKqi%2FBbU8IWFdTUflNFP60DYLrTVay7nPtSK9Vysgly4z3I4gdSSk60lRvxeDgnnSRJfoyKWFHLZFDXhra7dOhn9KhyvLH3RtbQj4pgMmED9SfqCe41lzmrVYWN%2BxL7YRCYeZ6%2BHR59qrsVjwYVBQK55dOnxvW8SY%2F6NYS1c1IW9axhI7aj3tUQ97GQFyKQ%3D/taWqdbuHDFmqFufv";
+
+    let skckData = [];
+
+    // --- REALTIME LISTENER UNTUK is_valid ---
+    let validSubscription = null;
+
+    async function toggleValid(id, checked) {
+      const { error } = await supabase.from('skck').update({ is_valid: checked }).eq('id', id);
+      if (error) {
+        alert('Gagal update status valid: ' + error.message);
+      }
+      // Tidak perlu panggil renderTable di sini, karena akan otomatis via realtime listener
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function hapusData(id, file_ktp_url) {
+      if (!confirm('Yakin ingin menghapus data ini?')) return;
+      const { error } = await supabase.from('skck').delete().eq('id', id);
+      if (error) {
+        alert('Gagal menghapus data: ' + error.message);
+        return;
+      }
+      if (file_ktp_url) {
+        try {
+          const urlParts = file_ktp_url.split('/');
+          const filename = decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
+          await supabase.storage.from('skck').remove([filename]);
+        } catch (err) { }
+      }
+      loadData();
+    }
+
+    // Kirim satu data (validasi status valid)
+    async function kirimUlangData(id) {
+      let row = skckData.find(r => r.id === id);
+      if (!row || !row.is_valid) {
+        alert("Data belum valid! Silakan centang valid terlebih dahulu.");
+        return;
+      }
+
+      let { data, error } = await supabase.from('skck').select('*').eq('id', id).single();
+      if (error || !data) {
+        alert('Gagal mengambil data SKCK.');
+        return;
+      }
+
+      let now = new Date().toLocaleString();
+      let msg = `**Layanan Pembuatan SKCK**\n\n`;
+      msg += `ID Data: ${data.id} | Waktu: ${now}\n`;
+      msg += `-- DATA PETUGAS --\n`;
+      msg += `Nama Petugas: ${data.petugas || "-"}\n\n`;
+      msg += `-- DATA PENGAJU --\n`;
+      msg += `Paspor (UCP): ${data.ucp || "-"}\n`;
+      msg += `Nama Lengkap (KTP): ${data.nama || "-"}\n`;
+      msg += `Usia (KTP): ${data.usia || "-"}\n`;
+      msg += `Jenis Kelamin: ${data.jk || "-"}\n`;
+      msg += `Keperluan Pembuatan: ${data.keperluan || "-"}\n`;
+      msg += `Nomor HP: ${data.nomorhp || "-"}\n`;
+      msg += `Dokumen KTP: ${data.foto_ktp || "-"}\n`;
+      msg += `ID Discord: ${data.discordid || "-"}\n`;
+      msg += `Total Harga: Rp${data.harga ? Number(data.harga).toLocaleString("id-ID") : "-"}\n`;
+      msg += `Pernyataan: Tidak pernah melakukan tindak kriminal sesuai data yang diberikan.\n`;
+
+      let payload = { content: msg };
+
+      if (data.file_ktp_url && data.file_ktp_url.startsWith("http")) {
+        payload.embeds = [{
+          image: { url: data.file_ktp_url },
+          description: "Dokumen KTP"
+        }];
+      }
+
+      try {
+        await delay(2000);
+        let res = await fetch(discordWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          alert('Data berhasil dikirim ke Discord!');
+        } else {
+          alert('Gagal mengirim ke Discord. Pastikan webhook aktif.\n' + (await res.text()));
+        }
+      } catch (err) {
+        alert('Gagal mengirim ke Discord.\n' + err);
+      }
+    }
+
+    // Kirim SEMUA data satu per satu, hanya yang valid
+    async function kirimSemuaKeDiscord() {
+      // Ambil hanya data yang valid
+      let validRows = skckData.filter(row => row.is_valid);
+      if (!validRows.length) {
+        alert('Tidak ada data valid untuk dikirim!');
+        return;
+      }
+
+      if (!confirm('Kirim semua data VALID ke Discord?')) return;
+      let errCount = 0;
+      for (let i = 0; i < validRows.length; i++) {
+        let row = validRows[i];
+        let now = new Date().toLocaleString();
+        let msg = `**Layanan Pembuatan SKCK**\n\n`;
+        msg += `No: ${i+1} | ID: ${row.id} | Waktu: ${now}\n`;
+        msg += `-- DATA PETUGAS --\n`;
+        msg += `Nama Petugas: ${row.petugas || "-"}\n\n`;
+        msg += `-- DATA PENGAJU --\n`;
+        msg += `Paspor (UCP): ${row.ucp || "-"}\n`;
+        msg += `Nama Lengkap (KTP): ${row.nama || "-"}\n`;
+        msg += `Usia (KTP): ${row.usia || "-"}\n`;
+        msg += `Jenis Kelamin: ${row.jk || "-"}\n`;
+        msg += `Keperluan Pembuatan: ${row.keperluan || "-"}\n`;
+        msg += `Nomor HP: ${row.nomorhp || "-"}\n`;
+        msg += `Dokumen KTP: ${row.foto_ktp || "-"}\n`;
+        msg += `ID Discord: ${row.discordid || "-"}\n`;
+        msg += `Total Harga: Rp${row.harga ? Number(row.harga).toLocaleString("id-ID") : "-"}\n`;
+        msg += `Pernyataan: Tidak pernah melakukan tindak kriminal sesuai data yang diberikan.\n`;
+
+        let payload = { content: msg };
+        if (row.file_ktp_url && row.file_ktp_url.startsWith("http")) {
+          payload.embeds = [{
+            image: { url: row.file_ktp_url },
+            description: "Dokumen KTP"
+          }];
+        }
+
+        await delay(2000);
+        try {
+          let res = await fetch(discordWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) {
+            errCount++;
+            if (errCount >= 3) {
+              alert('Gagal mengirim ke Discord sebanyak 3x. Proses dihentikan.');
+              break;
+            }
+          }
+        } catch (err) {
+          errCount++;
+          if (errCount >= 3) {
+            alert('Gagal mengirim ke Discord sebanyak 3x. Proses dihentikan.');
+            break;
+          }
+        }
+      }
+      alert('Pengiriman selesai.');
+    }
+
+    async function loadData() {
+      const area = document.getElementById('table-area');
+      area.innerHTML = '<div class="loader">Memuat data...</div>';
+
+      let { data, error } = await supabase
+        .from('skck')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        area.innerHTML = '<div style="color:red">Gagal memuat data: ' + error.message + '</div>';
+        skckData = [];
+      } else {
+        skckData = data || [];
+      }
+      renderTable();
+      // Tombol kirim semua data batch
+      if (!document.getElementById('btnKirimSemua')) {
+        const btn = document.createElement('button');
+        btn.className = 'btn-kirim';
+        btn.id = 'btnKirimSemua';
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Semua ke Discord';
+        btn.onclick = kirimSemuaKeDiscord;
+        document.querySelector('.container').insertBefore(btn, area);
+      }
+    }
+
+    function renderTable() {
+      const area = document.getElementById('table-area');
+      const search = (document.getElementById('search')?.value || '').toLowerCase();
+      let filtered = skckData.filter(row => {
+        if (!search) return true;
+        return (
+          (row.petugas || '').toLowerCase().includes(search) ||
+          (row.ucp || '').toLowerCase().includes(search) ||
+          (row.nama || '').toLowerCase().includes(search) ||
+          (row.keperluan || '').toLowerCase().includes(search) ||
+          (row.nomorhp || '').toLowerCase().includes(search) ||
+          (row.discordid || '').toLowerCase().includes(search)
+        );
+      });
+
+      let html = `<div style="overflow-x:auto;"><table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Petugas</th>
+            <th>UCP</th>
+            <th>Nama Lengkap</th>
+            <th>Usia</th>
+            <th>JK</th>
+            <th>Keperluan</th>
+            <th>No HP</th>
+            <th>Foto KTP?</th>
+            <th>Total Harga</th>
+            <th>Discord ID</th>
+            <th>Waktu Daftar</th>
+            <th>File KTP</th>
+            <th>Valid?</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+      if (filtered.length === 0) {
+        html += `<tr>
+          <td colspan="15" class="no-data">Belum ada data pendaftaran yang ditemukan.</td>
+        </tr>`;
+      } else {
+        filtered.forEach((row, i) => {
+          html += `<tr>
+            <td>${i+1}</td>
+            <td>${row.petugas || ''}</td>
+            <td>${row.ucp || ''}</td>
+            <td>${row.nama || ''}</td>
+            <td>${row.usia || ''}</td>
+            <td>${row.jk || ''}</td>
+            <td>${row.keperluan || ''}</td>
+            <td>${row.nomorhp || ''}</td>
+            <td>${row.foto_ktp || ''}</td>
+            <td>${row.harga || ''}</td>
+            <td>${row.discordid || ''}</td>
+            <td>${row.created_at ? new Date(row.created_at).toLocaleString() : ''}</td>
+            <td>${
+              row.file_ktp_url
+                ? `<a href="${row.file_ktp_url}" target="_blank"><img src="${row.file_ktp_url}" class="img-ktp-preview" alt="KTP" /></a>`
+                : '-'
+            }</td>
+            <td>
+              <label class="valid-label">
+                <input type="checkbox" class="checkbox-valid" ${row.is_valid ? "checked" : ""} onchange="toggleValid('${row.id}', this.checked)">
+                ${row.is_valid ? "✅" : "❌"}
+              </label>
+            </td>
+            <td>
+              <button class="btn-hapus" onclick="hapusData('${row.id}', '${row.file_ktp_url || ''}')"><i class="fas fa-trash"></i> Hapus</button>
+              <button class="btn-kirim" onclick="kirimUlangData('${row.id}')" ${!row.is_valid ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fas fa-paper-plane"></i> Kirim</button>
+            </td>
+          </tr>`;
+        });
+      }
+      html += `</tbody></table></div>`;
+      area.innerHTML = html;
+    }
+
+    // --- REALTIME SUBSCRIPTION ---
+    async function setupRealtime() {
+      // Unsubscribe sebelumnya jika ada
+      if (window.validSubscription) {
+        await window.validSubscription.unsubscribe();
+      }
+
+      // Realtime untuk update status valid
+      window.validSubscription = supabase
+        .channel('skck_valid_channel')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'skck' },
+          payload => {
+            // Update skckData dan re-render tabel
+            const newRow = payload.new;
+            if (!newRow) return;
+            const idx = skckData.findIndex(r => r.id === newRow.id);
+            if (idx !== -1) {
+              skckData[idx] = { ...skckData[idx], ...newRow };
+            }
+            renderTable();
+          }
+        )
+        .subscribe();
+    }
+
+    window.hapusData = hapusData;
+    window.kirimUlangData = kirimUlangData;
+    window.kirimSemuaKeDiscord = kirimSemuaKeDiscord;
+    window.toggleValid = toggleValid;
+
+    // Initial load and realtime setup
+    loadData().then(setupRealtime);
+  </script>
+</body>
+</html>
