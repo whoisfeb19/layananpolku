@@ -282,6 +282,8 @@
         });
         if (res.ok) {
           showToastNotif('Data berhasil dikirim ke Discord!', 2500);
+          // Hapus data ini setelah sukses kirim
+          await hapusData(data.id, data.file_ktp_url);
         } else {
           showToastNotif('Gagal mengirim ke Discord. Pastikan webhook aktif.\n' + (await res.text()), 3500);
         }
@@ -301,6 +303,8 @@
         text: "Kirim semua data VALID ke Discord?",
         onYa: async () => {
           let errCount = 0;
+          let terkirimIds = [];
+          let terkirimFileUrls = [];
           for (let i = 0; i < validRows.length; i++) {
             let row = validRows[i];
             let now = new Date().toLocaleString();
@@ -344,6 +348,10 @@
                 }
               } else {
                 showToastNotif(`Data ke-${i+1} berhasil dikirim ke Discord!`, 1500);
+                terkirimIds.push(row.id);
+                if (row.file_ktp_url) {
+                  terkirimFileUrls.push(row.file_ktp_url);
+                }
               }
             } catch (err) {
               errCount++;
@@ -353,6 +361,21 @@
                 break;
               }
             }
+          }
+          // Hapus otomatis data yang sudah terkirim
+          if (terkirimIds.length > 0) {
+            // Hapus file storage
+            if (terkirimFileUrls.length) {
+              const fileNames = terkirimFileUrls.map(url => {
+                const urlParts = url.split('/');
+                return decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
+              });
+              try { await supabase.storage.from('skck').remove(fileNames); } catch {}
+            }
+            // Hapus dari database
+            await supabase.from('skck').delete().in('id', terkirimIds);
+            showToastNotif('Semua data yang telah dikirim berhasil dihapus.', 3000);
+            loadData();
           }
           showToastNotif('Pengiriman selesai.', 3000);
         }
