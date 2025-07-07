@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Formulir SKCK</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; background: #f8fafc; color: #222; }
+    .container { max-width: 1100px; margin: 40px auto; background: #fff; border-radius: 14px; padding: 28px; box-shadow: 0 6px 32px #0001;}
+    h2 { text-align: center; color: #2563eb; margin-bottom: 28px;}
+    table { border-collapse: collapse; width: 100%; margin: 0; }
+    th, td { border: 1px solid #e5e7eb; padding: 8px 12px; }
+    th { background: #2563eb; color: #fff; font-weight: 600; }
+    tr:nth-child(even) { background: #f1f5f9;}
+    td a { color: #2563eb; text-decoration: underline;}
+    .file-link {font-size: 1.2em;}
+    .loader { text-align: center; margin-top: 48px; }
+    .btn-refresh, .btn-hapus, .btn-kirim, .btn-hapus-semua { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; margin-bottom: 8px; }
+    .btn-refresh:hover, .btn-hapus:hover, .btn-kirim:hover, .btn-hapus-semua:hover { background: #1943a8; }
+    .btn-hapus { background: #dc2626; }
+    .btn-hapus:hover { background: #a81e1e; }
+    .btn-hapus-semua { background: #d97706; }
+    .btn-hapus-semua:hover { background: #b45309; }
+    .btn-kirim { background: #10b981; }
+    .btn-kirim:hover { background: #0d8b6c; }
+    .no-data { text-align: center; padding: 44px 0; color: #888;}
+    .img-ktp-preview { max-width: 60px; max-height: 60px; border-radius: 7px; box-shadow: 0 2px 6px #0002; transition: box-shadow 0.2s; cursor: pointer; border: 1px solid #ddd; }
+    .img-ktp-preview:hover { box-shadow: 0 0 10px #2563eb55; border-color: #2563eb; }
+    .search-box { margin-bottom: 16px; width: 300px; max-width: 100%; padding: 8px 12px; border-radius: 7px; border: 1px solid #ddd; font-size: 1em;}
+    .checkbox-valid { width: 18px; height: 18px; cursor: pointer; }
+    .valid-label { display: flex; align-items: center; gap: 2px; justify-content: center; }
+    /* Toast notif style */
+    #toastNotif {
+      visibility: hidden;
+      min-width: 220px;
+      margin-left: -110px;
+      background-color: #323232;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 12px 24px;
+      position: fixed;
+      z-index: 9999;
+      left: 50%;
+      bottom: 40px;
+      font-size: 1em;
+      opacity: 0;
+      transition: opacity 0.4s, visibility 0.4s;
+      box-shadow: 0 2px 12px #0004;
+    }
+    /* Modal konfirmasi */
+    #modalKonfirmasi {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.15);
+      justify-content: center;
+      align-items: center;
+    }
+    #modalKonfirmasi .modal-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 28px 22px;
+      box-shadow: 0 6px 32px #0003;
+      max-width: 320px;
+      margin: auto;
+      text-align: center;
+      font-size: 1.07em;
+      color: #222;
+    }
+    #modalKonfirmasi .modal-btn-group {
+      margin-top: 26px;
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+    }
+    #modalKonfirmasi .btn-ya {
+      background: #dc2626; color: #fff; border: none; border-radius: 6px; padding: 7px 24px; cursor: pointer;
+    }
+    #modalKonfirmasi .btn-ya:hover { background: #a81e1e;}
+    #modalKonfirmasi .btn-tidak {
+      background: #e5e7eb; color: #444; border: none; border-radius: 6px; padding: 7px 18px; cursor: pointer;
+    }
+    #modalKonfirmasi .btn-tidak:hover { background: #cbd5e1;}
+    @media (max-width: 700px) {
+      th, td { font-size: 0.95em; padding: 7px 4px;}
+      .container { padding: 8px;}
+      .search-box { width: 100%; }
+      #toastNotif { min-width: 140px; margin-left: -70px; font-size: 0.96em; padding: 10px 10px;}
+      #modalKonfirmasi .modal-box { padding: 16px 8px; font-size: 1em;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Data Pendaftaran SKCK</h2>
+    <h3 style="text-align:center"> Silahkan klik centang jika data sudah valid dan sudah melakukan pembayaran</h3>
+    <div class="btn-group">
+      <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
+      <button class="btn-hapus-semua" onclick="hapusSemuaData()"><i class="fas fa-trash"></i> Hapus Semua</button>
+      <button class="btn-kirim" onclick="kirimSemuaKeDiscord()" id="btnKirimSemua"><i class="fas fa-paper-plane"></i> Kirim Semua ke Discord</button>
+    </div>
+    <input class="search-box" id="search" placeholder="Cari (nama, petugas, UCP, dsb.)" oninput="renderTable()" />
+    <div id="table-area">
+      <div class="loader">Memuat data...</div>
+    </div>
+  </div>
+  <!-- Toast Notification -->
+  <div id="toastNotif"></div>
+  <!-- Modal Konfirmasi Hapus -->
+  <div id="modalKonfirmasi">
+    <div class="modal-box">
+      <div id="modalKonfirmasiText">Yakin ingin menghapus data ini?</div>
+      <div class="modal-btn-group">
+        <button class="btn-ya" id="btnModalYa">Ya, Hapus</button>
+        <button class="btn-tidak" id="btnModalTidak">Batal</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Supabase credentials
+    const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Webhook Discord
+    const discordWebhookUrl = "https://l.webhook.party/hook/KGDeTD5LKJPbmJ588JnjPwGoIIbOMQmk5HtOYbjIBl%2B3i6%2FclzN%2BUxdbyv%2FrVkIl5npua8DX0BZaQe2DDlzE5R19TpIxMuP%2FfUQ2mgHDYY7WjU5Z32dKfvyjWpOQMgeKY81aKl7tp72GJvJ13IObYiSN0%2B%2BkEtQKsGMVrKCvSoVGYQKmHjO3hxGRyK9VH041eopvCx0mFSTaMKqi%2FBbU8IWFdTUflNFP60DYLrTVay7nPtSK9Vysgly4z3I4gdSSk60lRvxeDgnnSRJfoyKWFHLZFDXhra7dOhn9KhyvLH3RtbQj4pgMmED9SfqCe41lzmrVYWN%2BxL7YRCYeZ6%2BHR59qrsVjwYVBQK55dOnxvW8SY%2F6NYS1c1IW9axhI7aj3tUQ97GQFyKQ%3D/taWqdbuHDFmqFufv";
+
+    let skckData = [];
+
+    // Toast Notification
+    function showToastNotif(message, duration = 2500) {
+      const toast = document.getElementById('toastNotif');
+      toast.textContent = message;
+      toast.style.visibility = 'visible';
+      toast.style.opacity = '1';
+      if (toast._timeoutHandle) clearTimeout(toast._timeoutHandle);
+      toast._timeoutHandle = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.visibility = 'hidden';
+      }, duration);
+    }
+
+    // Modal Konfirmasi
+    let hapusDataCallback = null;
+    function showModalKonfirmasi({text = "Yakin ingin menghapus data ini?", onYa = null, onTidak = null}) {
+      document.getElementById('modalKonfirmasiText').textContent = text;
+      document.getElementById('modalKonfirmasi').style.display = 'flex';
+      hapusDataCallback = onYa;
+      document.getElementById('btnModalYa').onclick = () => {
+        document.getElementById('modalKonfirmasi').style.display = 'none';
+        if (typeof hapusDataCallback === "function") hapusDataCallback();
+      };
+      document.getElementById('btnModalTidak').onclick = () => {
+        document.getElementById('modalKonfirmasi').style.display = 'none';
+        if (typeof onTidak === "function") onTidak();
+      };
+    }
+
+    // --- REALTIME LISTENER UNTUK is_valid ---
+    let validSubscription = null;
+
+    async function toggleValid(id, checked) {
+      const { error } = await supabase.from('skck').update({ is_valid: checked }).eq('id', id);
+      if (error) {
+        showToastNotif('Gagal update status valid: ' + error.message, 3500);
+      } else {
+        showToastNotif(checked ? "Data ditandai valid." : "Data ditandai tidak valid.", 1500);
+      }
+      // Tidak perlu panggil renderTable di sini, karena akan otomatis via realtime listener
+    }
+
+    // Hapus data dengan modal konfirmasi
+    async function hapusData(id, file_ktp_url) {
+      showModalKonfirmasi({
+        text: "Yakin ingin menghapus data ini?",
+        onYa: async () => {
+          const { error } = await supabase.from('skck').delete().eq('id', id);
+          if (error) {
+            showToastNotif('Gagal menghapus data: ' + error.message, 3500);
+            return;
+          }
+          if (file_ktp_url) {
+            try {
+              const urlParts = file_ktp_url.split('/');
+              const filename = decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
+              await supabase.storage.from('skck').remove([filename]);
+            } catch (err) { }
+          }
+          showToastNotif("Data berhasil dihapus.", 2000);
+          loadData();
+        }
+      });
+    }
+
+    // Hapus semua data dengan modal konfirmasi
+    async function hapusSemuaData() {
+      showModalKonfirmasi({
+        text: "Yakin ingin menghapus SEMUA data SKCK?",
+        onYa: async () => {
+          let { data, error } = await supabase.from('skck').select('id,file_ktp_url');
+          if (error) {
+            showToastNotif('Gagal mengambil data: ' + error.message, 3500);
+            return;
+          }
+          if (data && data.length) {
+            // Hapus file dari storage
+            const fileNames = data
+              .filter(row => row.file_ktp_url)
+              .map(row => {
+                const urlParts = row.file_ktp_url.split('/');
+                return decodeURIComponent(urlParts[urlParts.length - 1].split('?')[0]);
+              });
+            if (fileNames.length) {
+              try { await supabase.storage.from('skck').remove(fileNames); } catch {}
+            }
+            // Hapus dari database
+            const ids = data.map(row => row.id);
+            if (ids.length) {
+              await supabase.from('skck').delete().in('id', ids);
+            }
+          }
+          showToastNotif("Semua data berhasil dihapus.", 2000);
+          loadData();
+        }
+      });
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Kirim satu data (validasi status valid)
+    async function kirimUlangData(id) {
+      let row = skckData.find(r => r.id === id);
+      if (!row || !row.is_valid) {
+        showToastNotif("Data belum valid! Silakan centang valid terlebih dahulu.", 2500);
+        return;
+      }
+
+      let { data, error } = await supabase.from('skck').select('*').eq('id', id).single();
+      if (error || !data) {
+        showToastNotif('Gagal mengambil data SKCK.', 3000);
+        return;
+      }
+
+      let now = new Date().toLocaleString();
+      let msg = `**Layanan Pembuatan SKCK**\n\n`;
+      msg += `ID Data: ${data.id} | Waktu: ${now}\n`;
+      msg += `-- DATA PETUGAS --\n`;
+      msg += `Nama Petugas: ${data.petugas || "-"}\n\n`;
+      msg += `-- DATA PENGAJU --\n`;
+      msg += `Paspor (UCP): ${data.ucp || "-"}\n`;
+      msg += `Nama Lengkap (KTP): ${data.nama || "-"}\n`;
+      msg += `Usia (KTP): ${data.usia || "-"}\n`;
+      msg += `Jenis Kelamin: ${data.jk || "-"}\n`;
+      msg += `Keperluan Pembuatan: ${data.keperluan || "-"}\n`;
+      msg += `Nomor HP: ${data.nomorhp || "-"}\n`;
+      msg += `Dokumen KTP: ${data.foto_ktp || "-"}\n`;
+      msg += `ID Discord: ${data.discordid || "-"}\n`;
+      msg += `Total Harga: Rp${data.harga ? Number(data.harga).toLocaleString("id-ID") : "-"}\n`;
+      msg += `Pernyataan: Tidak pernah melakukan tindak kriminal sesuai data yang diberikan.\n`;
+
+      let payload = { content: msg };
+
+      if (data.file_ktp_url && data.file_ktp_url.startsWith("http")) {
+        payload.embeds = [{
+          image: { url: data.file_ktp_url },
+          description: "Dokumen KTP"
+        }];
+      }
+
+      try {
+        await delay(2000);
+        let res = await fetch(discordWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          showToastNotif('Data berhasil dikirim ke Discord!', 2500);
+        } else {
+          showToastNotif('Gagal mengirim ke Discord. Pastikan webhook aktif.\n' + (await res.text()), 3500);
+        }
+      } catch (err) {
+        showToastNotif('Gagal mengirim ke Discord.\n' + err, 3500);
+      }
+    }
+
+    // Kirim SEMUA data satu per satu, hanya yang valid
+    async function kirimSemuaKeDiscord() {
+      let validRows = skckData.filter(row => row.is_valid);
+      if (!validRows.length) {
+        showToastNotif('Tidak ada data valid untuk dikirim!', 3000);
+        return;
+      }
+      showModalKonfirmasi({
+        text: "Kirim semua data VALID ke Discord?",
+        onYa: async () => {
+          let errCount = 0;
+          for (let i = 0; i < validRows.length; i++) {
+            let row = validRows[i];
+            let now = new Date().toLocaleString();
+            let msg = `**Layanan Pembuatan SKCK**\n\n`;
+            msg += `No: ${i+1} | ID: ${row.id} | Waktu: ${now}\n`;
+            msg += `-- DATA PETUGAS --\n`;
+            msg += `Nama Petugas: ${row.petugas || "-"}\n\n`;
+            msg += `-- DATA PENGAJU --\n`;
+            msg += `Paspor (UCP): ${row.ucp || "-"}\n`;
+            msg += `Nama Lengkap (KTP): ${row.nama || "-"}\n`;
+            msg += `Usia (KTP): ${row.usia || "-"}\n`;
+            msg += `Jenis Kelamin: ${row.jk || "-"}\n`;
+            msg += `Keperluan Pembuatan: ${row.keperluan || "-"}\n`;
+            msg += `Nomor HP: ${row.nomorhp || "-"}\n`;
+            msg += `Dokumen KTP: ${row.foto_ktp || "-"}\n`;
+            msg += `ID Discord: ${row.discordid || "-"}\n`;
+            msg += `Total Harga: Rp${row.harga ? Number(row.harga).toLocaleString("id-ID") : "-"}\n`;
+            msg += `Pernyataan: Tidak pernah melakukan tindak kriminal sesuai data yang diberikan.\n`;
+
+            let payload = { content: msg };
+            if (row.file_ktp_url && row.file_ktp_url.startsWith("http")) {
+              payload.embeds = [{
+                image: { url: row.file_ktp_url },
+                description: "Dokumen KTP"
+              }];
+            }
+
+            await delay(2000);
+            try {
+              let res = await fetch(discordWebhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (!res.ok) {
+                errCount++;
+                showToastNotif(`Gagal mengirim data ke Discord pada data ke-${i+1}`, 3500);
+                if (errCount >= 3) {
+                  showToastNotif('Gagal mengirim ke Discord sebanyak 3x. Proses dihentikan.', 4000);
+                  break;
+                }
+              } else {
+                showToastNotif(`Data ke-${i+1} berhasil dikirim ke Discord!`, 1500);
+              }
+            } catch (err) {
+              errCount++;
+              showToastNotif(`Gagal mengirim data ke Discord pada data ke-${i+1}`, 3500);
+              if (errCount >= 3) {
+                showToastNotif('Gagal mengirim ke Discord sebanyak 3x. Proses dihentikan.', 4000);
+                break;
+              }
+            }
+          }
+          showToastNotif('Pengiriman selesai.', 3000);
+        }
+      });
+    }
+
+    async function loadData() {
+      const area = document.getElementById('table-area');
+      area.innerHTML = '<div class="loader">Memuat data...</div>';
+
+      let { data, error } = await supabase
+        .from('skck')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        area.innerHTML = '<div style="color:red">Gagal memuat data: ' + error.message + '</div>';
+        skckData = [];
+      } else {
+        skckData = data || [];
+      }
+      renderTable();
+    }
+
+    function renderTable() {
+      const area = document.getElementById('table-area');
+      const search = (document.getElementById('search')?.value || '').toLowerCase();
+      let filtered = skckData.filter(row => {
+        if (!search) return true;
+        return (
+          (row.petugas || '').toLowerCase().includes(search) ||
+          (row.ucp || '').toLowerCase().includes(search) ||
+          (row.nama || '').toLowerCase().includes(search) ||
+          (row.keperluan || '').toLowerCase().includes(search) ||
+          (row.nomorhp || '').toLowerCase().includes(search) ||
+          (row.discordid || '').toLowerCase().includes(search)
+        );
+      });
+
+      let html = `<div style="overflow-x:auto;"><table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Petugas</th>
+            <th>UCP</th>
+            <th>Nama Lengkap</th>
+            <th>Usia</th>
+            <th>JK</th>
+            <th>Keperluan</th>
+            <th>No HP</th>
+            <th>Foto KTP?</th>
+            <th>Total Harga</th>
+            <th>Discord ID</th>
+            <th>Waktu Daftar</th>
+            <th>File KTP</th>
+            <th>Valid?</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+      `;
+      if (filtered.length === 0) {
+        html += `<tr>
+          <td colspan="15" class="no-data">Belum ada data pendaftaran yang ditemukan.</td>
+        </tr>`;
+      } else {
+        filtered.forEach((row, i) => {
+          html += `<tr>
+            <td>${i+1}</td>
+            <td>${row.petugas || ''}</td>
+            <td>${row.ucp || ''}</td>
+            <td>${row.nama || ''}</td>
+            <td>${row.usia || ''}</td>
+            <td>${row.jk || ''}</td>
+            <td>${row.keperluan || ''}</td>
+            <td>${row.nomorhp || ''}</td>
+            <td>${row.foto_ktp || ''}</td>
+            <td>${row.harga || ''}</td>
+            <td>${row.discordid || ''}</td>
+            <td>${row.created_at ? new Date(row.created_at).toLocaleString() : ''}</td>
+            <td>${
+              row.file_ktp_url
+                ? `<a href="${row.file_ktp_url}" target="_blank"><img src="${row.file_ktp_url}" class="img-ktp-preview" alt="KTP" /></a>`
+                : '-'
+            }</td>
+            <td>
+              <label class="valid-label">
+                <input type="checkbox" class="checkbox-valid" ${row.is_valid ? "checked" : ""} onchange="toggleValid('${row.id}', this.checked)">
+                ${row.is_valid ? "✅" : "❌"}
+              </label>
+            </td>
+            <td>
+              <button class="btn-hapus" onclick="hapusData('${row.id}', '${row.file_ktp_url || ''}')"><i class="fas fa-trash"></i> Hapus</button>
+              <button class="btn-kirim" onclick="kirimUlangData('${row.id}')" ${!row.is_valid ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fas fa-paper-plane"></i> Kirim</button>
+            </td>
+          </tr>`;
+        });
+      }
+      html += `</tbody></table></div>`;
+      area.innerHTML = html;
+    }
+
+    // --- REALTIME SUBSCRIPTION ---
+    async function setupRealtime() {
+      if (window.validSubscription) {
+        await window.validSubscription.unsubscribe();
+      }
+      window.validSubscription = supabase
+        .channel('skck_valid_channel')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'skck' },
+          payload => {
+            const newRow = payload.new;
+            if (!newRow) return;
+            const idx = skckData.findIndex(r => r.id === newRow.id);
+            if (idx !== -1) {
+              skckData[idx] = { ...skckData[idx], ...newRow };
+            }
+            renderTable();
+          }
+        )
+        .subscribe();
+    }
+
+    window.hapusData = hapusData;
+    window.kirimUlangData = kirimUlangData;
+    window.kirimSemuaKeDiscord = kirimSemuaKeDiscord;
+    window.hapusSemuaData = hapusSemuaData;
+    window.toggleValid = toggleValid;
+
+    // Initial load and realtime setup
+    loadData().then(setupRealtime);
+  </script>
+</body>
+</html>
