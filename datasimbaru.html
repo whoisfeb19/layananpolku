@@ -189,7 +189,7 @@
     // --- Webhook Discord untuk data (tetap) & untuk buka/tutup pelayanan (channel berbeda) ---
     const discordWebhookUrl = "https://l.webhook.party/hook/jLlaeTAM1s39Odwyp%2FyuOzXkWCEuVbiHOXrrMYVeqoarEkz0wDcvBN%2FQyuy9zurl%2Bx%2FKoXuX%2FvxYCHhtma7o7rRGV7YGZ5ebqrqz%2FU9Ooa2bIGXWC3eThYwUVqZE7TV4ZbNRlmGSAvy5BinmARhucGM4JdvrGaxAeg89S80OpaL3tVgFcNm4zVgsSPituklsb229Gqg1HLo0ZjSm5awY5hPZXwu9Gntcgbf75kKdMvIWPCHbcNhnAMD6LJ5SDJJyLy6Szr7CZHNX5AFuZpMbBrV%2FzrG2EKYkU1AgcokQzIH5vhcn0f5witO4s4NWKv3DTdgWkMEvEV5SdR0GyB9RpUBo5pPrvl8Hy2IiMKrm3D0rych2KrxoVq%2F6MBbNEyhtjtgN%2FYzzlnI%3D/KryzdSmlmr0DTa%2Bz";
     // --- GANTI webhook berikut ke channel Discord yang berbeda untuk buka/tutup pelayanan! ---
-    const discordWebhookPelayanan = "https://discord.com/api/webhooks/1382027668588855367/yhI5QrQ13pWfRLbsVVF_Xy0hZ-LvDTkvc9DuoznDOoKekQ10B-RhPDW6WcMUf7WR_YLy"; // <--- REPLACE with your own channel webhook
+    const discordWebhookPelayanan = "https://discord.com/api/webhooks/1382027668588855367/yhI5QrQ13pWfRLbsVVF_Xy0hZ-LvDTkvc9DuoznDOoKekQ10B-RhPDW6WcMUf7WR_YLy";
 
     let cacheData = [];
 
@@ -257,32 +257,50 @@
       IMPOUND: "https://i.ibb.co/4ZVQk5m/pelayanan-impound.png"
     };
     const urlLayanan = "https://layananpolku.vercel.app/";
-    const roleTag = "<@&1257347543524966545>";
+    const roleTag = "@unknown-role";
 
+    // MODIFIKASI: Pengumuman hanya satu pesan, sesuai jumlah layanan dicentang
     async function kirimPengumumanMultiLayanan(jenisArr) {
-      for (const jenis of jenisArr) {
-        const payload = {
-          content: `📢PENGUMUMAN\nLAYANAN PEMBUATAN ${jenis} TELAH DIBUKA\nSILAHKAN KLIK LINK INI\n${urlLayanan}\n\nTERIMAKASIH\n${roleTag}`,
-          embeds: gambarLayanan[jenis] ? [{
-            image: { url: gambarLayanan[jenis] },
-            description: `Pelayanan ${jenis}`
-          }] : []
-        };
-        try {
-          const res = await fetch(discordWebhookPelayanan, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          if (res.ok) {
-            showToastNotif(`Pengumuman buka pelayanan ${jenis} terkirim ke Discord.`, 2000);
-          } else {
-            showToastNotif(`Gagal mengirim pengumuman buka pelayanan ${jenis}.`, 2000);
-          }
-        } catch (err) {
-          showToastNotif("Error: " + err.message, 2000);
+      let namaLayanan = jenisArr.map(j=>{
+        if(j==="SIM") return "SIM";
+        if(j==="PLATE") return "PLATE";
+        if(j==="IMPOUND") return "PENGAMBILAN KENDARAAN SITAAN";
+        return j;
+      });
+      let judul = "📢PENGUMUMAN";
+      let konten = "";
+
+      if(jenisArr.length === 1) {
+        konten = `LAYANAN PEMBUATAN ${namaLayanan[0]} TELAH DIBUKA\nSILAHKAN KLIK LINK INI\n${urlLayanan}\n\nTERIMAKASIH\n${roleTag}`;
+      } else if (jenisArr.length === 2) {
+        konten = `LAYANAN PEMBUATAN ${namaLayanan[0]} DAN ${namaLayanan[1]} TELAH DIBUKA\nSILAHKAN KLIK LINK INI\n${urlLayanan}\n\nTERIMAKASIH\n${roleTag}`;
+      } else {
+        konten = `LAYANAN PEMBUATAN SIM , PLATE , DAN PENGAMBILAN KENDARAAN SITAAN TELAH DIBUKA\nSILAHKAN KLIK LINK INI\n${urlLayanan}\n\nTERIMAKASIH\n${roleTag}`;
+      }
+
+      let gambar = gambarLayanan[jenisArr[0]] || "";
+
+      const payload = {
+        content: `${judul}\n${konten}`,
+        embeds: gambar ? [{
+          image: { url: gambar },
+          description: `Pelayanan ${jenisArr.join(', ')}`
+        }] : []
+      };
+
+      try {
+        const res = await fetch(discordWebhookPelayanan, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          showToastNotif("Pengumuman buka pelayanan terkirim ke Discord.", 3500);
+        } else {
+          showToastNotif("Gagal mengirim pengumuman buka pelayanan.", 4000);
         }
-        await new Promise(resolve=>setTimeout(resolve, 1000));
+      } catch (err) {
+        showToastNotif("Error: " + err.message, 4000);
       }
     }
 
