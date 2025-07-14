@@ -92,7 +92,6 @@
       background: #e5e7eb; color: #444; border: none; border-radius: 6px; padding: 7px 18px; cursor: pointer;
     }
     #modalKonfirmasi .btn-tidak:hover { background: #cbd5e1;}
-    /* Modal Pilihan Layanan */
     #modalPilihLayanan {
       display: none;
       position: fixed;
@@ -149,9 +148,7 @@
       <div class="loader">Memuat data...</div>
     </div>
   </div>
-  <!-- Toast Notification -->
   <div id="toastNotif"></div>
-  <!-- Modal Konfirmasi Hapus -->
   <div id="modalKonfirmasi">
     <div class="modal-box">
       <div id="modalKonfirmasiText">Yakin ingin menghapus data ini?</div>
@@ -161,7 +158,6 @@
       </div>
     </div>
   </div>
-  <!-- Modal Pilih Layanan Multi Pilih -->
   <div id="modalPilihLayanan">
     <div class="modal-box">
       <div style="margin-bottom:16px;font-size:1.1em;font-weight:600;">Pilih Layanan yang Akan Dibuka</div>
@@ -181,19 +177,15 @@
     </div>
   </div>
   <script>
-    // === Konfigurasi & Setup ===
     const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // --- Webhook Discord untuk data (tetap) & untuk buka/tutup pelayanan (channel berbeda) ---
     const discordWebhookUrl = "https://l.webhook.party/hook/jLlaeTAM1s39Odwyp%2FyuOzXkWCEuVbiHOXrrMYVeqoarEkz0wDcvBN%2FQyuy9zurl%2Bx%2FKoXuX%2FvxYCHhtma7o7rRGV7YGZ5ebqrqz%2FU9Ooa2bIGXWC3eThYwUVqZE7TV4ZbNRlmGSAvy5BinmARhucGM4JdvrGaxAeg89S80OpaL3tVgFcNm4zVgsSPituklsb229Gqg1HLo0ZjSm5awY5hPZXwu9Gntcgbf75kKdMvIWPCHbcNhnAMD6LJ5SDJJyLy6Szr7CZHNX5AFuZpMbBrV%2FzrG2EKYkU1AgcokQzIH5vhcn0f5witO4s4NWKv3DTdgWkMEvEV5SdR0GyB9RpUBo5pPrvl8Hy2IiMKrm3D0rych2KrxoVq%2F6MBbNEyhtjtgN%2FYzzlnI%3D/KryzdSmlmr0DTa%2Bz";
-    // --- GANTI webhook berikut ke channel Discord yang berbeda untuk buka/tutup pelayanan! ---
     const discordWebhookPelayanan = "https://discord.com/api/webhooks/1382027668588855367/yhI5QrQ13pWfRLbsVVF_Xy0hZ-LvDTkvc9DuoznDOoKekQ10B-RhPDW6WcMUf7WR_YLy";
 
     let cacheData = [];
 
-    // === Toast Notification Function ===
     function showToastNotif(message, duration = 2500) {
       const toast = document.getElementById('toastNotif');
       toast.textContent = message;
@@ -206,7 +198,6 @@
       }, duration);
     }
 
-    // === Modal Konfirmasi Hapus (dengan label dinamis) ===
     let hapusDataCallback = null;
     function showModalKonfirmasi({text = "Yakin ingin menghapus data ini?", onYa = null, onTidak = null, yaLabel = "Ya, Hapus"}) {
       document.getElementById('modalKonfirmasiText').textContent = text;
@@ -223,13 +214,11 @@
       };
     }
 
-    // --- Modal Pilih Layanan (Multi Pilih) ---
     function bukaPelayanan() {
       document.getElementById('modalPilihLayanan').style.display = 'flex';
     }
     function tutupModalPilihLayanan() {
       document.getElementById('modalPilihLayanan').style.display = 'none';
-      // Reset ceklis
       ['SIM','PLATE','IMPOUND'].forEach(l=>document.getElementById('layanan'+l).checked=false);
     }
     function getSelectedLayanan() {
@@ -250,16 +239,13 @@
         onYa: () => kirimPengumumanMultiLayanan(terpilih)
       });
     }
-    // Gambar untuk tiap layanan
-    const gambarLayanan = {
-      SIM: "https://imgur.com/kMeyg5y",
-      PLATE: "https://imgur.com/kMeyg5y",
-      IMPOUND: "https://imgur.com/kMeyg5y"
-    };
+
+    // Gambar link: GANTI SESUAI GAMBAR PUBLIK YANG KAMU MAU
+    const gambarBukaPelayanan = "https://i.imgur.com/8lE5U2z.png";
+    const gambarTutupPelayanan = "https://i.imgur.com/M2NQf5I.png";
     const urlLayanan = "https://layananpolku.vercel.app/";
     const roleTag = "@unknown-role";
 
-    // MODIFIKASI: Pengumuman hanya satu pesan, sesuai jumlah layanan dicentang
     async function kirimPengumumanMultiLayanan(jenisArr) {
       let namaLayanan = jenisArr.map(j=>{
         if(j==="SIM") return "SIM";
@@ -278,14 +264,8 @@
         konten = `LAYANAN PEMBUATAN SIM , PLATE , DAN PENGAMBILAN KENDARAAN SITAAN TELAH DIBUKA\nSILAHKAN KLIK LINK INI\n${urlLayanan}\n\nTERIMAKASIH\n${roleTag}`;
       }
 
-      let gambar = gambarLayanan[jenisArr[0]] || "";
-
       const payload = {
-        content: `${judul}\n${konten}`,
-        embeds: gambar ? [{
-          image: { url: gambar },
-          description: `Pelayanan ${jenisArr.join(', ')}`
-        }] : []
+        content: `${judul}\n${konten}\n${gambarBukaPelayanan}`
       };
 
       try {
@@ -304,7 +284,33 @@
       }
     }
 
-    // --- REALTIME LISTENER UNTUK is_valid ---
+    async function tutupPelayanan() {
+      showModalKonfirmasi({
+        text: "Yakin ingin MENGUMUMKAN TUTUP pelayanan?",
+        yaLabel: "Ya, Tutup",
+        onYa: async () => {
+          const waktu = new Date().toLocaleString("id-ID");
+          const payload = {
+            content: `:red_circle: **PELAYANAN SIM DITUTUP!**\n\nWaktu: ${waktu}\nTerima kasih telah menggunakan layanan.\n${gambarTutupPelayanan}`
+          };
+          try {
+            const res = await fetch(discordWebhookPelayanan, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+              showToastNotif("Pengumuman TUTUP pelayanan terkirim ke Discord.", 3500);
+            } else {
+              showToastNotif("Gagal mengirim pengumuman tutup pelayanan.", 4000);
+            }
+          } catch (err) {
+            showToastNotif("Error: " + err.message, 4000);
+          }
+        }
+      });
+    }
+
     let validSubscription = null;
 
     async function toggleValid(id, checked) {
@@ -314,10 +320,8 @@
       } else {
         showToastNotif(checked ? "Data ditandai valid." : "Data ditandai tidak valid.", 1500);
       }
-      // Tidak perlu panggil renderTable di sini, karena akan otomatis via realtime listener
     }
 
-    // Ganti hapusData dengan konfirmasi modal
     async function hapusData(id, file_ktp_url) {
       showModalKonfirmasi({
         text: "Yakin ingin menghapus data ini?",
@@ -398,7 +402,6 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // Kirim data valid satu per satu (AMAN DARI WARNING)
     async function kirimSemuaKeDiscord() {
       let validData = cacheData.filter(row => row.is_valid);
       if (!validData.length) {
@@ -417,15 +420,10 @@
               const row = validData[i];
               const waktu = new Date().toLocaleString();
               let msg = "**Layanan Pembuatan SIM**\n" + formatEntry(row, i+1, waktu);
-
-              let payload = { content: msg };
               if (row.file_ktp_url && row.file_ktp_url.startsWith('http')) {
-                payload.embeds = [{
-                  image: { url: row.file_ktp_url },
-                  description: "Dokumen KTP"
-                }];
+                msg += `\n${row.file_ktp_url}`;
               }
-              // Delay 2 detik antar data
+              let payload = { content: msg };
               await delay(2000);
               let res = await fetch(discordWebhookUrl, {
                 method: 'POST',
@@ -447,33 +445,6 @@
           }
           btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Semua`;
           btn.disabled = false;
-        }
-      });
-    }
-
-    async function tutupPelayanan() {
-      showModalKonfirmasi({
-        text: "Yakin ingin MENGUMUMKAN TUTUP pelayanan?",
-        yaLabel: "Ya, Tutup",
-        onYa: async () => {
-          const waktu = new Date().toLocaleString("id-ID");
-          const payload = {
-            content: `:red_circle: **PELAYANAN SIM DITUTUP!**\n\nWaktu: ${waktu}\nTerima kasih telah menggunakan layanan.`
-          };
-          try {
-            const res = await fetch(discordWebhookPelayanan, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            if (res.ok) {
-              showToastNotif("Pengumuman TUTUP pelayanan terkirim ke Discord.", 3500);
-            } else {
-              showToastNotif("Gagal mengirim pengumuman tutup pelayanan.", 4000);
-            }
-          } catch (err) {
-            showToastNotif("Error: " + err.message, 4000);
-          }
         }
       });
     }
@@ -584,7 +555,6 @@
       renderTable(cacheData);
     }
 
-    // --- REALTIME SUBSCRIPTION ---
     async function setupRealtime() {
       if (window.validSubscription) {
         await window.validSubscription.unsubscribe();
@@ -616,7 +586,6 @@
     window.bukaPelayanan = bukaPelayanan;
     window.tutupPelayanan = tutupPelayanan;
 
-    // Initial load and realtime setup
     loadData().then(setupRealtime);
   </script>
 </body>
