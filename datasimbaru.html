@@ -130,7 +130,7 @@
     <div class="modal-box">
       <div id="modalKonfirmasiText">Yakin ingin menghapus data ini?</div>
       <div class="modal-btn-group">
-        <button class="btn-ya" id="btnModalYa">Ya, Hapus</button>
+        <button class="btn-ya" id="btnModalYa"><span id="modalYaLabel">Ya, Hapus</span></button>
         <button class="btn-tidak" id="btnModalTidak">Batal</button>
       </div>
     </div>
@@ -161,10 +161,11 @@
       }, duration);
     }
 
-    // === Modal Konfirmasi Hapus ===
+    // === Modal Konfirmasi Hapus (dengan label dinamis) ===
     let hapusDataCallback = null;
-    function showModalKonfirmasi({text = "Yakin ingin menghapus data ini?", onYa = null, onTidak = null}) {
+    function showModalKonfirmasi({text = "Yakin ingin menghapus data ini?", onYa = null, onTidak = null, yaLabel = "Ya, Hapus"}) {
       document.getElementById('modalKonfirmasiText').textContent = text;
+      document.getElementById('modalYaLabel').textContent = yaLabel;
       document.getElementById('modalKonfirmasi').style.display = 'flex';
       hapusDataCallback = onYa;
       document.getElementById('btnModalYa').onclick = () => {
@@ -194,6 +195,7 @@
     async function hapusData(id, file_ktp_url) {
       showModalKonfirmasi({
         text: "Yakin ingin menghapus data ini?",
+        yaLabel: "Ya, Hapus",
         onYa: async () => {
           const { error } = await supabase.from('sim').delete().eq('id', id);
           if (error) {
@@ -233,6 +235,7 @@
     async function hapusSemuaData() {
       showModalKonfirmasi({
         text: "Yakin ingin menghapus SEMUA data SIM?",
+        yaLabel: "Ya, Hapus Semua",
         onYa: async () => {
           let { data, error } = await supabase.from('sim').select('id, file_ktp_url');
           if (error) {
@@ -278,6 +281,7 @@
       }
       showModalKonfirmasi({
         text: "Kirim data valid ke Discord satu per satu dan tampilkan gambar kalau ada?",
+        yaLabel: "Ya, Kirim",
         onYa: async () => {
           const btn = document.getElementById("btnKirimSemua");
           btn.disabled = true;
@@ -325,6 +329,7 @@
     async function bukaPelayanan() {
       showModalKonfirmasi({
         text: "Yakin ingin MENGUMUMKAN BUKA pelayanan?",
+        yaLabel: "Ya, Buka",
         onYa: async () => {
           const waktu = new Date().toLocaleString("id-ID");
           const payload = {
@@ -351,6 +356,7 @@
     async function tutupPelayanan() {
       showModalKonfirmasi({
         text: "Yakin ingin MENGUMUMKAN TUTUP pelayanan?",
+        yaLabel: "Ya, Tutup",
         onYa: async () => {
           const waktu = new Date().toLocaleString("id-ID");
           const payload = {
