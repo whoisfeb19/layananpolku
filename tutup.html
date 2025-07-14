@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Penutupan Layanan - Banner Polri</title>
-  <!-- Google Fonts for Oswald and Merriweather -->
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Merriweather:wght@900&display=swap" rel="stylesheet">
   <style>
     html,body {
@@ -66,25 +65,6 @@
       display: block;
       pointer-events: none;
     }
-    .download-btn {
-      display: block;
-      margin: 16px auto 0 auto;
-      padding: 10px 30px;
-      font-size: 1.1em;
-      font-family: Oswald, Arial, sans-serif;
-      background: #b70000;
-      color: #fff;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: background 0.2s;
-      box-shadow: 0 2px 8px #0002;
-      z-index: 10;
-      position: relative;
-    }
-    .download-btn:hover {
-      background: #a30000;
-    }
     @media (max-width: 800px) {
       .banner-polri { height: 250px; }
       .banner-logo { width: 60px; top: 12px; left: 10px;}
@@ -96,12 +76,10 @@
   </style>
 </head>
 <body>
-  <button class="download-btn" onclick="downloadBanner()">Download Banner</button>
-  <div id="capture-area" class="banner-polri">
-    <!-- Logo custom, ganti src di bawah sesuai kebutuhan -->
-    <img class="banner-logo" src="polisi.png" alt="Logo">
+  <div class="banner-polri">
+    <img class="banner-logo" src="https://i.ibb.co/1rCLm5q/logo-kkc.png" alt="Logo">
     <div class="banner-title">
-      MARKAS BESAR KEPOLISIAN KOTAKU
+      MARKAS BESAR KEPOLISIAN DAERAH KOTAKU
     </div>
     <hr class="banner-divider">
     <div class="banner-text">
@@ -109,7 +87,7 @@
       AKAN DIBUKA KEMBALI SESUAI JAM OPERASIONAL,<br>
       TERIMAKASIH BAGI WARGA YANG TELAH BERKUNJUNG.
     </div>
-    <!-- SVG LENGKUNG PERSIS SEPERTI GAMBAR -->
+    <!-- Tambahkan SVG wave merah/putih di bawah -->
     <svg class="banner-svg" viewBox="0 0 1440 140" preserveAspectRatio="none">
       <!-- Merah tebal -->
       <path d="M0,80 C120,120 430,110 670,120 C950,135 1220,70 1440,100 L1440,140 L0,140 Z" fill="#b70000"/>
