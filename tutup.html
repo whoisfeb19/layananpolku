@@ -9,22 +9,24 @@
       margin: 0;
       padding: 0;
       background: #fff;
+      /* Pastikan tidak ada border! */
     }
     .banner-polri {
       position: relative;
-      width: 1366px; /* Ganti dari 100vw ke px supaya hasil download konsisten */
+      width: 1366px; /* Menggunakan px agar hasil download konsisten */
       height: 432px;
       background: #363636;
       color: #fff;
       font-family: 'Oswald', Arial, sans-serif;
       box-sizing: border-box;
       overflow: hidden;
-      /* Tambahkan SVG wave sebagai background-image */
+      /* SVG wave sebagai background, tidak sebagai elemen SVG */
       background-image:
         url('data:image/svg+xml;utf8,<svg width="1440" height="140" viewBox="0 0 1440 140" xmlns="http://www.w3.org/2000/svg"><path d="M0,80 C120,120 430,110 670,120 C950,135 1220,70 1440,100 L1440,140 L0,140 Z" fill="%23b70000"/><path d="M0,105 C100,135 430,125 700,130 C970,135 1290,60 1440,110 L1440,140 L0,140 Z" fill="white"/></svg>');
       background-repeat: no-repeat;
       background-position: left bottom;
       background-size: 100% 140px;
+      /* Jangan tambahkan border */
     }
     .banner-logo {
       position: absolute;
@@ -92,14 +94,14 @@
 </head>
 <body>
   <div class="banner-polri" id="capture-area">
-    <!-- Pastikan polisi.png ada di folder yang sama, atau gunakan data URI untuk logo -->
+    <!-- Pastikan polisi.png ada di folder yang sama. Jika ingin lebih aman, gunakan base64 atau SVG inline -->
     <img class="banner-logo" src="polisi.png" alt="Logo">
     <div class="banner-title">
       MARKAS BESAR KEPOLISIAN KOTAKU
     </div>
     <hr class="banner-divider">
     <div class="banner-text">
-      PELAYANAN ADMINISTRASI POLISI TELAH DIBUKA<br>
+      PELAYANAN ADMINISTRASI POLISI TELAH DITUTUP<br>
       AKAN DIBUKA KEMBALI SESUAI JAM OPERASIONAL,<br>
       TERIMAKASIH BAGI WARGA YANG TELAH BERKUNJUNG.
     </div>
@@ -114,7 +116,7 @@
         useCORS: true,
         foreignObjectRendering: true,
         allowTaint: true,
-        scale: 1 // biar ukuran tetap
+        scale: 1
       }).then(canvas => {
         let link = document.createElement('a');
         link.download = 'banner-penutupan-layanan.png';
