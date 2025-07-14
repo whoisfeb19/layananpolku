@@ -171,7 +171,7 @@
         <input type="checkbox" id="layananIMPOUND" value="IMPOUND"> Pelayanan IMPOUND
       </label>
       <div class="modal-btn-group">
-        <button onclick="konfirmasiMultiLayanan()" style="padding:8px 20px;border-radius:6px;border:none;background:#2563eb;color:#fff;font-size:1em;cursor:pointer;">Kirim Pengumuman</button>
+        <button id="btnKirimPengumuman" style="padding:8px 20px;border-radius:6px;border:none;background:#2563eb;color:#fff;font-size:1em;cursor:pointer;">Kirim Pengumuman</button>
         <button onclick="tutupModalPilihLayanan()" style="padding:8px 20px;border-radius:6px;border:none;background:#e5e7eb;color:#444;font-size:1em;cursor:pointer;">Batal</button>
       </div>
     </div>
@@ -232,6 +232,26 @@
         document.getElementById('layanan'+l).checked
       );
     }
+
+    // -- Fix: make konfirmasiMultiLayanan global and assign to button
+    function konfirmasiMultiLayanan() {
+      const terpilih = getSelectedLayanan();
+      if (terpilih.length === 0) {
+        showToastNotif('Pilih minimal satu layanan!');
+        return;
+      }
+      tutupModalPilihLayanan();
+      showModalKonfirmasi({
+        text: `Yakin ingin MENGUMUMKAN BUKA layanan: ${terpilih.join(', ')}?`,
+        yaLabel: "Ya, Kirim",
+        onYa: () => kirimPengumumanMultiLayanan(terpilih)
+      });
+    }
+    window.konfirmasiMultiLayanan = konfirmasiMultiLayanan;
+
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById('btnKirimPengumuman').onclick = konfirmasiMultiLayanan;
+    });
 
     async function kirimPengumumanMultiLayanan(jenisArr) {
       let namaLayanan = jenisArr.map(j=>{
@@ -422,7 +442,6 @@
         text: "Yakin ingin MENGUMUMKAN TUTUP pelayanan?",
         yaLabel: "Ya, Tutup",
         onYa: async () => {
-          // Format pengumuman sesuai permintaan
           const payload = {
             content: `**PENGUMUMAN**\nLAYANAN ADMINISTRASI KEPOLISIAN TELAH DI TUTUP DAN AKAN DI BUKA KEMBALI SESUAI DENGAN JAM OPERASIONAL YANG TELAH DI TENTUKAN,\nBAGI WARGA YANG TELAH BERKUNJUNG KAMI UCAPKAN TERIMA KASIH`,
             embeds: [{
