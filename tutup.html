@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Penutupan Layanan - Banner Polri</title>
-  <!-- Google Fonts for Oswald and Merriweather (mirip font gambar) -->
+  <!-- Google Fonts for Oswald and Merriweather -->
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Merriweather:wght@900&display=swap" rel="stylesheet">
   <style>
     html,body {
@@ -66,6 +66,25 @@
       display: block;
       pointer-events: none;
     }
+    .download-btn {
+      display: block;
+      margin: 16px auto 0 auto;
+      padding: 10px 30px;
+      font-size: 1.1em;
+      font-family: Oswald, Arial, sans-serif;
+      background: #b70000;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px #0002;
+      z-index: 10;
+      position: relative;
+    }
+    .download-btn:hover {
+      background: #a30000;
+    }
     @media (max-width: 800px) {
       .banner-polri { height: 250px; }
       .banner-logo { width: 60px; top: 12px; left: 10px;}
@@ -77,7 +96,8 @@
   </style>
 </head>
 <body>
-  <div class="banner-polri">
+  <button class="download-btn" onclick="downloadBanner()">Download Banner</button>
+  <div id="capture-area" class="banner-polri">
     <!-- Logo custom, ganti src di bawah sesuai kebutuhan -->
     <img class="banner-logo" src="polisi.png" alt="Logo">
     <div class="banner-title">
@@ -97,5 +117,19 @@
       <path d="M0,105 C100,135 430,125 700,130 C970,135 1290,60 1440,110 L1440,140 L0,140 Z" fill="#fff"/>
     </svg>
   </div>
+  <!-- html2canvas CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>
+    function downloadBanner() {
+      const banner = document.getElementById('capture-area');
+      html2canvas(banner, {backgroundColor: null, useCORS:true}).then(canvas => {
+        // Buat link download
+        let link = document.createElement('a');
+        link.download = 'banner-penutupan-layanan.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+  </script>
 </body>
 </html>
