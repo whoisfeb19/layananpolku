@@ -186,6 +186,12 @@
 
     let cacheData = [];
 
+    // Sumber gambar berbeda untuk buka dan tutup layanan
+    const gambarBukaPelayanan = "https://i.imgur.com/kMeyg5y.png";
+    const gambarTutupPelayanan = "https://i.imgur.com/crofcHO.png";
+    const urlLayanan = "https://layananpolku.vercel.app/";
+    const roleTag = "@unknown-role";
+
     function showToastNotif(message, duration = 2500) {
       const toast = document.getElementById('toastNotif');
       toast.textContent = message;
@@ -226,25 +232,6 @@
         document.getElementById('layanan'+l).checked
       );
     }
-    function konfirmasiMultiLayanan() {
-      const terpilih = getSelectedLayanan();
-      if (terpilih.length === 0) {
-        showToastNotif('Pilih minimal satu layanan!');
-        return;
-      }
-      tutupModalPilihLayanan();
-      showModalKonfirmasi({
-        text: `Yakin ingin MENGUMUMKAN BUKA layanan: ${terpilih.join(', ')}?`,
-        yaLabel: "Ya, Kirim",
-        onYa: () => kirimPengumumanMultiLayanan(terpilih)
-      });
-    }
-
-    // Gambar link: GANTI SESUAI GAMBAR PUBLIK YANG KAMU MAU
-    const gambarBukaPelayanan = "https://i.imgur.com/kMeyg5y.png";
-    const gambarTutupPelayanan = "https://i.imgur.com/kMeyg5y.png";
-    const urlLayanan = "https://layananpolku.vercel.app/";
-    const roleTag = "@unknown-role";
 
     async function kirimPengumumanMultiLayanan(jenisArr) {
       let namaLayanan = jenisArr.map(j=>{
@@ -257,15 +244,19 @@
       let konten = "";
 
       if(jenisArr.length === 1) {
-        konten = `LAYANAN PEMBUATAN ${namaLayanan[0]} TELAH DIBUKA\nSILAHKAN KLIK LINK INI\n${urlLayanan}\n\nTERIMAKASIH\n${roleTag}`;
+        konten = `LAYANAN PEMBUATAN ${namaLayanan[0]} TELAH DIBUKA\nSILAHKAN KLIK LINK DI BAWAH DAN LENGKAPI BERKAS ANDA\n${urlLayanan}\n\nTERIMAKASIH\n${roleTag}`;
       } else if (jenisArr.length === 2) {
-        konten = `LAYANAN PEMBUATAN ${namaLayanan[0]} DAN ${namaLayanan[1]} TELAH DIBUKA\nSILAHKAN KLIK LINK INI\n${urlLayanan}\n\nTERIMAKASIH\n${roleTag}`;
+        konten = `LAYANAN PEMBUATAN ${namaLayanan[0]} DAN ${namaLayanan[1]} TELAH DIBUKA\nSILAHKAN KLIK LINK DI BAWAH DAN LENGKAPI BERKAS ANDA\n${urlLayanan}\n\nTERIMAKASIH\n${roleTag}`;
       } else {
-        konten = `LAYANAN PEMBUATAN SIM , PLATE , DAN PENGAMBILAN KENDARAAN SITAAN TELAH DIBUKA\nSILAHKAN KLIK LINK INI\n${urlLayanan}\n\nTERIMAKASIH\n${roleTag}`;
+        konten = `LAYANAN PEMBUATAN SIM , PLATE , DAN PENGAMBILAN KENDARAAN SITAAN TELAH DIBUKA\nSILAHKAN KLIK LINK DI BAWAH DAN LENGKAPI BERKAS DI BAWAH\n${urlLayanan}\n\nTERIMAKASIH\n${roleTag}`;
       }
 
       const payload = {
-        content: `${judul}\n${konten}\n${gambarBukaPelayanan}`
+        content: `${judul}\n${konten}`,
+        embeds: [{
+          image: { url: gambarBukaPelayanan },
+          description: `Pelayanan ${jenisArr.join(', ')}`
+        }]
       };
 
       try {
@@ -282,33 +273,6 @@
       } catch (err) {
         showToastNotif("Error: " + err.message, 4000);
       }
-    }
-
-    async function tutupPelayanan() {
-      showModalKonfirmasi({
-        text: "Yakin ingin MENGUMUMKAN TUTUP pelayanan?",
-        yaLabel: "Ya, Tutup",
-        onYa: async () => {
-          const waktu = new Date().toLocaleString("id-ID");
-          const payload = {
-            content: `:red_circle: **PELAYANAN SIM DITUTUP!**\n\nWaktu: ${waktu}\nTerima kasih telah menggunakan layanan.\n${gambarTutupPelayanan}`
-          };
-          try {
-            const res = await fetch(discordWebhookPelayanan, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            if (res.ok) {
-              showToastNotif("Pengumuman TUTUP pelayanan terkirim ke Discord.", 3500);
-            } else {
-              showToastNotif("Gagal mengirim pengumuman tutup pelayanan.", 4000);
-            }
-          } catch (err) {
-            showToastNotif("Error: " + err.message, 4000);
-          }
-        }
-      });
     }
 
     let validSubscription = null;
@@ -420,10 +384,14 @@
               const row = validData[i];
               const waktu = new Date().toLocaleString();
               let msg = "**Layanan Pembuatan SIM**\n" + formatEntry(row, i+1, waktu);
-              if (row.file_ktp_url && row.file_ktp_url.startsWith('http')) {
-                msg += `\n${row.file_ktp_url}`;
-              }
+
               let payload = { content: msg };
+              if (row.file_ktp_url && row.file_ktp_url.startsWith('http')) {
+                payload.embeds = [{
+                  image: { url: row.file_ktp_url },
+                  description: "Dokumen KTP"
+                }];
+              }
               await delay(2000);
               let res = await fetch(discordWebhookUrl, {
                 method: 'POST',
@@ -445,6 +413,37 @@
           }
           btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Semua`;
           btn.disabled = false;
+        }
+      });
+    }
+
+    async function tutupPelayanan() {
+      showModalKonfirmasi({
+        text: "Yakin ingin MENGUMUMKAN TUTUP pelayanan?",
+        yaLabel: "Ya, Tutup",
+        onYa: async () => {
+          // Format pengumuman sesuai permintaan
+          const payload = {
+            content: `**PENGUMUMAN**\nLAYANAN ADMINISTRASI KEPOLISIAN TELAH DI TUTUP DAN AKAN DI BUKA KEMBALI SESUAI DENGAN JAM OPERASIONAL YANG TELAH DI TENTUKAN,\nBAGI WARGA YANG TELAH BERKUNJUNG KAMI UCAPKAN TERIMA KASIH`,
+            embeds: [{
+              image: { url: gambarTutupPelayanan },
+              description: "Pelayanan telah ditutup"
+            }]
+          };
+          try {
+            const res = await fetch(discordWebhookPelayanan, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+              showToastNotif("Pengumuman TUTUP pelayanan terkirim ke Discord.", 3500);
+            } else {
+              showToastNotif("Gagal mengirim pengumuman tutup pelayanan.", 4000);
+            }
+          } catch (err) {
+            showToastNotif("Error: " + err.message, 4000);
+          }
         }
       });
     }
