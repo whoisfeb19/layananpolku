@@ -12,13 +12,19 @@
     }
     .banner-polri {
       position: relative;
-      width: 100vw;
+      width: 1366px; /* Ganti dari 100vw ke px supaya hasil download konsisten */
       height: 432px;
       background: #363636;
-      overflow: hidden;
       color: #fff;
       font-family: 'Oswald', Arial, sans-serif;
       box-sizing: border-box;
+      overflow: hidden;
+      /* Tambahkan SVG wave sebagai background-image */
+      background-image:
+        url('data:image/svg+xml;utf8,<svg width="1440" height="140" viewBox="0 0 1440 140" xmlns="http://www.w3.org/2000/svg"><path d="M0,80 C120,120 430,110 670,120 C950,135 1220,70 1440,100 L1440,140 L0,140 Z" fill="%23b70000"/><path d="M0,105 C100,135 430,125 700,130 C970,135 1290,60 1440,110 L1440,140 L0,140 Z" fill="white"/></svg>');
+      background-repeat: no-repeat;
+      background-position: left bottom;
+      background-size: 100% 140px;
     }
     .banner-logo {
       position: absolute;
@@ -56,15 +62,6 @@
       text-shadow: 0 2px 4px #0008;
       padding: 0 16px;
     }
-    .banner-svg {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      width: 100%;
-      height: 140px;
-      z-index: 1;
-      display: block;
-      pointer-events: none;
-    }
     .download-btn {
       display: block;
       margin: 16px auto 0 auto;
@@ -85,18 +82,17 @@
       background: #a30000;
     }
     @media (max-width: 800px) {
-      .banner-polri { height: 250px; }
+      .banner-polri { height: 250px; width: 100vw; }
       .banner-logo { width: 60px; top: 12px; left: 10px;}
       .banner-title { font-size: 1.4em; margin-top: 16px; }
       .banner-divider { width: 65%; border-bottom-width:4px;margin-bottom: 10px;}
       .banner-text { font-size: 1em; padding: 0 2vw;}
-      .banner-svg { height: 50px;}
     }
   </style>
 </head>
 <body>
-  <!-- Tambah id capture-area supaya bisa dicapture html2canvas -->
   <div class="banner-polri" id="capture-area">
+    <!-- Pastikan polisi.png ada di folder yang sama, atau gunakan data URI untuk logo -->
     <img class="banner-logo" src="polisi.png" alt="Logo">
     <div class="banner-title">
       MARKAS BESAR KEPOLISIAN KOTAKU
@@ -107,23 +103,19 @@
       AKAN DIBUKA KEMBALI SESUAI JAM OPERASIONAL,<br>
       TERIMAKASIH BAGI WARGA YANG TELAH BERKUNJUNG.
     </div>
-    <!-- Tambahkan SVG wave merah/putih di bawah -->
-    <svg class="banner-svg" viewBox="0 0 1440 140" preserveAspectRatio="none">
-      <!-- Merah tebal -->
-      <path d="M0,80 C120,120 430,110 670,120 C950,135 1220,70 1440,100 L1440,140 L0,140 Z" fill="#b70000"/>
-      <!-- Putih tipis -->
-      <path d="M0,105 C100,135 430,125 700,130 C970,135 1290,60 1440,110 L1440,140 L0,140 Z" fill="#fff"/>
-    </svg>
   </div>
-  <!-- Tombol download gambar -->
   <button class="download-btn" onclick="downloadBanner()">Download Gambar Banner</button>
-  <!-- html2canvas CDN -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script>
     function downloadBanner() {
       const banner = document.getElementById('capture-area');
-      html2canvas(banner, {backgroundColor: null, useCORS:true}).then(canvas => {
-        // Buat link download
+      html2canvas(banner, {
+        backgroundColor: null,
+        useCORS: true,
+        foreignObjectRendering: true,
+        allowTaint: true,
+        scale: 1 // biar ukuran tetap
+      }).then(canvas => {
         let link = document.createElement('a');
         link.download = 'banner-penutupan-layanan.png';
         link.href = canvas.toDataURL('image/png');
