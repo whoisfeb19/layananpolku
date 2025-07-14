@@ -9,24 +9,21 @@
       margin: 0;
       padding: 0;
       background: #fff;
-      /* Pastikan tidak ada border! */
     }
     .banner-polri {
       position: relative;
-      width: 1366px; /* Menggunakan px agar hasil download konsisten */
+      width: 1366px;
       height: 432px;
       background: #363636;
       color: #fff;
       font-family: 'Oswald', Arial, sans-serif;
       box-sizing: border-box;
       overflow: hidden;
-      /* SVG wave sebagai background, tidak sebagai elemen SVG */
       background-image:
         url('data:image/svg+xml;utf8,<svg width="1440" height="140" viewBox="0 0 1440 140" xmlns="http://www.w3.org/2000/svg"><path d="M0,80 C120,120 430,110 670,120 C950,135 1220,70 1440,100 L1440,140 L0,140 Z" fill="%23b70000"/><path d="M0,105 C100,135 430,125 700,130 C970,135 1290,60 1440,110 L1440,140 L0,140 Z" fill="white"/></svg>');
       background-repeat: no-repeat;
       background-position: left bottom;
       background-size: 100% 140px;
-      /* Jangan tambahkan border */
     }
     .banner-logo {
       position: absolute;
@@ -35,6 +32,10 @@
       width: 110px;
       height: auto;
       z-index: 2;
+      /* Tambahkan background putih agar logo tidak transparan */
+      background: #fff;
+      border-radius: 8px;
+      padding: 2px;
     }
     .banner-title {
       font-family: 'Oswald', Arial, sans-serif;
@@ -94,8 +95,8 @@
 </head>
 <body>
   <div class="banner-polri" id="capture-area">
-    <!-- Pastikan polisi.png ada di folder yang sama. Jika ingin lebih aman, gunakan base64 atau SVG inline -->
-    <img class="banner-logo" src="polisi.png" alt="Logo">
+    <!-- Ganti src logo dengan base64 PNG kecil agar pasti tampil, contoh di bawah -->
+    <img class="banner-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAAyCAYAAAB4mvENAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAWElEQVR4nO3BMQEAAAgDoJvcf8EGhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwKcKAAEG3A4pAAAAAElFTkSuQmCC" alt="Logo">
     <div class="banner-title">
       MARKAS BESAR KEPOLISIAN KOTAKU
     </div>
