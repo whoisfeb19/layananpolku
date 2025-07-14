@@ -11,6 +11,7 @@
     .container { max-width: 1100px; margin: 40px auto; background: #fff; border-radius: 14px; padding: 28px; box-shadow: 0 6px 32px #0001;}
     h2 { text-align: center; color: #2563eb; margin-bottom: 28px;}
     .btn-group { display: flex; gap: 10px; margin-bottom: 8px; }
+    .service-group { display: flex; gap: 10px; margin-bottom: 18px; justify-content: flex-start; }
     .search-group { display: flex; gap: 10px; margin-bottom: 18px; align-items: center; }
     .search-input { padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 1em; }
     .btn-search { background: #10b981; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; }
@@ -22,23 +23,81 @@
     td a { color: #2563eb; text-decoration: underline;}
     .file-link {font-size: 1.2em;}
     .loader { text-align: center; margin-top: 48px; }
-    .btn-refresh, .btn-hapus, .btn-kirim, .btn-hapus-semua { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; margin-bottom: 8px; }
-    .btn-refresh:hover, .btn-hapus:hover, .btn-kirim:hover, .btn-hapus-semua:hover { background: #1943a8; }
+    .btn-refresh, .btn-hapus, .btn-kirim, .btn-hapus-semua, .btn-buka, .btn-tutup { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; cursor: pointer; margin-bottom: 8px; }
+    .btn-refresh:hover, .btn-hapus:hover, .btn-kirim:hover, .btn-hapus-semua:hover, .btn-buka:hover, .btn-tutup:hover { background: #1943a8; }
     .btn-hapus { background: #dc2626; }
     .btn-hapus:hover { background: #a81e1e; }
     .btn-kirim { background: #10b981; }
     .btn-kirim:hover { background: #0d8b6c; }
     .btn-hapus-semua { background: #d97706; }
     .btn-hapus-semua:hover { background: #b45309; }
+    .btn-buka { background: #22c55e; }
+    .btn-buka:hover { background: #15803d; }
+    .btn-tutup { background: #ef4444; }
+    .btn-tutup:hover { background: #991b1b; }
     .no-data { text-align: center; padding: 44px 0; color: #888;}
     .img-ktp-preview { max-width: 60px; max-height: 60px; border-radius: 7px; box-shadow: 0 2px 6px #0002; transition: box-shadow 0.2s; cursor: pointer; border: 1px solid #ddd; }
     .img-ktp-preview:hover { box-shadow: 0 0 10px #2563eb55; border-color: #2563eb; }
     .checkbox-valid { width: 18px; height: 18px; cursor: pointer; }
     .valid-label { display: flex; align-items: center; gap: 2px; justify-content: center; }
+    #toastNotif {
+      visibility: hidden;
+      min-width: 220px;
+      margin-left: -110px;
+      background-color: #323232;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 12px 24px;
+      position: fixed;
+      z-index: 9999;
+      left: 50%;
+      bottom: 40px;
+      font-size: 1em;
+      opacity: 0;
+      transition: opacity 0.4s, visibility 0.4s;
+      box-shadow: 0 2px 12px #0004;
+    }
+    #modalKonfirmasi {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.15);
+      justify-content: center;
+      align-items: center;
+    }
+    #modalKonfirmasi .modal-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 28px 22px;
+      box-shadow: 0 6px 32px #0003;
+      max-width: 320px;
+      margin: auto;
+      text-align: center;
+      font-size: 1.07em;
+      color: #222;
+    }
+    #modalKonfirmasi .modal-btn-group {
+      margin-top: 26px;
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+    }
+    #modalKonfirmasi .btn-ya {
+      background: #dc2626; color: #fff; border: none; border-radius: 6px; padding: 7px 24px; cursor: pointer;
+    }
+    #modalKonfirmasi .btn-ya:hover { background: #a81e1e;}
+    #modalKonfirmasi .btn-tidak {
+      background: #e5e7eb; color: #444; border: none; border-radius: 6px; padding: 7px 18px; cursor: pointer;
+    }
+    #modalKonfirmasi .btn-tidak:hover { background: #cbd5e1;}
     @media (max-width: 700px) {
       th, td { font-size: 0.95em; padding: 7px 4px;}
       .container { padding: 8px;}
-      .btn-group, .search-group { flex-direction: column; gap: 6px; }
+      .btn-group, .search-group, .service-group { flex-direction: column; gap: 6px; }
+      #toastNotif { min-width: 140px; margin-left: -70px; font-size: 0.96em; padding: 10px 10px;}
+      #modalKonfirmasi .modal-box { padding: 16px 8px; font-size: 1em;}
     }
   </style>
 </head>
@@ -46,6 +105,10 @@
   <div class="container">
     <h2>Data Pendaftaran SIM</h2>
     <h3 style="text-align:center"> silahkan klik centang jika data sudah valid dan sudah melakukan pembayaran</h3>
+    <div class="service-group">
+      <button class="btn-buka" onclick="bukaPelayanan()"><i class="fas fa-door-open"></i> Buka Pelayanan</button>
+      <button class="btn-tutup" onclick="tutupPelayanan()"><i class="fas fa-door-closed"></i> Tutup Pelayanan</button>
+    </div>
     <div class="btn-group">
       <button class="btn-refresh" onclick="loadData()"><i class="fas fa-sync-alt"></i> Muat Ulang</button>
       <button class="btn-hapus-semua" onclick="hapusSemuaData()"><i class="fas fa-trash"></i> Hapus Semua</button>
@@ -60,14 +123,59 @@
       <div class="loader">Memuat data...</div>
     </div>
   </div>
+  <!-- Toast Notification -->
+  <div id="toastNotif"></div>
+  <!-- Modal Konfirmasi Hapus -->
+  <div id="modalKonfirmasi">
+    <div class="modal-box">
+      <div id="modalKonfirmasiText">Yakin ingin menghapus data ini?</div>
+      <div class="modal-btn-group">
+        <button class="btn-ya" id="btnModalYa">Ya, Hapus</button>
+        <button class="btn-tidak" id="btnModalTidak">Batal</button>
+      </div>
+    </div>
+  </div>
   <script>
     // === Konfigurasi & Setup ===
     const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+    // --- Webhook Discord untuk data (tetap) & untuk buka/tutup pelayanan (channel berbeda) ---
     const discordWebhookUrl = "https://l.webhook.party/hook/jLlaeTAM1s39Odwyp%2FyuOzXkWCEuVbiHOXrrMYVeqoarEkz0wDcvBN%2FQyuy9zurl%2Bx%2FKoXuX%2FvxYCHhtma7o7rRGV7YGZ5ebqrqz%2FU9Ooa2bIGXWC3eThYwUVqZE7TV4ZbNRlmGSAvy5BinmARhucGM4JdvrGaxAeg89S80OpaL3tVgFcNm4zVgsSPituklsb229Gqg1HLo0ZjSm5awY5hPZXwu9Gntcgbf75kKdMvIWPCHbcNhnAMD6LJ5SDJJyLy6Szr7CZHNX5AFuZpMbBrV%2FzrG2EKYkU1AgcokQzIH5vhcn0f5witO4s4NWKv3DTdgWkMEvEV5SdR0GyB9RpUBo5pPrvl8Hy2IiMKrm3D0rych2KrxoVq%2F6MBbNEyhtjtgN%2FYzzlnI%3D/KryzdSmlmr0DTa%2Bz";
+    // --- GANTI webhook berikut ke channel Discord yang berbeda untuk buka/tutup pelayanan! ---
+    const discordWebhookPelayanan = "https://discord.com/api/webhooks/1382027668588855367/yhI5QrQ13pWfRLbsVVF_Xy0hZ-LvDTkvc9DuoznDOoKekQ10B-RhPDW6WcMUf7WR_YLy"; // <--- REPLACE with your own channel webhook
+
     let cacheData = [];
+
+    // === Toast Notification Function ===
+    function showToastNotif(message, duration = 2500) {
+      const toast = document.getElementById('toastNotif');
+      toast.textContent = message;
+      toast.style.visibility = 'visible';
+      toast.style.opacity = '1';
+      if (toast._timeoutHandle) clearTimeout(toast._timeoutHandle);
+      toast._timeoutHandle = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.visibility = 'hidden';
+      }, duration);
+    }
+
+    // === Modal Konfirmasi Hapus ===
+    let hapusDataCallback = null;
+    function showModalKonfirmasi({text = "Yakin ingin menghapus data ini?", onYa = null, onTidak = null}) {
+      document.getElementById('modalKonfirmasiText').textContent = text;
+      document.getElementById('modalKonfirmasi').style.display = 'flex';
+      hapusDataCallback = onYa;
+      document.getElementById('btnModalYa').onclick = () => {
+        document.getElementById('modalKonfirmasi').style.display = 'none';
+        if (typeof hapusDataCallback === "function") hapusDataCallback();
+      };
+      document.getElementById('btnModalTidak').onclick = () => {
+        document.getElementById('modalKonfirmasi').style.display = 'none';
+        if (typeof onTidak === "function") onTidak();
+      };
+    }
 
     // --- REALTIME LISTENER UNTUK is_valid ---
     let validSubscription = null;
@@ -75,26 +183,34 @@
     async function toggleValid(id, checked) {
       const { error } = await supabase.from('sim').update({ is_valid: checked }).eq('id', id);
       if (error) {
-        alert('Gagal update status valid: ' + error.message);
+        showToastNotif('Gagal update status valid: ' + error.message, 3500);
+      } else {
+        showToastNotif(checked ? "Data ditandai valid." : "Data ditandai tidak valid.", 1500);
       }
       // Tidak perlu panggil renderTable di sini, karena akan otomatis via realtime listener
     }
 
+    // Ganti hapusData dengan konfirmasi modal
     async function hapusData(id, file_ktp_url) {
-      if (!confirm('Yakin ingin menghapus data ini?')) return;
-      const { error } = await supabase.from('sim').delete().eq('id', id);
-      if (error) {
-        alert('Gagal menghapus data: ' + error.message);
-        return;
-      }
-      if (file_ktp_url) {
-        try {
-          const urlParts = file_ktp_url.split('/');
-          const filename = decodeURIComponent(urlParts.slice(4).join('/').split('?')[0]);
-          await supabase.storage.from('sim').remove([filename]);
-        } catch (err) {}
-      }
-      loadData();
+      showModalKonfirmasi({
+        text: "Yakin ingin menghapus data ini?",
+        onYa: async () => {
+          const { error } = await supabase.from('sim').delete().eq('id', id);
+          if (error) {
+            showToastNotif('Gagal menghapus data: ' + error.message, 3500);
+            return;
+          }
+          if (file_ktp_url) {
+            try {
+              const urlParts = file_ktp_url.split('/');
+              const filename = decodeURIComponent(urlParts.slice(4).join('/').split('?')[0]);
+              await supabase.storage.from('sim').remove([filename]);
+            } catch (err) {}
+          }
+          showToastNotif("Data berhasil dihapus.", 2000);
+          loadData();
+        }
+      });
     }
 
     async function hapusDataBatch(rows) {
@@ -115,16 +231,21 @@
     }
 
     async function hapusSemuaData() {
-      if (!confirm('Yakin ingin menghapus SEMUA data SIM?')) return;
-      let { data, error } = await supabase.from('sim').select('id, file_ktp_url');
-      if (error) {
-        alert('Gagal mengambil data: ' + error.message);
-        return;
-      }
-      if (data && data.length) {
-        await hapusDataBatch(data);
-      }
-      loadData();
+      showModalKonfirmasi({
+        text: "Yakin ingin menghapus SEMUA data SIM?",
+        onYa: async () => {
+          let { data, error } = await supabase.from('sim').select('id, file_ktp_url');
+          if (error) {
+            showToastNotif('Gagal mengambil data: ' + error.message, 3500);
+            return;
+          }
+          if (data && data.length) {
+            await hapusDataBatch(data);
+          }
+          showToastNotif("Semua data berhasil dihapus.", 2000);
+          loadData();
+        }
+      });
     }
 
     function formatEntry(row, nomor, waktu) {
@@ -152,47 +273,105 @@
     async function kirimSemuaKeDiscord() {
       let validData = cacheData.filter(row => row.is_valid);
       if (!validData.length) {
-        alert('Tidak ada data valid untuk dikirim.');
+        showToastNotif('Tidak ada data valid untuk dikirim.', 3000);
         return;
       }
-      if (!confirm('Kirim data valid ke Discord satu per satu dan tampilkan gambar kalau ada?')) return;
-      const btn = document.getElementById("btnKirimSemua");
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
+      showModalKonfirmasi({
+        text: "Kirim data valid ke Discord satu per satu dan tampilkan gambar kalau ada?",
+        onYa: async () => {
+          const btn = document.getElementById("btnKirimSemua");
+          btn.disabled = true;
+          btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Mengirim...`;
+          try {
+            for (let i = 0; i < validData.length; i++) {
+              const row = validData[i];
+              const waktu = new Date().toLocaleString();
+              let msg = "**Layanan Pembuatan SIM**\n" + formatEntry(row, i+1, waktu);
 
-      try {
-        for (let i = 0; i < validData.length; i++) {
-          const row = validData[i];
-          const waktu = new Date().toLocaleString();
-          let msg = "**Layanan Pembuatan SIM**\n" + formatEntry(row, i+1, waktu);
-
-          let payload = { content: msg };
-          if (row.file_ktp_url && row.file_ktp_url.startsWith('http')) {
-            payload.embeds = [{
-              image: { url: row.file_ktp_url },
-              description: "Dokumen KTP"
-            }];
+              let payload = { content: msg };
+              if (row.file_ktp_url && row.file_ktp_url.startsWith('http')) {
+                payload.embeds = [{
+                  image: { url: row.file_ktp_url },
+                  description: "Dokumen KTP"
+                }];
+              }
+              // Delay 2 detik antar data
+              await delay(2000);
+              let res = await fetch(discordWebhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (!res.ok) {
+                showToastNotif(`Gagal mengirim data ke Discord pada data ke-${i+1}: ${await res.text()}`, 4500);
+                break;
+              } else {
+                showToastNotif(`Data ke-${i+1} berhasil dikirim ke Discord!`, 1500);
+              }
+            }
+            showToastNotif('Semua data valid berhasil dikirim ke Discord! Data akan dihapus otomatis.', 4000);
+            await hapusDataBatch(validData);
+            loadData();
+          } catch (err) {
+            showToastNotif('Gagal mengirim ke Discord.\n' + err.message, 4000);
           }
-          // Delay 2 detik antar data
-          await delay(2000);
-          let res = await fetch(discordWebhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          if (!res.ok) {
-            alert(`Gagal mengirim data ke Discord pada data ke-${i+1}.\n${await res.text()}`);
-            break;
+          btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Semua`;
+          btn.disabled = false;
+        }
+      });
+    }
+
+    // === BUKA & TUTUP PELAYANAN ===
+    async function bukaPelayanan() {
+      showModalKonfirmasi({
+        text: "Yakin ingin MENGUMUMKAN BUKA pelayanan?",
+        onYa: async () => {
+          const waktu = new Date().toLocaleString("id-ID");
+          const payload = {
+            content: `:green_circle: **PELAYANAN SIM DIBUKA!**\n\nWaktu: ${waktu}\nSilakan mendaftar dan melengkapi persyaratan.`
+          };
+          try {
+            const res = await fetch(discordWebhookPelayanan, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+              showToastNotif("Pengumuman BUKA pelayanan terkirim ke Discord.", 3500);
+            } else {
+              showToastNotif("Gagal mengirim pengumuman buka pelayanan.", 4000);
+            }
+          } catch (err) {
+            showToastNotif("Error: " + err.message, 4000);
           }
         }
-        alert('Semua data valid berhasil dikirim ke Discord! Data akan dihapus otomatis.');
-        await hapusDataBatch(validData);
-        loadData();
-      } catch (err) {
-        alert('Gagal mengirim ke Discord.\n' + err.message);
-      }
-      btn.innerHTML = `<i class="fas fa-paper-plane"></i> Kirim Semua`;
-      btn.disabled = false;
+      });
+    }
+
+    async function tutupPelayanan() {
+      showModalKonfirmasi({
+        text: "Yakin ingin MENGUMUMKAN TUTUP pelayanan?",
+        onYa: async () => {
+          const waktu = new Date().toLocaleString("id-ID");
+          const payload = {
+            content: `:red_circle: **PELAYANAN SIM DITUTUP!**\n\nWaktu: ${waktu}\nTerima kasih telah menggunakan layanan.`
+          };
+          try {
+            const res = await fetch(discordWebhookPelayanan, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+              showToastNotif("Pengumuman TUTUP pelayanan terkirim ke Discord.", 3500);
+            } else {
+              showToastNotif("Gagal mengirim pengumuman tutup pelayanan.", 4000);
+            }
+          } catch (err) {
+            showToastNotif("Error: " + err.message, 4000);
+          }
+        }
+      });
     }
 
     function renderTable(data) {
@@ -303,19 +482,15 @@
 
     // --- REALTIME SUBSCRIPTION ---
     async function setupRealtime() {
-      // Unsubscribe sebelumnya jika ada
       if (window.validSubscription) {
         await window.validSubscription.unsubscribe();
       }
-
-      // Realtime untuk update status valid
       window.validSubscription = supabase
         .channel('sim_valid_channel')
         .on(
           'postgres_changes',
           { event: '*', schema: 'public', table: 'sim' },
           payload => {
-            // Update cacheData dan re-render tabel
             const newRow = payload.new;
             if (!newRow) return;
             const idx = cacheData.findIndex(r => r.id === newRow.id);
@@ -334,6 +509,8 @@
     window.resetSearch = resetSearch;
     window.kirimSemuaKeDiscord = kirimSemuaKeDiscord;
     window.toggleValid = toggleValid;
+    window.bukaPelayanan = bukaPelayanan;
+    window.tutupPelayanan = tutupPelayanan;
 
     // Initial load and realtime setup
     loadData().then(setupRealtime);
