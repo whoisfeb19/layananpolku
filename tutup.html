@@ -65,7 +65,6 @@
       display: block;
       pointer-events: none;
     }
-    
     .download-btn {
       display: block;
       margin: 16px auto 0 auto;
@@ -93,11 +92,11 @@
       .banner-text { font-size: 1em; padding: 0 2vw;}
       .banner-svg { height: 50px;}
     }
-    
   </style>
 </head>
 <body>
-  <div class="banner-polri">
+  <!-- Tambah id capture-area supaya bisa dicapture html2canvas -->
+  <div class="banner-polri" id="capture-area">
     <img class="banner-logo" src="polisi.png" alt="Logo">
     <div class="banner-title">
       MARKAS BESAR KEPOLISIAN KOTAKU
@@ -116,6 +115,8 @@
       <path d="M0,105 C100,135 430,125 700,130 C970,135 1290,60 1440,110 L1440,140 L0,140 Z" fill="#fff"/>
     </svg>
   </div>
+  <!-- Tombol download gambar -->
+  <button class="download-btn" onclick="downloadBanner()">Download Gambar Banner</button>
   <!-- html2canvas CDN -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script>
