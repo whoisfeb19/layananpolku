@@ -237,7 +237,6 @@
             border: 1px solid #bbb;
             font-size: 1rem;
         }
-        /* Modal Content Animation */
         .animate-pop {
             animation: pop 0.4s ease-out;
         }
@@ -360,21 +359,7 @@
             <form id="staffForm" enctype="multipart/form-data" autocomplete="off">
                 <label for="nama-petugas">Nama Petugas:</label>
                 <select id="nama-petugas" name="nama-petugas">
-                    <option value="Ken Marcello">Ken Marcello</option>
-                    <option value="Melvin Kanedrick">Melvin Kanedrick</option>
-                    <option value="Haikal Pratama">Haikal Pratama</option>
-                    <option value="Berlyn Wasylena">Berlyn Wasylena</option>
-                    <option value="Elvino Pablo">Elvino Pablo</option>
-                    <option value="Jennie Cathlyn">Jennie Cathlyn</option>
-                    <option value="Bhagaskara Hindia">Bhagaskara Hindia</option>
-                    <option value="Kenneth Yobs">Kenneth Yobs</option>
-                    <option value="Ashabira Maharani">Ashabira Maharani</option>
-                    <option value="Tycen Wright">Tycen Wright</option>
-                    <option value="Agung Lafurqon">Agung Lafurqon</option>
-                    <option value="Cheezy Abobo">Cheezy Abobo</option>
-                    <option value="Youw Boy">Youw Boy</option>
-                    <option value="Garry Wackson">Garry Wackson</option>
-                    <option value="Sanz Toretto">Sanz Toretto</option>
+                    <!-- Nama petugas dari Supabase akan diisi lewat JS -->
                 </select>
                 <h2>DATA DIRI PENERIMA</h2>
                 <label>Pasport (UCP):</label>
@@ -491,7 +476,36 @@
         }
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', async function () {
+        // === SUPABASE SETUP ===
+        const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // === AMBIL NAMA PETUGAS DARI SUPABASE DAN ISI DROPDOWN ===
+        const petugasSelect = document.getElementById('nama-petugas');
+        try {
+            const { data: petugasData, error: petugasError } = await supabase
+                .from('perpolum')
+                .select('nama');
+
+            if (petugasError) {
+                petugasSelect.innerHTML = `<option value="">Gagal mengambil data petugas</option>`;
+            } else if (petugasData && petugasData.length > 0) {
+                petugasSelect.innerHTML = "";
+                petugasData.forEach(row => {
+                    const opt = document.createElement('option');
+                    opt.value = row.nama;
+                    opt.textContent = row.nama;
+                    petugasSelect.appendChild(opt);
+                });
+            } else {
+                petugasSelect.innerHTML = `<option value="">Tidak ada data petugas</option>`;
+            }
+        } catch (err) {
+            petugasSelect.innerHTML = `<option value="">Error mengambil data petugas</option>`;
+        }
+
         // === DISCORD ID AUTOFILL DAN CEK LOGIN ===
         const discordId = localStorage.getItem("discord_id");
         if (!discordId) {
@@ -539,11 +553,6 @@
                 fileListDiv.appendChild(ul);
             }
         }
-
-        // === SETUP SUPABASE ===
-        const supabaseUrl = "https://esfeooendxloxnhkuknt.supabase.co";
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzZmVvb2VuZHhsb3huaGt1a250Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NTgyMzcsImV4cCI6MjA2NTUzNDIzN30.YiJlNEiLfV4ReVaZ_VLbiI-CXgMoIeDpGyq4ywMzZ7U";
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         document.getElementById("staffForm").addEventListener("submit", async function(e){
             e.preventDefault();
