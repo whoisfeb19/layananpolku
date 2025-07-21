@@ -264,11 +264,11 @@
       let konten = "";
 
       if(jenisArr.length === 1) {
-        konten = `# LAYANAN PEMBUATAN ${namaLayanan[0]} TELAH DIBUKA\n# SILAHKAN KLIK LINK DI BAWAH DAN LENGKAPI BERKAS ANDA\n# ${urlLayanan}\n\n# TERIMAKASIH\n${roleTag}`;
+        konten = ` LAYANAN PEMBUATAN ${namaLayanan[0]} TELAH DIBUKA\n SILAHKAN KLIK LINK DI BAWAH DAN LENGKAPI BERKAS ANDA\n ${urlLayanan}\n\n TERIMAKASIH\n${roleTag}`;
       } else if (jenisArr.length === 2) {
-        konten = `# LAYANAN PEMBUATAN ${namaLayanan[0]} DAN ${namaLayanan[1]} TELAH DIBUKA\n #SILAHKAN KLIK LINK DI BAWAH DAN LENGKAPI BERKAS ANDA\n# ${urlLayanan}\n\n# TERIMAKASIH\n${roleTag}`;
+        konten = ` LAYANAN PEMBUATAN ${namaLayanan[0]} DAN ${namaLayanan[1]} TELAH DIBUKA\n SILAHKAN KLIK LINK DI BAWAH DAN LENGKAPI BERKAS ANDA\n ${urlLayanan}\n\n TERIMAKASIH\n${roleTag}`;
       } else {
-        konten = `# LAYANAN PEMBUATAN SIM , PLATE , DAN PENGAMBILAN KENDARAAN SITAAN TELAH DIBUKA\n# SILAHKAN KLIK LINK DI BAWAH DAN LENGKAPI BERKAS DI BAWAH\n# ${urlLayanan}\n\n# TERIMAKASIH\n${roleTag}`;
+        konten = ` LAYANAN PEMBUATAN SIM , PLATE , DAN PENGAMBILAN KENDARAAN SITAAN TELAH DIBUKA\n SILAHKAN KLIK LINK DI BAWAH DAN LENGKAPI BERKAS DI BAWAH\n ${urlLayanan}\n\n TERIMAKASIH\n${roleTag}`;
       }
 
       const payload = {
@@ -443,7 +443,7 @@
         yaLabel: "Ya, Tutup",
         onYa: async () => {
           const payload = {
-            content: `# :red_circle: PENGUMUMAN\n# LAYANAN ADMINISTRASI KEPOLISIAN TELAH DI TUTUP DAN AKAN DI BUKA KEMBALI SESUAI DENGAN JAM OPERASIONAL YANG TELAH DI TENTUKAN,\n# BAGI WARGA YANG TELAH BERKUNJUNG KAMI UCAPKAN TERIMA KASIH\n${roleTag}`,
+            content: `# :red_circle: PENGUMUMAN\n LAYANAN ADMINISTRASI KEPOLISIAN TELAH DI TUTUP DAN AKAN DI BUKA KEMBALI SESUAI DENGAN JAM OPERASIONAL YANG TELAH DI TENTUKAN,\n BAGI WARGA YANG TELAH BERKUNJUNG KAMI UCAPKAN TERIMA KASIH\n${roleTag}`,
             embeds: [{
               image: { url: gambarTutupPelayanan },
               description: "Pelayanan telah ditutup"
